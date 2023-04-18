@@ -1,0 +1,3 @@
+schema:
+  - https://api.thegraph.com/subgraphs/name/ticruz38/five
+documents: "./src/queries/**/*.{gql,js,ts,jsx,tsx}"

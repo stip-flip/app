@@ -1,0 +1,32 @@
+fragment PoolFragment on Pool {
+  id
+  collateral
+  oracle
+  long
+  fee
+  ticks {
+    id
+    index
+    liquidity
+  }
+}
+
+query getPools($where: Pool_filter) {
+  pools(where: $where) {
+    ...PoolFragment
+  }
+}
+
+fragment PositionFragment on Position {
+  id
+  owner
+  tickLower
+  tickUpper
+  amount
+}
+
+query getPositions($where: Position_filter) {
+  positions(where: $where) {
+    ...PositionFragment
+  }
+}

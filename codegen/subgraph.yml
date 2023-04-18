@@ -1,0 +1,12 @@
+schema: https://api.thegraph.com/subgraphs/name/ticruz38/five
+documents: "./src/queries/**/*.gql"
+config:
+  scalars:
+    BigInt: number
+    Int: number
+generates:
+  ./src/hooks/subgraph.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request
