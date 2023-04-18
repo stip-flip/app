@@ -14,7 +14,6 @@
     defaultEvmStores,
     signerAddress,
   } from "svelte-ethers-store";
-
   let theme = "dark";
 
   $: {

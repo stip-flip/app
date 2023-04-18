@@ -1,7 +1,7 @@
 <script lang="ts">
   import { BigNumber } from "ethers";
   import { commify, formatUnits, parseUnits } from "ethers/lib/utils";
-  import { debounce } from "lodash";
+  import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
   import Tokens from "src/components/tokens.svelte";
   import { broadcastTransaction } from "src/hooks/blocknumber";
@@ -66,7 +66,7 @@
   let liquidityMoved: BigNumber = BigNumber.from(0);
   let feeAmount: BigNumber = BigNumber.from(0);
   let frAfter: BigNumber = BigNumber.from(0);
-  const deb = debounce(async () => {
+  const deb = _.debounce(async () => {
     if (selectedToken0 && selectedToken1 && selectedPool) {
       console.log("debounce");
       if (enter) {
