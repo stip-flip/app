@@ -1,6 +1,11 @@
 <script lang="ts">
   import { BigNumber } from "ethers";
-  import { commify, formatUnits, parseUnits } from "ethers/lib/utils";
+  import {
+    commify,
+    formatEther,
+    formatUnits,
+    parseUnits,
+  } from "ethers/lib/utils";
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
   import Tokens from "src/components/tokens.svelte";
@@ -66,9 +71,16 @@
   let liquidityMoved: BigNumber = BigNumber.from(0);
   let feeAmount: BigNumber = BigNumber.from(0);
   let frAfter: BigNumber = BigNumber.from(0);
+  let shares: string = "0";
+
+  $: {
+    if (selectedToken0 && selectedToken1 && selectedPool) {
+      deb();
+    }
+  }
   const deb = _.debounce(async () => {
     if (selectedToken0 && selectedToken1 && selectedPool) {
-      console.log("debounce");
+      // console.log("debounce");
       if (enter) {
         const enter = await $sdk?.POOL.attach(
           selectedPool?.address
@@ -83,6 +95,7 @@
         liquidityMoved = enter.liquidityMoved;
         feeAmount = enter.feeAmount;
         frAfter = enter.frAfter;
+        shares = formatEther(enter.shares);
       } else {
         const exit = await $sdk?.POOL.attach(selectedPool?.address).previewExit(
           parseUnits(amount, selectedToken0?.info.decimals || 0)
@@ -90,10 +103,11 @@
         liquidityMoved = exit.liquidityMoved;
         feeAmount = exit.feeAmount;
         frAfter = exit.frAfter;
+        shares = "0";
       }
     }
   }, 1000);
-  $: console.log(feeAmount);
+  // $: console.log(feeAmount);
 </script>
 
 <Tokens
@@ -108,7 +122,7 @@
   bind:selectedToken={selectedToken1}
 />
 
-<div class="w-1/3 m-auto mt-32 border-2 rounded-lg p-4">
+<div class="w-1/3 m-auto mt-16 border-2 rounded-lg p-4">
   <div class="flex justify-between items-center">
     <h1 class="text-3xl">Swap</h1>
   </div>
@@ -143,7 +157,7 @@
   </div>
   <div class="w-full flex space-x-4 mt-4 p-8 bg-slate-200 rounded-3xl relative">
     <input
-      value={amount}
+      value={shares}
       type="text"
       placeholder="Amount to swap"
       class="input input-ghost w-1/2 text-white text-2xl"
@@ -208,6 +222,7 @@
       min="0"
       max="10"
       bind:value={leverage}
+      on:input={deb}
       class="range"
       step="2"
     />

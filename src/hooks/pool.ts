@@ -128,7 +128,8 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
           0,
           Math.min(
             1,
-            (slot0.tick - cur.tickLower) / (cur.tickUpper - cur.tickLower)
+            (slot0.fr.toNumber() - cur.tickLower * 1e9) /
+              ((cur.tickUpper - cur.tickLower) * 1e9)
           )
         ),
         // pnl: await pool.getPositionPnL(cur.tickLower, cur.tickUpper, account),

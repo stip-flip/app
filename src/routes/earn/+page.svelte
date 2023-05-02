@@ -1,8 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { useInfos } from "src/hooks/erc20";
   import { usePoolInfos, usePositions } from "src/hooks/pool";
-  import { signerAddress } from "svelte-ethers-store";
   import Positions from "./_positions.svelte";
 
   $: poolInfos = usePoolInfos();
@@ -14,7 +12,7 @@
   $: positionExist = $positions.reduce((acc: boolean, cur: any) => {
     return acc || Object.keys(cur).length;
   }, false);
-  $: console.log($positions);
+  $: console.log($positions, $poolInfos);
 </script>
 
 <div class="w-1/2 m-auto mt-32 flex justify-between items-center">

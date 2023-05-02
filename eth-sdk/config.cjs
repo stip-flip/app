@@ -18,8 +18,8 @@ module.exports = sdk.defineConfig({
 		},
     goerli: {
       USDC: "0xE8D09a0ee0b4B4353F5c43C13ad10DacB7B60c0f",
-      POOL: "0x205421C878884f25269bC512189C38C3684aEEB3",
-      POOL_FACTORY: "0x37F5EF4C29dD6327fb75A35176737eFfFf75393B"
+      POOL: "0x777b2b12bF0AFfAc7EE84d1642Ccf32401cD51C4",
+      POOL_FACTORY: "0xCf2FfE6589fa12eEEc9E650E84d71F4E5ece56CB"
     }
 	},
 	outputPath: 'eth-sdk/build/'
