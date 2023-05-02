@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BigNumber } from "ethers";
+  import { BigNumber, ethers } from "ethers";
   import {
     commify,
     formatEther,
@@ -10,7 +10,11 @@
   import { validator } from "src/actions/big-number-input";
   import Tokens from "src/components/tokens.svelte";
   import { broadcastTransaction } from "src/hooks/blocknumber";
-  import { useInfoAndBalance, type TokenInfoAndBalance } from "src/hooks/erc20";
+  import {
+    useInfoAndBalance,
+    type TokenInfoAndBalance,
+    useAllowance,
+  } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
@@ -26,6 +30,11 @@
   $: poolInfos = usePoolInfos();
 
   $: quoteToken = useInfoAndBalance($sdk.USDC.address);
+
+  $: allowance = useAllowance(
+    selectedToken0?.info.address,
+    selectedPool?.address || ""
+  );
 
   $: tokenInfosAndBalances = [
     ...($poolInfos || []).map((pi) => pi.token),
@@ -241,22 +250,32 @@
     disabled={!selectedToken1}
     on:click={(_) => {
       if (enter) {
-        broadcastTransaction(
-          "Swapping " +
-            selectedToken0.info.name +
-            " for " +
-            selectedToken1.info.name,
-          $sdk.POOL.attach(selectedToken1.info.address)
-            .connect($signer)
-            .enter(
-              parseUnits(amount, selectedToken0.info.decimals),
-              parseUnits(amount, selectedToken0.info.decimals).mul(
-                leverage > 1 ? leverage : 1
-              ),
-              parseUnits("887000", 9),
-              $signerAddress
+        if ($allowance > Number(amount)) {
+          broadcastTransaction(
+            "Swapping " +
+              selectedToken0.info.name +
+              " for " +
+              selectedToken1.info.name,
+            $sdk.POOL.attach(selectedToken1.info.address)
+              .connect($signer)
+              .enter(
+                parseUnits(amount, selectedToken0.info.decimals),
+                parseUnits(amount, selectedToken0.info.decimals).mul(
+                  leverage > 1 ? leverage : 1
+                ),
+                parseUnits("887000", 9),
+                $signerAddress
+              )
+          );
+        } else {
+          broadcastTransaction(
+            "Increase Allowance",
+            $sdk.USDC.connect($signer).approve(
+              selectedPool?.address || "",
+              ethers.constants.MaxUint256
             )
-        );
+          );
+        }
       } else {
         broadcastTransaction(
           "Swapping " +
@@ -272,6 +291,6 @@
             )
         );
       }
-    }}>Swap</button
+    }}>{$allowance > Number(amount) ? "Swap" : "Approve"}</button
   >
 </div>
