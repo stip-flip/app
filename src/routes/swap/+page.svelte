@@ -131,10 +131,10 @@
   bind:selectedToken={selectedToken1}
 />
 
-<div class="w-1/3 m-auto mt-16 border-2 rounded-lg p-4">
-  <div class="flex justify-between items-center">
-    <h1 class="text-3xl">Swap</h1>
-  </div>
+<div class="w-1/3 m-auto mt-40 flex justify-between items-center">
+  <h1 class="text-3xl">Swap</h1>
+</div>
+<div class="w-1/3 m-auto mt-4 mb-24 border-2 rounded-lg p-4 bg-gradient">
   <div class="w-full flex space-x-4 mt-8 p-8 bg-slate-200 rounded-3xl">
     <input
       bind:value={amount}
@@ -246,8 +246,7 @@
   {/if}
 
   <button
-    class="btn-lg btn-primary w-full mt-8 rounded-full"
-    disabled={!selectedToken1}
+    class="btn btn-primary btn-lg w-full mt-8"
     on:click={(_) => {
       if (enter) {
         if ($allowance > Number(amount)) {
@@ -291,6 +290,9 @@
             )
         );
       }
-    }}>{$allowance > Number(amount) ? "Swap" : "Approve"}</button
+    }}
+    >{!selectedToken1 || $allowance > Number(amount)
+      ? "Swap"
+      : "Approve"}</button
   >
 </div>

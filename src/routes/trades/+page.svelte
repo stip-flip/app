@@ -13,8 +13,10 @@
   $: trades = $poolInfos.filter((pi) => (pi?.token?.balance || 0) > 0);
 </script>
 
-<div class="w-1/2 m-auto mt-32 border-2 rounded-lg p-4">
-  <h1 class="p-2 pb-6 text-xl font-bold">Trades</h1>
+<div class="w-1/2 m-auto mt-40 flex justify-between items-center">
+  <h1 class="text-3xl">Trades</h1>
+</div>
+<div class="w-1/2 m-auto mt-4 mb-24 border-2 rounded-lg p-4 bg-gradient">
   {#if trades?.length == 0}
     <strong>Your trades will appear here</strong>
   {:else}

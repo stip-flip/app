@@ -31,8 +31,12 @@
   }
 </script>
 
-<div class="border-2 rounded-lg p-4 bg-transparent w-1/2 m-auto mt-32">
-  <div class="flex justify-between items-center p-4 border-b">
+<div
+  class="border-2 rounded-lg p-4 bg-transparent w-1/2 m-auto mt-40 bg-gradient"
+>
+  <div
+    class="flex justify-between items-center p-4 border-b border-base-content"
+  >
     <a class="w-1/3" href="/earn">
       <Icon icon="ph-arrow-left-bold" class="text-2xl" />
     </a>
@@ -62,7 +66,7 @@
           <span>USDC</span>
         </label>
       </div>
-      <div class="border-b w-full" />
+      <div class="border-b w-full border-base-content" />
       <div>
         <div class="dropdown w-full">
           <label
@@ -87,7 +91,7 @@
           </ul>
         </div>
       </div>
-      <div class="border-b w-full" />
+      <div class="border-b w-full border-base-content" />
       {#if $usdcAllowance >= Number(amount)}
         <button
           class="btn btn-primary w-full"
@@ -129,13 +133,13 @@
           <Icon icon="octicon:inbox-24" class="text-4xl m-auto" />
         </div>
       {/if}
-      <div class="border-b w-full my-4" />
+      <div class="border-b w-full my-4 border-base-content" />
       <div class="text-center text-lg mt-4 font-semibold">
         Your liquidity will be active from
       </div>
       <div class="flex space-x-4">
         <div
-          class="w-1/2 border-2 rounded-3xl space-x-4 flex justify-between items-center p-2 mt-8"
+          class="w-1/2 border-2 rounded-3xl space-x-4 flex justify-between items-center p-2 mt-8 border-base-content"
         >
           <div
             class="p-2 text-xl cursor-pointer"
@@ -159,7 +163,7 @@
           </div>
         </div>
         <div
-          class="w-1/2 border-2 rounded-3xl space-x-4 flex justify-between items-center p-2 mt-8"
+          class="w-1/2 border-2 rounded-3xl space-x-4 flex justify-between items-center p-2 mt-8 border-base-content"
         >
           <div
             class="p-2 text-xl cursor-pointer"

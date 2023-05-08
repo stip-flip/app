@@ -7,10 +7,10 @@
   let amount: string;
 </script>
 
-<div class="w-1/2 m-auto mt-32">
+<div class="w-1/2 m-auto mt-40">
   <h1 class="text-3xl">Faucet</h1>
 </div>
-<div class="border-2 rounded-lg p-4 bg-transparent w-1/2 m-auto mt-4">
+<div class="border-2 rounded-lg p-4 bg-gradient w-1/2 m-auto mt-4">
   <div class="form-control w-full">
     <label class="label">
       <span class="label-text font-semibold mx-2 text-base">Mint NUSD</span>

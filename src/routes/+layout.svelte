@@ -72,7 +72,7 @@
   }
 </script>
 
-<div class="overflow-auto">
+<div class="root overflow-auto full-height">
   <div class="fixed z-50 bottom-4 right-4">
     <div use:autoAnimate>
       {#each $pendingTransactions as pt (pt.hash)}
@@ -95,7 +95,7 @@
     </div>
   </div>
   <div
-    class={`m-auto flex items-stretch justify-between py-4 px-8 border-b border-primary/5 w-full bg-base-300 z-10 min-w-[72rem]`}
+    class={`m-auto fixed flex items-stretch justify-between py-4 px-8 border-b border-primary/5 w-full bg-gradient z-10 min-w-[72rem]`}
   >
     <div class="flex items-center w-full">
       <div class="flex items-center w-content h-8 mr-8">
@@ -228,25 +228,6 @@
               />
               <p class="text-xs text-warning">Network</p>
             </button>
-            <!-- <div
-									on:click={(_) => {
-										defaultEvmStores.disconnect();
-										betaTester = false;
-										sessionStorage.removeItem('accnt');
-									}}
-									class={`border border-primary flex cursor-pointer items-center h-8 ` +
-										($chainId != mainDefaultChainId ? 'border-warning' : '')}
-								>
-									<ETHicon
-										class={`h-full py-1 w-8 border-r border-base-100 ` +
-											($chainId != mainDefaultChainId ? 'bg-warning border-warning' : 'bg-neutral')}
-									/>
-									<button
-										class={`text-primary tracking-wider px-4 ` +
-											($chainId != mainDefaultChainId ? 'text-warning' : '')}
-										>{$signerAddress.slice(0, 6) + '...' + $signerAddress.slice(-4)}</button
-									>
-								</div> -->
 
             <button
               class={`dropdown dropdown-bottom dropdown-end border border-primary flex cursor-pointer items-center h-8 ` +
@@ -298,9 +279,9 @@
         class="border border-primary h-8 w-8 p-1 flex items-center justify-center hover:bg-base-100 cursor-pointer"
       >
         {#if theme === "dark"}
-          <Icon icon="ph:sun-bold" class="w-fit h-fit text-primary" />
-        {:else if theme === "light"}
           <Icon icon="ph:moon-bold" class="w-fit h-fit text-primary" />
+        {:else if theme === "light"}
+          <Icon icon="ph:sun-bold" class="w-fit h-fit text-primary" />
         {/if}
       </button>
     </div>

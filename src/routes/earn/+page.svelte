@@ -15,12 +15,12 @@
   $: console.log($positions, $poolInfos);
 </script>
 
-<div class="w-1/2 m-auto mt-32 flex justify-between items-center">
+<div class="w-1/2 m-auto mt-40 flex justify-between items-center">
   <h1 class="text-3xl">Pools</h1>
   <a class="btn float-right" href="earn/add">+ New Position</a>
 </div>
 <div
-  class="border-2 rounded-lg p-4 bg-transparent w-1/2 m-auto mt-4 overflow-scroll"
+  class="border-2 rounded-lg p-4 bg-gradient bg-opacity-80 w-1/2 m-auto mt-4 overflow-scroll"
   style="max-height: 60vh"
 >
   {#if !positionExist}
