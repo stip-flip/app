@@ -36,7 +36,7 @@
           >
           <td>{commify((positions[b].liquidityActive * 100).toFixed(2))} %</td>
           <td>
-            {#await $sdk.POOL.attach(poolAddress).getPositionPnL(positions[b].tickLower, positions[b].tickUpper, $signerAddress) then pnl}
+            {#await $sdk.POOL.attach(poolAddress).positionPnL(positions[b].tickLower, positions[b].tickUpper, $signerAddress) then pnl}
               {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))}
             {/await}
           </td>

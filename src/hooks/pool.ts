@@ -16,10 +16,7 @@ export type PoolInfo = {
     feeProtocol: number;
     unlocked: boolean;
   };
-  trade: {
-    collateral: BigNumber;
-    debt: BigNumber;
-  };
+  debt: BigNumber;
   collateral: string;
   fee: number;
   liquidityPerTick: BigNumber;
@@ -38,7 +35,7 @@ export const poolInfoAsync = async (
 
   const [
     lastPrice,
-    trade,
+    debt,
     collateral,
     slot0,
     fee,
@@ -47,7 +44,7 @@ export const poolInfoAsync = async (
     traderLiquidities,
   ] = await Promise.all([
     p.lastPrice(),
-    p.trades(account || get(signerAddress) || ethers.constants.AddressZero),
+    p.debt(account || get(signerAddress) || ethers.constants.AddressZero),
     p.collateral(),
     p.slot0(),
     p.fee(),
@@ -59,7 +56,7 @@ export const poolInfoAsync = async (
   return {
     address,
     lastPrice,
-    trade,
+    debt,
     collateral,
     slot0,
     fee,
