@@ -41,6 +41,7 @@
           positions={$positions?.[i]}
           bytes={Object.keys($positions?.[i])}
           poolAddress={pi.address}
+          poolName={pi?.token?.info?.name || ""}
         />
       {/if}
     {/each}

@@ -6,8 +6,10 @@
   import { sdk } from "src/stores";
   import { validator } from "src/actions/big-number-input";
   import { signer, signerAddress } from "svelte-ethers-store";
+  import { broadcastTransaction } from "src/hooks/blocknumber";
 
   export let bytes: string[];
+  export let poolName: string;
   export let poolAddress: string;
   export let positions: Record<string, any>;
 
@@ -48,7 +50,7 @@
         formatAmount(selectedPosition?.liquidity, $usdcInfo?.decimals || 18)
       )}
     </div>
-    <div class="p-4 font-light">
+    <div class="m-4 mx-12 p-2 font-light bg-blend-lighten rounded-lg">
       Fees accumulated:
       {#await $sdk.POOL.attach(poolAddress).positionPnL(selectedPosition?.tickLower, selectedPosition?.tickUpper, $signerAddress) then pnl}
         {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))}
@@ -61,14 +63,17 @@
       <button
         class="btn btn-primary w-full"
         on:click={(_) =>
-          $sdk.POOL.attach(poolAddress)
-            .connect($signer)
-            .burnAndCollect(
-              $signerAddress,
-              selectedPosition?.tickLower,
-              selectedPosition?.tickUpper,
-              parseUnits(withdrawAmount, $usdcInfo?.decimals || 18)
-            )}
+          broadcastTransaction(
+            "Burn and Collect",
+            $sdk.POOL.attach(poolAddress)
+              .connect($signer)
+              .burnAndCollect(
+                $signerAddress,
+                selectedPosition?.tickLower,
+                selectedPosition?.tickUpper,
+                parseUnits(withdrawAmount, $usdcInfo?.decimals || 18)
+              )
+          )}
       >
         Collect
       </button>
