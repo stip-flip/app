@@ -47,7 +47,7 @@
   </div>
 
   <div class="w-1/2 m-auto mt-32">
-    <table class="table w-full my-24">
+    <table class="table w-full my-24 bg">
       <thead>
         <tr>
           <th>Daily volume</th>

@@ -115,7 +115,7 @@
           class="btn btn-primary w-full"
           disabled={!selectedPool || !amount}
           on:click={(_) => {
-            increaseAllowance(selectedPool.address, $sdk.USDC.address);
+            increaseAllowance($sdk.USDC.address, selectedPool.address);
           }}>Approve USDC</button
         >
       {/if}
