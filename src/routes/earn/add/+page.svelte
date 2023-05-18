@@ -9,7 +9,6 @@
     usdcBalance,
     usdcInfo,
     useAllowance,
-    type TokenInfo,
   } from "src/hooks/erc20";
   import { usePoolInfos, type PoolInfo } from "src/hooks/pool";
   import { sdk } from "src/stores";

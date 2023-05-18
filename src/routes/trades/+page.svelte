@@ -1,25 +1,46 @@
 <script lang="ts">
   import type { BigNumberish } from "ethers";
-  import { formatUnits } from "ethers/lib/utils";
-  import { uniq } from "lodash";
-  import { useInfo, useInfosAndBalances } from "src/hooks/erc20";
+  import { formatUnits, parseEther } from "ethers/lib/utils";
+  import { useInfo } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
+  import { signerAddress } from "svelte-ethers-store";
 
   $: poolInfos = usePoolInfos();
 
   $: collateralInfo = useInfo($sdk.USDC.address);
 
   $: trades = $poolInfos.filter((pi) => (pi?.token?.balance || 0) > 0);
-  let pnls: BigNumberish[] = [];
+  let exitPreviews: {
+    liquidationPrice: BigNumberish;
+    liquidityMoved: BigNumberish;
+    feeAmount: BigNumberish;
+    frAfter: BigNumberish;
+    pnl_: BigNumberish;
+  }[] = [];
   $: {
     Promise.all(
       trades?.map(async (t) => {
-        const res = await $sdk.POOL.previewExit(t?.token?.balance || 0);
-        return res.liquidityMoved.sub(res.feeAmount);
+        const res = await $sdk.POOL.attach(t.address)
+          .connect($signerAddress)
+          .previewExit(parseEther(String(t?.token?.balance) || "0"));
+        const sv = res.liquidityMoved.sub(res.feeAmount);
+        // compute the gap between sharesValue and debt
+        const gap = sv.sub(t.debt);
+        // how much % does the gap represent in shares value
+        const gapPercent = gap.mul(100).div(sv);
+        console.log(t.long, formatUnits(t.currentPrice, 8));
+        // the price needs to move by the gap percent to liquidate
+        const liquidationPrice = t.long
+          ? t.currentPrice.sub(t.currentPrice.mul(gapPercent).div(100))
+          : t.currentPrice.add(t.currentPrice.mul(gapPercent).div(100));
+        return {
+          ...res,
+          liquidationPrice,
+        };
       })
-    ).then((res) => (pnls = res));
+    ).then((res) => (exitPreviews = res));
   }
 </script>
 
@@ -57,10 +78,17 @@
               )}
               {$collateralInfo.name || "USDN"}
             </td>
-            <td> TODO </td>
+            <td
+              >{commify(
+                formatUnits(exitPreviews?.[i]?.liquidationPrice || "0", 8)
+              )}</td
+            >
             <td>
               {commify(
-                formatUnits(pnls?.[i] || "0", $collateralInfo.decimals),
+                formatUnits(
+                  exitPreviews?.[i]?.pnl_ || "0",
+                  $collateralInfo.decimals
+                ),
                 2
               )}
               {$collateralInfo.name || "USDN"}

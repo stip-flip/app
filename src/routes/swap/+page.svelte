@@ -1,11 +1,6 @@
 <script lang="ts">
   import { BigNumber, ethers } from "ethers";
-  import {
-    commify,
-    formatEther,
-    formatUnits,
-    parseUnits,
-  } from "ethers/lib/utils";
+  import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils";
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
   import Tokens from "src/components/tokens.svelte";
@@ -16,6 +11,7 @@
     useAllowance,
   } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
+  import { commify } from "src/lib";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
 
@@ -80,6 +76,7 @@
   let liquidityMoved: BigNumber = BigNumber.from(0);
   let feeAmount: BigNumber = BigNumber.from(0);
   let frAfter: BigNumber = BigNumber.from(0);
+  let pnl: BigNumber = BigNumber.from(0);
   let shares: string = "0";
 
   $: {
@@ -106,13 +103,14 @@
         frAfter = enter.frAfter;
         shares = formatEther(enter.shares);
       } else {
-        const exit = await $sdk?.POOL.attach(selectedPool?.address).previewExit(
-          parseUnits(amount, selectedToken0?.info.decimals || 0)
-        );
+        const exit = await $sdk?.POOL.attach(selectedPool?.address)
+          .connect($signerAddress)
+          .previewExit(parseUnits(amount, selectedToken0?.info.decimals || 0));
         liquidityMoved = exit.liquidityMoved;
         feeAmount = exit.feeAmount;
         frAfter = exit.frAfter;
-        shares = "0";
+        shares = formatEther(exit.liquidityMoved.sub(exit.feeAmount));
+        pnl = exit.pnl_;
       }
     }
   }, 1000);
@@ -157,7 +155,10 @@
       {#if selectedToken0 != undefined}
         <div
           class="absolute ml-4 text-sm cursor-pointer"
-          on:click={(_) => (amount = String(selectedToken0?.balance || 0))}
+          on:click={(_) => {
+            deb();
+            amount = String(selectedToken0?.balance || 0);
+          }}
         >
           Balance: {commify(selectedToken0?.balance.toFixed(2))}
         </div>
@@ -182,13 +183,13 @@
   {#if selectedPool}
     <div>
       <div class="flex justify-between my-4 text-lg">
-        <strong> Price </strong>
+        <strong> Current Price </strong>
         <strong>
-          {commify(formatUnits(selectedPool.lastPrice, 8))}
+          {commify(formatUnits(selectedPool.currentPrice, 8))}
         </strong>
       </div>
       <div class="flex justify-between my-4 text-lg">
-        <strong> Funding Rate </strong>
+        <strong> Current FR </strong>
         <strong>
           {commify(formatUnits(selectedPool.slot0.fr, 9 + 3))} %
         </strong>
@@ -216,9 +217,17 @@
           {commify(formatUnits(frAfter, 9 + 3))} %
         </strong>
       </div>
+      {#if !enter && selectedToken0?.info.address && selectedToken1?.info.address}
+        <div class="flex justify-between my-4 text-lg">
+          <strong> PNL </strong>
+          <strong>
+            {commify(formatUnits(pnl, selectedToken1?.info.decimals || 0))}
+          </strong>
+        </div>
+      {/if}
     {/if}
   {/if}
-  {#if enter}
+  {#if enter && selectedToken1}
     <div class="border-b border-slate-200 mt-8" />
     <div class="flex justify-between my-4 text-lg">
       <strong> Leverage </strong>

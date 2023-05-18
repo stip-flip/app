@@ -55,7 +55,10 @@
       {#await $sdk.POOL.attach(poolAddress).positionPnL(selectedPosition?.tickLower, selectedPosition?.tickUpper, $signerAddress) then pnl}
         {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))}
         <br />
-        Total: {commify(Number(withdrawAmount) + Number(pnl))}
+        Total: {commify(
+          Number(withdrawAmount) +
+            Number(formatUnits(pnl, $usdcInfo?.decimals || 18))
+        )}
       {/await}
     </div>
     <div class="border-b" />

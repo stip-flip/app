@@ -4,12 +4,15 @@ import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
 import { derived, get, type Readable } from "svelte/store";
+import { pendingTransactions, resolvedTransactions } from "./blocknumber";
 import { infosAndBalanceAsync, type TokenInfoAndBalance } from "./erc20";
 import type { PoolFragmentFragment } from "./subgraph";
 
 export type PoolInfo = {
   address: string;
+  long: boolean;
   lastPrice: BigNumber;
+  currentPrice: BigNumber;
   slot0: {
     fr: BigNumber;
     tick: number;
@@ -34,7 +37,9 @@ export const poolInfoAsync = async (
   const p = sdk.POOL.attach(address || ethers.constants.AddressZero);
 
   const [
+    long,
     lastPrice,
+    currentPrice,
     debt,
     collateral,
     slot0,
@@ -43,7 +48,9 @@ export const poolInfoAsync = async (
     totalLiquidities,
     traderLiquidities,
   ] = await Promise.all([
+    p.long(),
     p.lastPrice(),
+    p.getPrice(),
     p.debt(account || get(signerAddress) || ethers.constants.AddressZero),
     p.collateral(),
     p.slot0(),
@@ -55,7 +62,9 @@ export const poolInfoAsync = async (
 
   return {
     address,
+    long,
     lastPrice,
+    currentPrice: currentPrice.price,
     debt,
     collateral,
     slot0,
@@ -68,8 +77,8 @@ export const poolInfoAsync = async (
 
 export const usePoolInfos = (): Readable<PoolInfo[]> => {
   return derived(
-    [ethsdk],
-    ([$ethsdk], set) => {
+    [ethsdk, resolvedTransactions],
+    ([$ethsdk, $pt], set) => {
       gqlsdk.getPools({}).then(async (res) => {
         const poolInfos = await Promise.all(
           res.pools.map(async (p) => {
@@ -137,7 +146,7 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
 };
 
 export const usePositions = derived(
-  [chainId, signerAddress],
+  [chainId, signerAddress, resolvedTransactions],
   ([$signer, $signerAddress], set) => {
     gqlsdk.getPools({}).then(async (res) => {
       const poolAddresses = res.pools.map((p) => p.id);
