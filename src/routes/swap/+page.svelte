@@ -96,7 +96,7 @@
             String(Number(amount) * (leverage > 1 ? leverage : 1)),
             selectedToken0?.info.decimals || 0
           ),
-          parseUnits("887000", 9)
+          parseUnits("887000", 18)
         );
         liquidityMoved = enter.liquidityMoved;
         feeAmount = enter.feeAmount;
@@ -191,7 +191,7 @@
       <div class="flex justify-between my-4 text-lg">
         <strong> Current FR </strong>
         <strong>
-          {commify(formatUnits(selectedPool.slot0.fr, 9 + 3))} %
+          {commify(formatUnits(selectedPool.slot0.fr, 18 + 3))} %
         </strong>
       </div>
     </div>
@@ -214,14 +214,14 @@
       <div class="flex justify-between my-4 text-lg">
         <strong> FR After </strong>
         <strong>
-          {commify(formatUnits(frAfter, 9 + 3))} %
+          {commify(formatUnits(frAfter, 18 + 3))} %
         </strong>
       </div>
       {#if !enter && selectedToken0?.info.address && selectedToken1?.info.address}
         <div class="flex justify-between my-4 text-lg">
           <strong> PNL </strong>
           <strong>
-            {commify(formatUnits(pnl, selectedToken1?.info.decimals || 0))}
+            {commify(formatUnits(pnl, selectedToken1?.info.decimals || 18))}
           </strong>
         </div>
       {/if}
@@ -271,7 +271,7 @@
                 parseUnits(amount, selectedToken0.info.decimals).mul(
                   leverage > 1 ? leverage : 1
                 ),
-                parseUnits("887000", 9),
+                parseUnits("887000", 18),
                 $signerAddress
               )
           );

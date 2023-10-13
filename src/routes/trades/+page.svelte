@@ -26,11 +26,18 @@
           .connect($signerAddress)
           .previewExit(parseEther(String(t?.token?.balance) || "0"));
         const sv = res.liquidityMoved.sub(res.feeAmount);
+        // liquidation price is the price at which the shares value is equal to the debt
+        //@todo
         // compute the gap between sharesValue and debt
         const gap = sv.sub(t.debt);
         // how much % does the gap represent in shares value
         const gapPercent = gap.mul(100).div(sv);
-        console.log(t.long, formatUnits(t.currentPrice, 8));
+        console.log(
+          t.long,
+          t.token?.info.name,
+          res.pnl_,
+          formatUnits(t.currentPrice, 8)
+        );
         // the price needs to move by the gap percent to liquidate
         const liquidationPrice = t.long
           ? t.currentPrice.sub(t.currentPrice.mul(gapPercent).div(100))
@@ -73,7 +80,7 @@
             </td>
             <td>
               {commify(
-                formatUnits(t?.debt || "0", $collateralInfo.decimals),
+                formatUnits(t?.debt || "0", $collateralInfo?.decimals),
                 2
               )}
               {$collateralInfo.name || "USDN"}
@@ -94,7 +101,7 @@
               {$collateralInfo.name || "USDN"}
             </td>
             <td>
-              {commify(formatUnits(t?.slot0?.fr || "0", 12), 2)} %
+              {commify(formatUnits(t?.slot0?.fr || "0", 18 + 3), 2)} %
             </td>
           </tr>
         {/each}

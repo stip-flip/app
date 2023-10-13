@@ -1,5 +1,5 @@
 import { ethers, utils, type BigNumber } from "ethers";
-import { formatEther } from "ethers/lib/utils";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
@@ -134,8 +134,16 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
           0,
           Math.min(
             1,
-            (slot0.fr.toNumber() - cur.tickLower * 1e9) /
-              ((cur.tickUpper - cur.tickLower) * 1e9)
+            Number(
+              formatEther(slot0.fr.sub(parseEther(cur.tickLower.toString())))
+            ) /
+              Number(
+                formatEther(
+                  parseEther(cur.tickUpper.toString()).sub(
+                    parseEther(cur.tickLower.toString())
+                  )
+                )
+              )
           )
         ),
         // pnl: await pool.getPositionPnL(cur.tickLower, cur.tickUpper, account),
