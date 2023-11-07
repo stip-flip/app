@@ -71,7 +71,7 @@ export const asyncBalance = async (tokenAddress: string, account?: string) => {
   const aamount = token.balanceOf(account || get(signerAddress));
   const adecimals = token.decimals();
   const [amount, decimals] = await Promise.all([aamount, adecimals]);
-  return formatAmount(amount, decimals);
+  return formatUnits(amount, decimals);
 };
 
 export const useBalance = (

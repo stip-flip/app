@@ -2,7 +2,6 @@ fragment PoolFragment on Pool {
   id
   collateral
   oracle
-  long
   fee
   ticks {
     id

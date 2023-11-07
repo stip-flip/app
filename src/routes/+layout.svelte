@@ -119,10 +119,10 @@
       </div>
       <div class="tabs space-x-6">
         <a
-          href="/trades"
+          href="/wallet"
           class="!border-primary tab text-primary font-bold px-1 relative"
-          class:tab-active={$page.route?.id?.startsWith("/trades")}
-          class:tab-bordered={$page.route?.id?.startsWith("/trades")}>Trades</a
+          class:tab-active={$page.route?.id?.startsWith("/wallet")}
+          class:tab-bordered={$page.route?.id?.startsWith("/wallet")}>Wallet</a
         >
         <a
           href={`/swap/`}

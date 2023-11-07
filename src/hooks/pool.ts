@@ -10,19 +10,15 @@ import type { PoolFragmentFragment } from "./subgraph";
 
 export type PoolInfo = {
   address: string;
-  long: boolean;
   lastPrice: BigNumber;
   currentPrice: BigNumber;
-  slot0: {
-    fr: BigNumber;
-    tick: number;
-    feeProtocol: number;
-    unlocked: boolean;
-  };
+  fr: BigNumber;
+  tick: number;
+  feeProtocol: number;
   debt: BigNumber;
   collateral: string;
   fee: number;
-  liquidityPerTick: BigNumber;
+  liquidityPerTickX24: BigNumber;
   totalLiquidities: BigNumber;
   traderLiquidities: BigNumber;
   ticks?: Record<number, number>;
@@ -36,42 +32,33 @@ export const poolInfoAsync = async (
   const sdk = get(ethsdk);
   const p = sdk.POOL.attach(address || ethers.constants.AddressZero);
 
-  const [
-    long,
-    lastPrice,
-    currentPrice,
-    debt,
-    collateral,
-    slot0,
-    fee,
-    liquidityPerTick,
-    totalLiquidities,
-    traderLiquidities,
-  ] = await Promise.all([
-    p.long(),
-    p.lastPrice(),
-    p.getPrice(),
-    p.debt(account || get(signerAddress) || ethers.constants.AddressZero),
-    p.collateral(),
-    p.slot0(),
-    p.fee(),
-    p.liquidityPerTickX24(),
-    p.totalLiquidities(),
-    p.traderLiquidities(),
-  ]);
+  const [currentPrice, debt, collateral, slot0, slot1, slot2, fee, lp] =
+    await Promise.all([
+      p.getPrice(),
+      p.debt(account || get(signerAddress) || ethers.constants.AddressZero),
+      p.collateral(),
+      p.slot0(),
+      p.slot1(),
+      p.slot2(),
+      p.fee(),
+      p.liquidationPrice(
+        account || get(signerAddress) || ethers.constants.AddressZero
+      ),
+    ]);
 
   return {
     address,
-    long,
-    lastPrice,
+    lastPrice: slot2.lastPrice,
     currentPrice: currentPrice.price,
+    fr: slot0.fr,
+    tick: slot1.tick,
+    feeProtocol: 0,
     debt,
     collateral,
-    slot0,
     fee,
-    liquidityPerTick,
-    totalLiquidities,
-    traderLiquidities,
+    liquidityPerTickX24: slot1.liquidityPerTickX24,
+    totalLiquidities: slot0.totalLiquidities,
+    traderLiquidities: slot2.traderLiquidities,
   };
 };
 
@@ -157,6 +144,7 @@ export const usePositions = derived(
   [chainId, signerAddress, resolvedTransactions],
   ([$signer, $signerAddress], set) => {
     gqlsdk.getPools({}).then(async (res) => {
+      console.log(res.pools);
       const poolAddresses = res.pools.map((p) => p.id);
       const positions = await Promise.all(
         poolAddresses.map((a) => positionsAsync(a, $signerAddress))

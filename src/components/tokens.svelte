@@ -26,7 +26,7 @@
             <a>{token?.info?.name || "NUSD"}</a>
           </strong>
           <span class="mx-2">
-            ({commify((token?.balance || 0).toFixed(2))})
+            ({commify(Number(token?.balance || 0).toFixed(2))})
           </span>
         </li>
       {/each}

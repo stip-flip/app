@@ -6,8 +6,6 @@
   $: poolInfos = usePoolInfos();
 
   $: positions = usePositions;
-  // $poolInfos.map((p) => p.address),
-  // $signerAddress
 
   $: positionExist = $positions.reduce((acc: boolean, cur: any) => {
     return acc || Object.keys(cur).length;
@@ -35,7 +33,7 @@
       {#if Object.keys($positions?.[i] || {}).length}
         <h1 class="p-2 py-4 flex justify-between">
           <strong>{pi?.token?.info?.name}</strong>
-          <strong>Funding rate: {pi?.slot0.tick / 1000} %</strong>
+          <strong>Funding rate: {pi?.tick / 1000} %</strong>
         </h1>
         <Positions
           positions={$positions?.[i]}

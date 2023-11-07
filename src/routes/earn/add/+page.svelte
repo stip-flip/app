@@ -11,6 +11,7 @@
     useAllowance,
   } from "src/hooks/erc20";
   import { usePoolInfos, type PoolInfo } from "src/hooks/pool";
+  import { commify } from "src/lib";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
 
@@ -65,6 +66,13 @@
           <span>USDC</span>
         </label>
       </div>
+      <div
+        class="text-right -mt-4 px-4 cursor-pointer"
+        on:click={(_) => (amount = String($usdcBalance))}
+      >
+        <span class="text-xs text-gray-400">Balance: </span>
+        <span class="text-xs">{commify($usdcBalance)}</span>
+      </div>
       <div class="border-b w-full border-base-content" />
       <div>
         <div class="dropdown w-full">
@@ -74,7 +82,7 @@
             class:btn-outline={selectedPool != undefined}
             >{selectedPool != undefined
               ? selectedPool?.token?.info?.name
-              : "Select an exposure"}</label
+              : "Lend liquidity to"}</label
           >
           <ul
             tabindex="0"

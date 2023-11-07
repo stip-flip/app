@@ -6,16 +6,17 @@
   import Tokens from "src/components/tokens.svelte";
   import { broadcastTransaction } from "src/hooks/blocknumber";
   import {
+    useAllowance,
     useInfoAndBalance,
     type TokenInfoAndBalance,
-    useAllowance,
   } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
   import { commify } from "src/lib";
-  import { sdk } from "src/stores";
+  import { MAX_FR, sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
 
-  let amount: string = "0";
+  let amountOut: string = "0";
+  let amountIn: string = "0";
   let leverage: number = 0;
 
   let selectedToken0: TokenInfoAndBalance;
@@ -36,6 +37,8 @@
     ...($poolInfos || []).map((pi) => pi.token),
     $quoteToken,
   ].filter((t) => !!t);
+
+  $: console.log(tokenInfosAndBalances, $poolInfos);
 
   $: filteredSelectedToken1 = tokenInfosAndBalances.filter(
     (t: TokenInfoAndBalance) => {
@@ -73,44 +76,62 @@
       pi.address == selectedToken0?.info.address ||
       pi.address == selectedToken1?.info.address
   );
-  let liquidityMoved: BigNumber = BigNumber.from(0);
   let feeAmount: BigNumber = BigNumber.from(0);
   let frAfter: BigNumber = BigNumber.from(0);
   let pnl: BigNumber = BigNumber.from(0);
-  let shares: string = "0";
 
   $: {
     if (selectedToken0 && selectedToken1 && selectedPool) {
-      deb();
+      debOut();
     }
   }
-  const deb = _.debounce(async () => {
+  // debounce outgoing amount
+  const debOut = _.debounce(async () => {
     if (selectedToken0 && selectedToken1 && selectedPool) {
       // console.log("debounce");
       if (enter) {
         const enter = await $sdk?.POOL.attach(
           selectedPool?.address
         ).previewEnter(
-          parseUnits(amount, selectedToken0?.info.decimals || 0),
-          parseUnits(
-            String(Number(amount) * (leverage > 1 ? leverage : 1)),
-            selectedToken0?.info.decimals || 0
-          ),
-          parseUnits("887000", 18)
+          parseUnits(amountOut, selectedToken0?.info.decimals || 0)
         );
-        liquidityMoved = enter.liquidityMoved;
         feeAmount = enter.feeAmount;
         frAfter = enter.frAfter;
-        shares = formatEther(enter.shares);
+        amountIn = formatEther(enter.swapOut.mul(-1));
       } else {
         const exit = await $sdk?.POOL.attach(selectedPool?.address)
           .connect($signerAddress)
-          .previewExit(parseUnits(amount, selectedToken0?.info.decimals || 0));
-        liquidityMoved = exit.liquidityMoved;
+          .previewExit(
+            parseUnits(amountOut, selectedToken0?.info.decimals || 0)
+          );
         feeAmount = exit.feeAmount;
         frAfter = exit.frAfter;
-        shares = formatEther(exit.liquidityMoved.sub(exit.feeAmount));
-        pnl = exit.pnl_;
+        amountIn = formatEther(exit.swapOut.mul(-1));
+      }
+    }
+  }, 1000);
+
+  // debounce incoming amount
+  const debIn = _.debounce(async () => {
+    if (selectedToken0 && selectedToken1 && selectedPool) {
+      if (enter) {
+        const enter = await $sdk?.POOL.attach(
+          selectedPool?.address
+        ).previewEnter(
+          parseUnits(amountIn, selectedToken1?.info.decimals || 0).mul(-1)
+        );
+        feeAmount = enter.feeAmount;
+        frAfter = enter.frAfter;
+        amountOut = formatEther(enter.swapOut);
+      } else {
+        const exit = await $sdk?.POOL.attach(selectedPool?.address)
+          .connect($signerAddress)
+          .previewExit(
+            parseUnits(amountIn, selectedToken1?.info.decimals || 0).mul(-1)
+          );
+        feeAmount = exit.feeAmount;
+        frAfter = exit.frAfter;
+        amountOut = formatEther(exit.swapOut);
       }
     }
   }, 1000);
@@ -135,14 +156,14 @@
 <div class="w-1/3 m-auto mt-4 mb-24 border-2 rounded-lg p-4 bg-gradient">
   <div class="w-full flex space-x-4 mt-8 p-8 bg-slate-200 rounded-3xl">
     <input
-      bind:value={amount}
+      bind:value={amountOut}
       type="text"
       placeholder="Amount to swap"
       class="input input-ghost w-1/2 text-white text-2xl"
-      on:validated={(v) => (amount = v.detail)}
-      on:input={deb}
+      on:validated={(v) => (amountOut = v.detail)}
+      on:input={debOut}
       use:validator={{
-        value: amount,
+        value: amountOut,
         max: selectedToken0?.balance || 0,
       }}
     />
@@ -156,21 +177,28 @@
         <div
           class="absolute ml-4 text-sm cursor-pointer"
           on:click={(_) => {
-            deb();
-            amount = String(selectedToken0?.balance || 0);
+            console.log(selectedToken0?.balance);
+            amountOut = String(selectedToken0?.balance || 0);
+            debOut();
           }}
         >
-          Balance: {commify(selectedToken0?.balance.toFixed(2))}
+          Balance: {commify(selectedToken0?.balance)}
         </div>
       {/if}
     </div>
   </div>
   <div class="w-full flex space-x-4 mt-4 p-8 bg-slate-200 rounded-3xl relative">
     <input
-      value={shares}
+      bind:value={amountIn}
       type="text"
       placeholder="Amount to swap"
       class="input input-ghost w-1/2 text-white text-2xl"
+      on:validated={(v) => (amountIn = v.detail)}
+      on:input={debIn}
+      use:validator={{
+        value: amountIn,
+        max: String(1e18),
+      }}
     />
     <div class="dropdown w-1/2">
       <label for="selectedToken1" tabindex="0" class="w-full btn rounded-full"
@@ -185,30 +213,22 @@
       <div class="flex justify-between my-4 text-lg">
         <strong> Current Price </strong>
         <strong>
-          {commify(formatUnits(selectedPool.currentPrice, 8))}
+          {commify(formatUnits(selectedPool.currentPrice, 6))}
         </strong>
       </div>
       <div class="flex justify-between my-4 text-lg">
         <strong> Current FR </strong>
         <strong>
-          {commify(formatUnits(selectedPool.slot0.fr, 18 + 3))} %
+          {commify(formatUnits(selectedPool.fr, 18 + 3))} %
         </strong>
       </div>
     </div>
-    {#if amount != "0"}
+    {#if amountOut != "0"}
       <div class="border-b border-slate-200 mt-8" />
       <div class="flex justify-between my-4 text-lg">
         <strong> Fee </strong>
         <strong>
           {commify(formatUnits(feeAmount, selectedToken0?.info.decimals || 0))}
-        </strong>
-      </div>
-      <div class="flex justify-between my-4 text-lg">
-        <strong> Liquidity Moved </strong>
-        <strong>
-          {commify(
-            formatUnits(liquidityMoved, selectedToken0?.info.decimals || 0)
-          )}
         </strong>
       </div>
       <div class="flex justify-between my-4 text-lg">
@@ -240,7 +260,7 @@
       min="0"
       max="10"
       bind:value={leverage}
-      on:input={deb}
+      on:input={debOut}
       class="range"
       step="2"
     />
@@ -258,7 +278,7 @@
     class="btn btn-primary btn-lg w-full mt-8"
     on:click={(_) => {
       if (enter) {
-        if ($allowance > Number(amount)) {
+        if ($allowance > Number(amountOut)) {
           broadcastTransaction(
             "Swapping " +
               selectedToken0.info.name +
@@ -267,11 +287,11 @@
             $sdk.POOL.attach(selectedToken1.info.address)
               .connect($signer)
               .enter(
-                parseUnits(amount, selectedToken0.info.decimals),
-                parseUnits(amount, selectedToken0.info.decimals).mul(
+                parseUnits(amountOut, selectedToken0.info.decimals),
+                parseUnits(amountOut, selectedToken0.info.decimals).mul(
                   leverage > 1 ? leverage : 1
                 ),
-                parseUnits("887000", 18),
+                MAX_FR,
                 $signerAddress
               )
           );
@@ -293,14 +313,14 @@
           $sdk.POOL.attach(selectedToken0.info.address)
             .connect($signer)
             .exit(
-              parseUnits(amount, selectedToken0.info.decimals),
+              parseUnits(amountOut, selectedToken0.info.decimals),
               $signerAddress,
               { gasLimit: 1000000 }
             )
         );
       }
     }}
-    >{!selectedToken1 || $allowance > Number(amount)
+    >{!selectedToken1 || $allowance > Number(amountOut)
       ? "Swap"
       : "Approve"}</button
   >
