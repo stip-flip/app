@@ -1,9 +1,4 @@
-import {
-  getGoerliSdk,
-  getSepoliaSdk,
-  type GoerliSdk,
-  type SepoliaSdk,
-} from "eth-sdk/build";
+import { getGoerliSdk, type GoerliSdk } from "eth-sdk/build";
 import { formatEther } from "ethers/lib/utils";
 import { signer, chainId } from "svelte-ethers-store";
 import { derived, get, writable, type Readable } from "svelte/store";
@@ -21,9 +16,6 @@ export const sdk: Readable<GoerliSdk> = derived(
   [signer, chainId],
   ([$signer, $chainId], set) => {
     switch ($chainId) {
-      case 11155111:
-        set(getSepoliaSdk(provider($chainId)));
-        break;
       case 5:
         set(getGoerliSdk(provider($chainId)));
         break;
