@@ -11,10 +11,6 @@ module.exports = sdk.defineConfig({
   //   sepolia: "https://eth-sepolia.g.alchemy.com/v2/p485wpX8q1LUZSlUwcqc_ClbYCle4aKu"
   // },
   contracts: {
-    sepolia: {
-      USDC: "0x0E93915A24848b3BD7e9D907DA1229da264d5071",
-      POOL: "0xd1c24ccb43c3e2d93817104cd725ae280da3b6fa",
-    },
     goerli: {
       USDC: "0xc08b453c3328007f88993717ba77e67e94c79f1b",
       POOL: "0x4e411752f571838243B8E38c1957B968B3aa37cD",
