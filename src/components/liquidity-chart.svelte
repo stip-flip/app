@@ -119,7 +119,7 @@
       <Pancake.Grid vertical count={5} let:value>
         <span class="x label">
           <div class="grid-line vertical" />
-          <span class="x label">{value / 1e3} %</span>
+          <span class="x label">{value / 100} %</span>
         </span>
       </Pancake.Grid>
       <Pancake.Box

@@ -1,7 +1,6 @@
 import { getGoerliSdk, type GoerliSdk } from "eth-sdk/build";
-import { formatEther } from "ethers/lib/utils";
-import { signer, chainId } from "svelte-ethers-store";
-import { derived, get, writable, type Readable } from "svelte/store";
+import { chainId, signer } from "svelte-ethers-store";
+import { derived, type Readable } from "svelte/store";
 import { provider } from "./provider";
 
 export const marketSymbols = {

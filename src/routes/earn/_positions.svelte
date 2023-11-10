@@ -13,8 +13,6 @@
   export let positions: Record<string, any>;
 
   let selectedPosition: any;
-
-  $: console.log(positions);
 </script>
 
 <Modal {poolAddress} {selectedPosition} />
@@ -34,8 +32,8 @@
       {#each bytes as b}
         <tr class="hover">
           <td
-            >{positions[b].tickLower / 1000} to {positions[b].tickUpper /
-              1000}%</td
+            >{positions[b].tickLower / 100} to {positions[b].tickUpper /
+              100}%</td
           >
           <td
             >{formatAmount(positions[b].liquidity, $usdcInfo?.decimals || 18)} USDC</td
@@ -45,7 +43,9 @@
             {#await $sdk.POOL.attach(poolAddress).positionPnL(positions[b].tickLower, positions[b].tickUpper, $signerAddress) then pnl}
               {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))} USDC
             {:catch err}
-              0 USDC
+              {positions[b].tickLower}
+              {positions[b].tickUpper}
+              {$signerAddress}
             {/await}
           </td>
           <td>

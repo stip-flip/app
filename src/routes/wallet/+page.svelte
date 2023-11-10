@@ -24,17 +24,17 @@
       trades?.map(async (t) => {
         const pool = $sdk.POOL.attach(t.address);
         console.log(t.address);
-        const [/*leverage*/ liquidationPrice, /*pnl*/ slot0] =
-          await Promise.all([
-            // pool.leverage($signerAddress),
-            pool.liquidationPrice($signerAddress).catch((e) => console.log(e)),
-            // pool.traderPnL($signerAddress),
-            pool.slot0(),
-          ]);
+        const [leverage, liquidationPrice, pnl, slot0] = await Promise.all([
+          pool.leverage($signerAddress),
+          pool.liquidationPrice($signerAddress).catch((e) => console.log(e)),
+          pool.traderPnL($signerAddress),
+          pool.slot0(),
+        ]);
+        console.log(pnl);
         return {
-          leverage: 0,
-          liquidationPrice: 0,
-          pnl: 0,
+          leverage,
+          liquidationPrice,
+          pnl,
           fr: slot0?.fr,
         };
       })
@@ -58,6 +58,7 @@
           <th class="text-left">Balance</th>
           <th class="text-left">Leverage</th>
           <th class="text-left">Liquidation Price</th>
+          <th />
           <!-- <th class="text-left">PnL</th> -->
           <!-- <th class="text-left">Funding Rate</th> -->
         </tr>
@@ -65,7 +66,7 @@
       <tbody>
         {#each tokenInfos as ti, i}
           <Token
-            token={trades[i].token?.info.name}
+            token={trades[i].token?.info}
             balance={trades[i].token?.balance}
             leverage={ti.leverage}
             liquidationPrice={ti.liquidationPrice}

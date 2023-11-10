@@ -10,7 +10,6 @@
   $: positionExist = $positions.reduce((acc: boolean, cur: any) => {
     return acc || Object.keys(cur).length;
   }, false);
-  $: console.log($positions, $poolInfos);
 </script>
 
 <div class="w-1/2 m-auto mt-40 flex justify-between items-center">
@@ -33,7 +32,7 @@
       {#if Object.keys($positions?.[i] || {}).length}
         <h1 class="p-2 py-4 flex justify-between">
           <strong>{pi?.token?.info?.name}</strong>
-          <strong>Funding rate: {pi?.tick / 1000} %</strong>
+          <strong>Funding rate: {pi?.tick / 100} %</strong>
         </h1>
         <Positions
           positions={$positions?.[i]}

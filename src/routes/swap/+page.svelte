@@ -24,6 +24,9 @@
 
   let enter: boolean = true;
 
+  // do we want to trade in advanced mode?
+  let advanced: boolean = false;
+
   $: poolInfos = usePoolInfos();
 
   $: quoteToken = useInfoAndBalance($sdk.USDC.address);
@@ -135,7 +138,7 @@
       }
     }
   }, 1000);
-  // $: console.log(feeAmount);
+  $: console.log(amountIn);
 </script>
 
 <Tokens
@@ -209,7 +212,7 @@
     </div>
   </div>
   {#if selectedPool}
-    <div>
+    <div class="px-4">
       <div class="flex justify-between my-4 text-lg">
         <strong> Current Price </strong>
         <strong>
@@ -217,60 +220,75 @@
         </strong>
       </div>
       <div class="flex justify-between my-4 text-lg">
-        <strong> Current FR </strong>
+        <strong>Funding Rate</strong>
         <strong>
-          {commify(formatUnits(selectedPool.fr, 18 + 3))} %
+          {#if Number(amountOut)}
+            {commify(formatUnits(frAfter, 18 + 2))} %
+          {:else}
+            {commify(formatUnits(selectedPool.fr, 18 + 2))} %
+          {/if}
         </strong>
       </div>
     </div>
-    {#if amountOut != "0"}
-      <div class="border-b border-slate-200 mt-8" />
-      <div class="flex justify-between my-4 text-lg">
-        <strong> Fee </strong>
-        <strong>
-          {commify(formatUnits(feeAmount, selectedToken0?.info.decimals || 0))}
-        </strong>
-      </div>
-      <div class="flex justify-between my-4 text-lg">
-        <strong> FR After </strong>
-        <strong>
-          {commify(formatUnits(frAfter, 18 + 3))} %
-        </strong>
-      </div>
-      {#if !enter && selectedToken0?.info.address && selectedToken1?.info.address}
+    {#if Number(amountOut)}
+      <div class="px-4">
         <div class="flex justify-between my-4 text-lg">
-          <strong> PNL </strong>
+          <strong> Fees </strong>
           <strong>
-            {commify(formatUnits(pnl, selectedToken1?.info.decimals || 18))}
+            {commify(
+              formatUnits(feeAmount || 0, selectedToken0?.info.decimals || 0)
+            )} USDC
           </strong>
         </div>
-      {/if}
+        <!-- <div class="flex justify-between my-4 text-lg">
+        <strong> FR After </strong>
+        <strong>
+          {commify(formatUnits(frAfter, 18 + 2))} %
+        </strong>
+      </div> -->
+        {#if !enter && selectedToken0?.info.address && selectedToken1?.info.address}
+          <div class="flex justify-between my-4 text-lg">
+            <strong> PNL </strong>
+            <strong>
+              {commify(formatUnits(pnl, selectedToken1?.info.decimals || 18))}
+            </strong>
+          </div>
+        {/if}
+      </div>
     {/if}
   {/if}
   {#if enter && selectedToken1}
-    <div class="border-b border-slate-200 mt-8" />
-    <div class="flex justify-between my-4 text-lg">
-      <strong> Leverage </strong>
-      <strong>
-        {leverage}x
-      </strong>
-    </div>
-    <input
-      type="range"
-      min="0"
-      max="10"
-      bind:value={leverage}
-      on:input={debOut}
-      class="range"
-      step="2"
-    />
-    <div class="w-full flex justify-between text-xs px-2">
-      <span>|</span>
-      <span>|</span>
-      <span>|</span>
-      <span>|</span>
-      <span>|</span>
-      <span>|</span>
+    <div class="collapse">
+      <input type="checkbox" />
+      <div class="collapse-title flex flex-col w-full border-opacity-50">
+        <div class="divider">Advanced</div>
+      </div>
+      <!-- <div class=" text-xl font-medium">Advanced</div> -->
+      <div class="collapse-content">
+        <div class="flex justify-between text-lg">
+          <strong> Leverage </strong>
+          <strong>
+            {leverage}x
+          </strong>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max="10"
+          bind:value={leverage}
+          on:input={debOut}
+          class="range"
+          step="2"
+        />
+        <div class="w-full flex justify-between text-xs px-2">
+          <span>|</span>
+          <span>|</span>
+          <span>|</span>
+          <span>|</span>
+          <span>|</span>
+          <span>|</span>
+        </div>
+      </div>
     </div>
   {/if}
 

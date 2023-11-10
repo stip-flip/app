@@ -25,9 +25,9 @@
 
   let lowerFR = -500;
   let upperFR = 500;
-
+  // fr is actually a tick here
   function formatFR(fr: number) {
-    return fr / 1000;
+    return fr / 100;
   }
 </script>
 
