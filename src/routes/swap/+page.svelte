@@ -240,12 +240,6 @@
             )} USDC
           </strong>
         </div>
-        <!-- <div class="flex justify-between my-4 text-lg">
-        <strong> FR After </strong>
-        <strong>
-          {commify(formatUnits(frAfter, 18 + 2))} %
-        </strong>
-      </div> -->
         {#if !enter && selectedToken0?.info.address && selectedToken1?.info.address}
           <div class="flex justify-between my-4 text-lg">
             <strong> PNL </strong>
