@@ -4,14 +4,13 @@
 
 <div class="root full-height overflow-scroll">
   <div
-    style="border-radius: 500px 220px;"
-    class="animated fixed bottom-48 left-28 p-24 bg-gradient border-2"
+    class="animated mt-48 text-center lg:text-start lg:mt-0 lg:fixed lg:bottom-48 lg:left-28 lg:p-24 lg:bg-gradient lg:border-2"
   >
-    <h1 class="text-7xl font-bold ml-12">Stip & Flip</h1>
+    <h1 class="text-7xl font-bold lg:ml-12">Stip & Flip</h1>
     <h2 class="mt-8 text-4xl text-base-content">
       Decentralised & Permissionless Perpetual Markets
     </h2>
-    <div class="flex space-x-2 mt-8 -ml-8">
+    <div class="flex justify-center lg:justify-start space-x-2 mt-8 lg:-ml-8">
       <Icon class="text-4xl" icon="mdi:twitter" />
       <Icon class="text-4xl" icon="mdi:github" />
     </div>
