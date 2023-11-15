@@ -119,7 +119,7 @@
             </li>
           </ul>
         </div>
-        <div class="space-x-4 w-1/5 flex justify-end">
+        <div class="space-x-4 lg:w-1/5 flex justify-end">
           <Wallet />
           <Theme />
         </div>

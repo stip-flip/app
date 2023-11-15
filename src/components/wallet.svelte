@@ -25,7 +25,9 @@
 
 <div class="relative">
   {#if !$connected || !$signerAddress}
-    <div class="border border-primary flex cursor-pointer items-center h-8">
+    <div
+      class="border border-primary flex cursor-pointer items-center h-8 rounded-full"
+    >
       <button
         on:click={connectWallet}
         class="px-4 text-primary tracking-wider flex cursor-pointer"
