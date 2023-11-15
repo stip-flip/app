@@ -153,10 +153,14 @@
   bind:selectedToken={selectedToken1}
 />
 
-<div class="w-1/3 m-auto mt-40 flex justify-between items-center">
+<div
+  class="px-8 lg:px-0 lg:w-1/3 m-auto mt-20 lg:mt-40 flex justify-between items-center"
+>
   <h1 class="text-3xl">Swap</h1>
 </div>
-<div class="w-1/3 m-auto mt-4 mb-24 border-2 rounded-lg p-4 bg-gradient">
+<div
+  class="lg:w-1/3 m-auto mt-4 mb-24 lg:border-2 rounded-lg p-4 lg:bg-gradient"
+>
   <div class="w-full flex space-x-4 mt-8 p-8 bg-slate-200 rounded-3xl">
     <input
       bind:value={amountOut}

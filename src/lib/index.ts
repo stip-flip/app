@@ -19,10 +19,10 @@ export const commify = (value: any, decimals?: number) => {
   return com((Number(value) || 0).toFixed(decimals || 2));
 };
 
-export async function switchNetwork() {
+export async function switchNetwork(chainId: number) {
   await window?.ethereum?.request({
     method: "wallet_switchEthereumChain",
-    params: [{ chainId: "0x5" }],
+    params: [{ chainId: "0x" + chainId.toString(16) }],
   });
 }
 

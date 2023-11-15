@@ -44,20 +44,24 @@
   }
 </script>
 
-<div class="w-1/2 m-auto mt-40 flex justify-between items-center">
+<div
+  class="px-8 lg:px-0 lg:w-1/2 m-auto mt-20 lg:mt-40 flex justify-between items-center"
+>
   <h1 class="text-3xl">Wallet</h1>
 </div>
-<div class="w-1/2 m-auto mt-4 mb-24 border-2 rounded-lg p-4 bg-gradient">
+<div
+  class="lg:w-1/2 m-auto mt-20 lg:mt-4 mb-24 lg:border-2 rounded-lg p-4 bg-gradient"
+>
   {#if trades?.length == 0}
     <strong>Your trades will appear here</strong>
   {:else}
-    <table class="table w-full">
+    <table class="table w-full bg-gradient">
       <thead>
         <tr>
           <th class="text-left">Token</th>
           <th class="text-left">Balance</th>
-          <th class="text-left">Leverage</th>
-          <th class="text-left">Liquidation Price</th>
+          <th class="text-left">Funding Rate</th>
+          <!-- <th class="text-left">Liquidation Price</th> -->
           <th />
           <!-- <th class="text-left">PnL</th> -->
           <!-- <th class="text-left">Funding Rate</th> -->

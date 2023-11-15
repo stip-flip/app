@@ -11,8 +11,11 @@
   import Theme from "src/components/theme.svelte";
   import { pendingTransactions, transactions } from "src/hooks/blocknumber";
   import { chainId, defaultEvmStores, connected } from "svelte-ethers-store";
+  import WalletDrawer from "src/components/wallet-drawer.svelte";
   let theme = "dark";
   let toggled = false;
+
+  let overlay: HTMLAreaElement;
 
   $: {
     if (browser) {
@@ -30,88 +33,17 @@
     }
   });
 
-  const idToChain: any = {
-    1: "mainnet",
-    5: "goerli",
-  };
   // keep this right here
   $: console.log($transactions);
 
-  function saveThemeSelection() {
-    localStorage.setItem("theme", theme);
-  }
-
   $: homepage = $page.route.id == "/";
+
+  let docurl = "https://sf-doc.vercel.app/docs";
 </script>
 
-<!-- This is an example component -->
-<!-- <div class="w-full fixed">
-  <nav class="px-2">
-    <div class="container mx-auto flex flex-wrap items-center justify-between">
-      <a href={"/"} class="flex items-center">
-        <Logo />
-      </a>
-      <div class="flex md:order-2">
-        <button
-          data-collapse-toggle="mobile-menu-3"
-          type="button"
-          class="md:hidden focus:outline-none focus:ring-2 rounded-lg inline-flex items-center justify-center"
-          aria-controls="mobile-menu-3"
-          aria-expanded="false"
-        >
-          <span class="sr-only">Open main menu</span>
-          <Icon class="text-2xl" icon="mingcute:menu-fill" />
-        </button>
-      </div>
-      <div
-        class="hidden md:flex justify-between items-center w-full md:w-auto md:order-1"
-        id="mobile-menu-3"
-      >
-        <ul
-          class="flex-col md:flex-row flex md:space-x-8 mt-4 md:mt-0 md:text-sm md:font-medium"
-        >
-          <li>
-            <a
-              href="/wallet"
-              class="!border-primary tab text-primary font-bold px-1 relative"
-              class:tab-active={$page.route?.id?.startsWith("/wallet")}
-              class:tab-bordered={$page.route?.id?.startsWith("/wallet")}
-              >Wallet</a
-            >
-          </li>
-          <li>
-            <a
-              href={`/swap/`}
-              class="!border-primary tab text-primary font-bold px-1 relative"
-              class:tab-active={$page.route?.id?.startsWith("/swap")}
-              class:tab-bordered={$page.route?.id?.startsWith("/swap")}>Swap</a
-            >
-          </li>
-          <li>
-            <a
-              href={`/earn/`}
-              class="!border-primary tab text-primary font-bold px-1 relative"
-              class:tab-active={$page.route?.id?.startsWith("/earn")}
-              class:tab-bordered={$page.route?.id?.startsWith("/earn")}>Earn</a
-            >
-          </li>
-          <li>
-            <a
-              href={`/faucet/`}
-              class="!border-primary tab text-primary font-bold px-1 relative"
-              class:tab-active={$page.route?.id?.startsWith("/faucet")}
-              class:tab-bordered={$page.route?.id?.startsWith("/faucet")}
-              >Faucet</a
-            >
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</div> -->
-
+<WalletDrawer />
 <div class="drawer">
-  <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
+  <input id="app-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col">
     <!-- Navbar -->
     <div class="w-full justify-between navbar bg-transparent fixed">
@@ -135,10 +67,10 @@
           <Theme />
         </div>
       {:else}
-        <div class="flex items-center w-content h-8 mr-8">
+        <div class="flex items-center w-content h-8 mr-8 w-1/5">
           <div class="flex-none lg:hidden">
             <label
-              for="my-drawer-3"
+              for="app-drawer"
               aria-label="open sidebar"
               class="btn btn-square btn-ghost"
             >
@@ -156,7 +88,7 @@
               >
             </label>
           </div>
-          <a href={"/"} class="flex items-center">
+          <a href={"/"} class="items-center hidden lg:flex">
             <Logo />
           </a>
         </div>
@@ -166,54 +98,51 @@
             <li>
               <a
                 href="/wallet"
-                class=""
-                class:tab-active={$page.route?.id?.startsWith("/wallet")}
-                class:tab-bordered={$page.route?.id?.startsWith("/wallet")}
+                class="text-lg"
+                class:underline={$page.route?.id?.startsWith("/wallet")}
                 >Wallet</a
               >
             </li>
             <li>
               <a
                 href={`/swap/`}
-                class=""
-                class:tab-active={$page.route?.id?.startsWith("/swap")}
-                class:tab-bordered={$page.route?.id?.startsWith("/swap")}
-                >Swap</a
+                class="text-lg"
+                class:underline={$page.route?.id?.startsWith("/swap")}>Swap</a
               >
             </li>
             <li>
               <a
                 href={`/earn/`}
-                class=""
-                class:tab-active={$page.route?.id?.startsWith("/earn")}
-                class:tab-bordered={$page.route?.id?.startsWith("/earn")}
-                >Earn</a
+                class="text-lg"
+                class:underline={$page.route?.id?.startsWith("/earn")}>Earn</a
               >
             </li>
             <li>
               <a
                 href={`/faucet/`}
-                class=""
-                class:tab-active={$page.route?.id?.startsWith("/faucet")}
-                class:tab-bordered={$page.route?.id?.startsWith("/faucet")}
+                class="text-lg"
+                class:underline={$page.route?.id?.startsWith("/faucet")}
                 >Faucet</a
               >
             </li>
           </ul>
         </div>
-        <div class="space-x-4">
+        <div class="space-x-4 w-1/5 flex justify-end">
           <Wallet />
           <Theme />
         </div>
       {/if}
     </div>
-    <slot />
+    <div class="root h-screen">
+      <slot />
+    </div>
   </div>
   <div class="drawer-side">
     <label
-      for="my-drawer-3"
+      for="app-drawer"
       aria-label="close sidebar"
       class="drawer-overlay"
+      bind:this={overlay}
     />
     <aside class="bg-base-100 min-h-screen w-80">
       <div
@@ -222,6 +151,33 @@
       <div class="h-4" />
       <ul class="menu px-4 py-0">
         <li>
+          <details id="disclosure-docs" open="true">
+            <summary class="group"
+              ><span><Logo width="2rem" height="2rem" /></span> App</summary
+            >
+            <ul on:click={(_) => overlay.click()}>
+              <li>
+                <a href="/wallet"> Wallet </a>
+              </li>
+              <li>
+                <a href="/swap">
+                  <span>Swap</span>
+                </a>
+              </li>
+              <li>
+                <a href="/earn" class="group">
+                  <span>Earn</span>
+                </a>
+              </li>
+              <li>
+                <a href="/faucet" class="group">
+                  <span>Faucet</span>
+                </a>
+              </li>
+            </ul>
+          </details>
+        </li>
+        <li>
           <details id="disclosure-docs" open="">
             <summary class="group"
               ><span
@@ -229,7 +185,7 @@
                   width="18"
                   height="18"
                   viewBox="0 0 48 48"
-                  class="text-orange-400 h-5 w-5"
+                  class="text-info h-5 w-5"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                   ><path
@@ -248,188 +204,71 @@
                 ></span
               > Docs</summary
             >
+            <ul on:click={(_) => overlay.click()}>
+              <li>
+                <a href={docurl + "/general-overview/what-is-stup&flip"}>
+                  <span>General Overview</span>
+                </a>
+              </li>
+              <ul>
+                <li>
+                  <a
+                    href={docurl + "/general-overview/what-is-stup&flip"}
+                    class="group"
+                  >
+                    <span>What is Stip & Flip</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={docurl + "/general-overview/key-points"}
+                    class="group"
+                  >
+                    <span>Key Points</span>
+                  </a>
+                </li>
+              </ul>
+            </ul>
             <ul>
               <li>
-                <a href="/docs/install/" class="group active">
-                  <span>Install</span>
+                <a href={docurl + "/protocol-rules/pools"}>
+                  <span>Protocol Rules</span>
                 </a>
               </li>
-              <li>
-                <a href="/docs/use/" class="group">
-                  <span>Use</span>
-                </a>
-              </li>
-              <li>
-                <a href="/docs/customize/" class="group">
-                  <span>Customize components</span>
-                </a>
-              </li>
-              <li>
-                <a href="/docs/config/" class="group">
-                  <span>Config</span>
-                  <span class="badge badge-sm font-mono lowercase">updated</span
+              <ul>
+                <li>
+                  <a href={docurl + "/protocol-rules/pools"} class="group">
+                    <span>Pools</span>
+                  </a>
+                </li>
+                <li>
+                  <a href={docurl + "/protocol-rules/swap-fees"} class="group">
+                    <span>Swap fees</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={docurl + "/protocol-rules/funding-rate"}
+                    class="group"
                   >
-                </a>
-              </li>
-              <li>
-                <a href="/docs/colors/" class="group">
-                  <span>Colors</span>
-                  <span class="badge badge-sm font-mono lowercase">updated</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a href="/docs/themes/" class="group">
-                  <span>Themes</span>
-                  <span class="badge badge-sm font-mono lowercase">updated</span
-                  >
-                </a>
-              </li>
-              <li>
-                <a href="/docs/utilities/" class="group">
-                  <span>Utilities</span>
-                  <span class="badge badge-sm font-mono lowercase">new</span>
-                </a>
-              </li>
-              <li>
-                <a href="/docs/layout-and-typography/" class="group">
-                  <span>Layout &amp; Typography</span>
-                </a>
-              </li>
+                    <span>Funding Rate</span>
+                  </a>
+                </li>
+                <li>
+                  <a href={docurl + "/protocol-rules/positions"} class="group">
+                    <span>Positions</span>
+                  </a>
+                </li>
+                <li>
+                  <a href={docurl + "/protocol-rules/token"} class="group">
+                    <span>S&F tokens</span>
+                  </a>
+                </li>
+              </ul>
             </ul>
           </details>
         </li>
       </ul>
-      <div
-        class="bg-base-100 pointer-events-none sticky bottom-0 flex h-40 [mask-image:linear-gradient(transparent,#000000)]"
-      />
     </aside>
   </div>
 </div>
-
-<!-- {#if $page.route.id == "/"}
-  <div
-    class={`m-auto fixed flex items-stretch justify-between py-4 px-8 border-b border-primary/5 w-full bg-gradient z-10 min-w-[72rem]`}
-  >
-    <div class="flex items-center w-full">
-      <div class="flex items-center w-content h-8 mr-8">
-        <a href={"/"} class="flex items-center">
-          <Logo />
-        </a>
-      </div>
-    </div>
-    <div class="w-1/4 flex justify-end items-center space-x-4">
-      <a
-        href="https://sf-doc.vercel.app"
-        class="btn-info font-bold p-1 px-2 rounded-md">Documentation</a
-      >
-      <a href="/swap" class="btn-primary font-bold p-1 px-2 rounded-md"
-        >Launch App</a
-      >
-      <button
-        on:click={(_) => {
-          if (theme == "dark") {
-            theme = "light";
-            saveThemeSelection();
-          } else if (theme == "light") {
-            theme = "dark";
-            saveThemeSelection();
-          }
-        }}
-        class="border border-primary h-8 w-8 p-1 flex items-center justify-center hover:bg-base-100 cursor-pointer"
-      >
-        {#if theme === "dark"}
-          <Icon icon="ph:moon-bold" class="w-fit h-fit text-primary" />
-        {:else if theme === "light"}
-          <Icon icon="ph:sun-bold" class="w-fit h-fit text-primary" />
-        {/if}
-      </button>
-    </div>
-  </div>
-  <slot />
-{:else}
-  <div class="root overflow-auto full-height">
-    <div class="fixed z-50 bottom-4 right-4">
-      <div use:autoAnimate>
-        {#each $pendingTransactions as pt (pt.hash)}
-          <div class="p-4 bg-warning m-2">
-            <div class="text-base-200">{pt.label}</div>
-            <progress class="progress w-56" />
-            <a
-              class="block text-xs text-right text-base-200 underline"
-              target="_blank"
-              rel="noreferrer"
-              href={"https://" +
-                idToChain[$chainId] +
-                ".etherscan.io/tx/" +
-                pt.hash}
-            >
-              View on Explorer
-            </a>
-          </div>
-        {/each}
-      </div>
-    </div>
-    <div
-      class={`m-auto fixed flex items-stretch justify-between py-4 px-8 border-b border-primary/5 w-full bg-gradient z-10 min-w-[72rem]`}
-    >
-      <div class="flex items-center w-full">
-        <div class="flex items-center w-content h-8 mr-8">
-          <a href={"/"} class="flex items-center">
-            <Logo />
-          </a>
-        </div>
-        <div class="tabs space-x-6">
-          <a
-            href="/wallet"
-            class="!border-primary tab text-primary font-bold px-1 relative"
-            class:tab-active={$page.route?.id?.startsWith("/wallet")}
-            class:tab-bordered={$page.route?.id?.startsWith("/wallet")}
-            >Wallet</a
-          >
-          <a
-            href={`/swap/`}
-            class="!border-primary tab text-primary font-bold px-1 relative"
-            class:tab-active={$page.route?.id?.startsWith("/swap")}
-            class:tab-bordered={$page.route?.id?.startsWith("/swap")}>Swap</a
-          >
-          <a
-            href={`/earn/`}
-            class="!border-primary tab text-primary font-bold px-1 relative"
-            class:tab-active={$page.route?.id?.startsWith("/earn")}
-            class:tab-bordered={$page.route?.id?.startsWith("/earn")}>Earn</a
-          >
-          <a
-            href={`/faucet/`}
-            class="!border-primary tab text-primary font-bold px-1 relative"
-            class:tab-active={$page.route?.id?.startsWith("/faucet")}
-            class:tab-bordered={$page.route?.id?.startsWith("/faucet")}
-            >Faucet</a
-          >
-        </div>
-      </div>
-      <div class="w-1/4 flex justify-end items-center space-x-4">
-        <Wallet />
-        <button
-          on:click={(_) => {
-            if (theme == "dark") {
-              theme = "light";
-              saveThemeSelection();
-            } else if (theme == "light") {
-              theme = "dark";
-              saveThemeSelection();
-            }
-          }}
-          class="cursor-pointer"
-        >
-          {#if theme === "dark"}
-            <Icon icon="ph:moon-bold" class="text-3xl text-primary" />
-          {:else if theme === "light"}
-            <Icon icon="ph:sun-bold" class="text-3xl text-primary" />
-          {/if}
-        </button>
-      </div>
-    </div>
-    <slot />
-  </div>
-{/if} -->

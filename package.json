@@ -32,17 +32,19 @@
 	},
 	"dependencies": {
 		"@0xsequence/multicall": "^0.39.0",
+		"@codingwithmanny/blockies": "^1.1.0",
 		"@formkit/auto-animate": "^1.0.0-beta.6",
 		"@sveltejs/pancake": "^0.0.18",
-		"daisyui": "^2.15.4",
+		"daisyui": "^3",
 		"ethers": "^5.7.1",
 		"lightweight-charts": "^3.8.0",
 		"lodash": "^4.17.21",
 		"svelte-ethers-store": "^2.5.7",
+		"svelte-web3": "^4.3.1",
 		"theme-change": "^2.2.0"
 	},
 	"volta": {
-		"node": "16.15.0"
+		"node": "18.15.0"
 	},
 	"type": "module"
 }

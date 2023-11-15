@@ -12,12 +12,14 @@
   }, false);
 </script>
 
-<div class="w-1/2 m-auto mt-40 flex justify-between items-center">
+<div
+  class="px-8 lg:px-0 lg:w-1/2 m-auto mt-20 lg:mt-40 flex justify-between items-center"
+>
   <h1 class="text-3xl">Pools</h1>
   <a class="btn float-right" href="earn/add">+ New Position</a>
 </div>
 <div
-  class="border-2 rounded-lg p-4 bg-gradient bg-opacity-80 w-1/2 m-auto mt-4 overflow-scroll"
+  class="lg:border-2 rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 m-auto mt-4 overflow-scroll"
   style="max-height: 60vh"
 >
   {#if !positionExist}
@@ -30,7 +32,7 @@
   {:else}
     {#each $poolInfos as pi, i}
       {#if Object.keys($positions?.[i] || {}).length}
-        <h1 class="p-2 py-4 flex justify-between">
+        <h1 class="p-2 py-4 flex justify-between mt-8">
           <strong>{pi?.token?.info?.name}</strong>
           <strong>Funding rate: {pi?.tick / 100} %</strong>
         </h1>

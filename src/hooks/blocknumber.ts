@@ -20,15 +20,15 @@ export const useBlockNumber = (defaultChainId?: number): Readable<number> => {
       function handleNewBlock(block: number) {
         set(block);
       }
-      provider($chainId as Network, defaultChainId as Network).addListener(
+      provider($chainId as Network, defaultChainId as Network)?.addListener(
         "block",
         handleNewBlock
       );
       return function () {
-        provider($chainId as Network, defaultChainId as Network).removeListener(
-          "block",
-          handleNewBlock
-        );
+        provider(
+          $chainId as Network,
+          defaultChainId as Network
+        )?.removeListener("block", handleNewBlock);
       };
     },
     0
@@ -45,7 +45,7 @@ export const bn = derived(
     }
     provider($chainId as Network)?.addListener("block", handleNewBlock);
     return function () {
-      provider($chainId as Network).removeListener("block", handleNewBlock);
+      provider($chainId as Network)?.removeListener("block", handleNewBlock);
     };
   },
   0

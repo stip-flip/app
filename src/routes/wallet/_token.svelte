@@ -25,13 +25,19 @@
     <p class="text-center text-sm">{details}</p>
     <div class="border-b m-4" />
     <div class="flex py-2 p-4">
-      <strong class="w-1/3">Funding Rate: </strong>
-      <!-- as a trader, a negative FR is actually positive -->
-      <p>{Number(commify(formatUnits(fr, 18 + 2)))} %</p>
+      <strong class="w-1/3">Leverage: </strong>
+      <p>{Number(leverage) == 0 ? "--" : commify(leverage, 2)}</p>
+    </div>
+    <div class="flex py-2 p-4">
+      <strong class="w-1/3">Liquidation Price: </strong>
+      <p>
+        {Number(liquidationPrice) == 0
+          ? "--"
+          : commify(formatUnits(liquidationPrice || "0", 8))}
+      </p>
     </div>
     <div class="flex py-2 p-4">
       <strong class="w-1/3">Profit & Loss: </strong>
-      <!-- as a trader, a negative FR is actually positive -->
       <p>{commify(formatUnits(pnl, 18))} USDC</p>
     </div>
     <div class="p-4 text-right">
@@ -52,13 +58,11 @@
     {commify(balance, 2)}
   </td>
   <td>
-    {Number(leverage) == 0 ? "--" : commify(leverage, 2)}
+    {Number(commify(formatUnits(fr, 18 + 2)))} %
   </td>
-  <td
-    >{Number(liquidationPrice) == 0
-      ? "--"
-      : commify(formatUnits(liquidationPrice || "0", 8))}</td
-  >
+  <!-- <td
+    ></td
+  > -->
   <td>
     <label for={token?.address}>
       <Icon icon="pepicons-pencil:dots-y" class="cursor-pointer w-6 h-6" />

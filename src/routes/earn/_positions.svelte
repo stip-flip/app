@@ -16,39 +16,43 @@
 </script>
 
 <Modal {poolAddress} {selectedPosition} />
-<div class="overflow-x-auto">
+<div class="overflow-x-auto bg-gradient">
   <table class="table w-full">
     <!-- head -->
     <thead>
       <tr>
-        <th>FR Range</th>
-        <th>Liquidity</th>
-        <th>Liquidity Active</th>
-        <th>Fees accumulated</th>
-        <th />
+        <th class="w-1/3 lg:w-auto">FR Range</th>
+        <th class="w-1/3 lg:w-auto">Liquidity</th>
+        <th class="hidden lg:table-cell">Liquidity Active</th>
+        <th class="w-1/3 lg:w-auto">PnL</th>
+        <th class="hidden lg-table-cell" />
       </tr>
     </thead>
     <tbody>
       {#each bytes as b}
         <tr class="hover">
-          <td
+          <td class="w-1/3 lg:w-auto"
             >{positions[b].tickLower / 100} to {positions[b].tickUpper /
               100}%</td
           >
-          <td
-            >{formatAmount(positions[b].liquidity, $usdcInfo?.decimals || 18)} USDC</td
+          <td class="w-1/3 lg:w-auto"
+            >{formatAmount(positions[b].liquidity, $usdcInfo?.decimals || 18)}
+            <Icon class="inline text-xl" icon="cryptocurrency-color:usdc" /></td
           >
-          <td>{commify((positions[b].liquidityActive * 100).toFixed(2))} %</td>
-          <td>
+          <td class="hidden lg:table-cell"
+            >{commify((positions[b].liquidityActive * 100).toFixed(2))} %</td
+          >
+          <td class="w-1/3 lg:w-auto">
             {#await $sdk.POOL.attach(poolAddress).positionPnL(positions[b].tickLower, positions[b].tickUpper, $signerAddress) then pnl}
-              {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))} USDC
+              {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))}
+              <Icon class="inline text-xl" icon="cryptocurrency-color:usdc" />
             {:catch err}
               {positions[b].tickLower}
               {positions[b].tickUpper}
               {$signerAddress}
             {/await}
           </td>
-          <td>
+          <td class="hidden lg:table-cell">
             <label
               for={poolAddress}
               on:click={(_) => (selectedPosition = positions[b])}

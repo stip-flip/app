@@ -8,14 +8,10 @@
     signerAddress,
   } from "svelte-ethers-store";
 
-  export let trades: any[] = [];
+  import { renderSVGIcon } from "@codingwithmanny/blockies";
+  import { switchNetwork } from "src/lib";
 
-  async function switchNetwork() {
-    await window?.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0x" + mainDefaultChainId.toString() }],
-    });
-  }
+  export let trades: any[] = [];
 
   async function connectWallet() {
     try {
@@ -37,13 +33,13 @@
       >
     </div>
   {:else}
-    <div class="flex items-center space-x-3 relative">
+    <div class="flex items-center relative space-x-4">
       <button
         class={`h-6 flex-col absolute -left-12 -top-1 cursor-pointer ` +
           ($chainId != mainDefaultChainId ? "" : "hidden")}
         on:click={(_) => {
           // alert('Switch to correct network');
-          switchNetwork();
+          // switchNetwork();
         }}
       >
         <Icon
@@ -52,35 +48,27 @@
         />
         <p class="text-xs text-warning">Network</p>
       </button>
-
-      <div
+      <label
+        for="wallet-drawer"
         class:border-warning={$chainId != mainDefaultChainId}
-        class="dropdown dropdown-bottom dropdown-end border border-primary rounded-full flex cursor-pointer items-center h-8"
+        class="border border-primary rounded-full flex cursor-pointer items-center h-8 bg-gradient"
       >
-        <button
-          class={`text-primary tracking-wider px-4 ` +
-            ($chainId != mainDefaultChainId ? "text-warning" : "")}
-          >{$signerAddress.slice(0, 6) +
-            "..." +
-            $signerAddress.slice(-4)}</button
+        <div
+          class="text-primary tracking-wider px-4 hidden lg:inline-block"
+          class:text-warning={$chainId != mainDefaultChainId}
         >
-        <ul
-          tabIndex={0}
-          class="dropdown-content menu p-2 shadow bg-secondary border border-primary w-full !top-8"
+          {$signerAddress.slice(0, 6) + "..." + $signerAddress.slice(-4)}
+        </div>
+        <div
+          class="text-primary tracking-wider lg:hidden"
+          class:text-warning={$chainId != mainDefaultChainId}
         >
-          <button
-            on:click={(_) => {
-              defaultEvmStores.disconnect();
-              sessionStorage.removeItem("accnt");
-            }}
-          >
-            <li>
-              <p>Disconnect</p>
-            </li>
-          </button>
-        </ul>
-        <Icon icon="mdi:ethereum" class="h-full py-1 w-8 cursor-default" />
-      </div>
+          {#await renderSVGIcon({ seed: $signerAddress || "" }) then icon}
+            {@html icon}
+          {/await}
+        </div>
+        <Icon icon="mdi:ethereum" class="h-full py-1 w-8" />
+      </label>
     </div>
   {/if}
 </div>

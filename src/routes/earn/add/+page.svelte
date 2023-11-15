@@ -32,7 +32,7 @@
 </script>
 
 <div
-  class="border-2 rounded-lg p-4 bg-transparent w-1/2 m-auto mt-40 bg-gradient"
+  class="lg:border-2 rounded-lg p-4 bg-transparent lg:w-1/2 m-auto mt-16 lg:mt-40 bg-gradient"
 >
   <div
     class="flex justify-between items-center p-4 border-b border-base-content"
@@ -43,9 +43,36 @@
     <h1 class="text-lg w-1/3 text-center font-semibold">Add Liquidity</h1>
     <div class="w-1/3" />
   </div>
-  <div class="flex justify-between items-stretch p-4 space-x-4">
-    <div class="w-1/2 flex flex-col justify-between">
-      <div class="form-control w-full">
+  <div class="p-4">
+    <div class="lg:flex lg:space-x-4">
+      <div class="lg:w-1/2">
+        <label class="label">
+          <span class="label-text font-semibold mx-2 text-base"
+            >Lend liquidity to</span
+          >
+        </label>
+        <div class="dropdown w-full">
+          <label
+            tabindex="0"
+            class="btn w-full"
+            class:btn-outline={selectedPool != undefined}
+            >{selectedPool?.token?.info?.name || "--"}</label
+          >
+          <ul
+            tabindex="0"
+            class="dropdown-content menu shadow bg-base-100 rounded-box w-full z-10"
+          >
+            {#each $pi || [] as p}
+              <li>
+                <a on:click={(_) => (selectedPool = p)}>{p.token?.info?.name}</a
+                >
+              </li>
+            {/each}
+            <!-- <li><a on:click={(_) => (exposure = 2)}>Neutral</a></li> -->
+          </ul>
+        </div>
+      </div>
+      <div class="form-control lg:w-1/2">
         <label class="label">
           <span class="label-text font-semibold mx-2 text-base"
             >Deposit amount</span
@@ -65,82 +92,18 @@
           />
           <span>USDC</span>
         </label>
-      </div>
-      <div
-        class="text-right -mt-4 px-4 cursor-pointer"
-        on:click={(_) => (amount = String($usdcBalance))}
-      >
-        <span class="text-xs text-gray-400">Balance: </span>
-        <span class="text-xs">{commify($usdcBalance)}</span>
-      </div>
-      <div class="border-b w-full border-base-content" />
-      <div>
-        <div class="dropdown w-full">
-          <label
-            tabindex="0"
-            class="btn w-full"
-            class:btn-outline={selectedPool != undefined}
-            >{selectedPool != undefined
-              ? selectedPool?.token?.info?.name
-              : "Lend liquidity to"}</label
-          >
-          <ul
-            tabindex="0"
-            class="dropdown-content menu shadow bg-base-100 rounded-box w-full"
-          >
-            {#each $pi || [] as p}
-              <li>
-                <a on:click={(_) => (selectedPool = p)}>{p.token?.info?.name}</a
-                >
-              </li>
-            {/each}
-            <!-- <li><a on:click={(_) => (exposure = 2)}>Neutral</a></li> -->
-          </ul>
+        <div
+          class="text-right px-4 cursor-pointer"
+          on:click={(_) => (amount = String($usdcBalance))}
+        >
+          <span class="text-xs text-gray-400">Balance: </span>
+          <span class="text-xs">{commify($usdcBalance)}</span>
         </div>
       </div>
-      <div class="border-b w-full border-base-content" />
-      {#if $usdcAllowance >= Number(amount)}
-        <button
-          class="btn btn-primary w-full"
-          disabled={!selectedPool || !amount}
-          on:click={(_) => {
-            broadcastTransaction(
-              "Minting liquidity tokens",
-              $sdk.POOL.attach(selectedPool.address)
-                .connect($signer)
-                .mint(
-                  $signerAddress,
-                  lowerFR,
-                  upperFR,
-                  parseUnits(amount, $usdcInfo.decimals)
-                )
-            );
-          }}>Add Liquidity</button
-        >
-      {:else}
-        <button
-          class="btn btn-primary w-full"
-          disabled={!selectedPool || !amount}
-          on:click={(_) => {
-            increaseAllowance($sdk.USDC.address, selectedPool.address);
-          }}>Approve USDC</button
-        >
-      {/if}
     </div>
-    <div class="w-1/2">
-      {#if selectedPool}
-        <LiquidityChart
-          initializedTicks={selectedPool.ticks}
-          bind:lowerFR
-          bind:upperFR
-        />
-      {:else}
-        <div class="text-center h-24">
-          <h1 class="pt-8">Your position will appear here</h1>
-          <Icon icon="octicon:inbox-24" class="text-4xl m-auto" />
-        </div>
-      {/if}
-      <div class="border-b w-full my-4 border-base-content" />
+    <div class="border-b w-full border-base-content hidden lg:block mt-4" />
+    <div class="">
+      <!-- <div class="border-b w-full my-4 border-base-content" /> -->
       <div class="text-center text-lg mt-4 font-semibold">
         Your liquidity will be active from
       </div>
@@ -196,5 +159,45 @@
       </div>
       <div class="text-center text-lg mt-4 font-semibold">And Upward</div>
     </div>
+    <div class="border-b w-full my-4 border-base-content" />
+    {#if selectedPool}
+      <LiquidityChart
+        initializedTicks={selectedPool.ticks}
+        bind:lowerFR
+        bind:upperFR
+      />
+    {:else}
+      <div class="text-center h-24">
+        <h1 class="pt-8">Your position will appear here</h1>
+        <Icon icon="octicon:inbox-24" class="text-4xl m-auto" />
+      </div>
+    {/if}
+    {#if $usdcAllowance >= Number(amount)}
+      <button
+        class="btn btn-primary w-full mt-8"
+        disabled={!selectedPool || !amount}
+        on:click={(_) => {
+          broadcastTransaction(
+            "Minting liquidity tokens",
+            $sdk.POOL.attach(selectedPool.address)
+              .connect($signer)
+              .mint(
+                $signerAddress,
+                lowerFR,
+                upperFR,
+                parseUnits(amount, $usdcInfo.decimals)
+              )
+          );
+        }}>Add Liquidity</button
+      >
+    {:else}
+      <button
+        class="btn btn-primary w-full mt-8"
+        disabled={!selectedPool || !amount}
+        on:click={(_) => {
+          increaseAllowance($sdk.USDC.address, selectedPool.address);
+        }}>Approve USDC</button
+      >
+    {/if}
   </div>
 </div>
