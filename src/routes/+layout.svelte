@@ -54,16 +54,13 @@
     }}
   >
     <div class="alert alert-info block">
-      <div class="text-base-200">{"pt.label"}</div>
+      <div class="text-base-200">{pt.label}</div>
       <progress class="progress w-56" />
       <a
         class="block text-xs text-right text-base-200 underline"
         target="_blank"
         rel="noreferrer"
-        href={"https://" +
-          idToChain[$chainId] +
-          ".etherscan.io/tx/" +
-          "pt.hash"}
+        href={"https://" + idToChain[$chainId] + ".etherscan.io/tx/" + pt.hash}
       >
         View on Explorer
       </a>
