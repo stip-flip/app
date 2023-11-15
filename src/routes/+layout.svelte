@@ -1,15 +1,17 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
+  import "../app.css";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import "../app.css";
 
   import Logo from "src/components/logo.svelte";
   import Theme from "src/components/theme.svelte";
   import WalletDrawer from "src/components/wallet-drawer.svelte";
   import Wallet from "src/components/wallet.svelte";
-  import { transactions } from "src/hooks/blocknumber";
+  import { pendingTransactions, transactions } from "src/hooks/blocknumber";
   import { connectMetamask } from "src/lib";
+  import { chainId } from "svelte-ethers-store";
+  import { fly } from "svelte/transition";
+  import { quintOut } from "svelte/easing";
   let theme = "dark";
   let toggled = false;
 
@@ -31,7 +33,43 @@
   $: homepage = $page.route.id == "/";
 
   let docurl = "https://sf-doc.vercel.app/docs";
+
+  const idToChain: any = {
+    1: "mainnet",
+    5: "goerli",
+    61: "etc",
+  };
 </script>
+
+{#each $pendingTransactions as pt (pt.hash)}
+  <div
+    class="toast z-10"
+    transition:fly={{
+      delay: 0,
+      duration: 1000,
+      x: 500,
+      y: 0,
+      opacity: 0.5,
+      easing: quintOut,
+    }}
+  >
+    <div class="alert alert-info block">
+      <div class="text-base-200">{"pt.label"}</div>
+      <progress class="progress w-56" />
+      <a
+        class="block text-xs text-right text-base-200 underline"
+        target="_blank"
+        rel="noreferrer"
+        href={"https://" +
+          idToChain[$chainId] +
+          ".etherscan.io/tx/" +
+          "pt.hash"}
+      >
+        View on Explorer
+      </a>
+    </div>
+  </div>
+{/each}
 
 <WalletDrawer />
 <div class="drawer">
