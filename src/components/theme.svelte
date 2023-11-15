@@ -1,12 +1,19 @@
 <script lang="ts">
+  import "../app.css";
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
-  import "../app.css";
 
   import Icon from "@iconify/svelte";
-  import { transactions } from "src/hooks/blocknumber";
-  import { defaultEvmStores } from "svelte-ethers-store";
-  let theme = "dark";
+  let theme = "light";
+
+  onMount(() => {
+    if (localStorage.getItem("theme")) {
+      theme = localStorage.getItem("theme");
+      document
+        .getElementsByTagName("html")[0]
+        .setAttribute("data-theme", localStorage.getItem("theme"));
+    }
+  });
 
   $: {
     if (browser) {
@@ -15,17 +22,6 @@
         .setAttribute("data-theme", theme);
     }
   }
-
-  onMount(() => {
-    try {
-      defaultEvmStores.setProvider().catch((e) => console.warn(e));
-    } catch (e) {
-      console.warn(e);
-    }
-  });
-
-  // keep this right here
-  $: console.log($transactions);
 
   function saveThemeSelection() {
     localStorage.setItem("theme", theme);

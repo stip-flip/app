@@ -1,6 +1,7 @@
 import { BigNumber, type BigNumberish } from "ethers";
 
 import { commify as com } from "ethers/lib/utils.js";
+import { defaultEvmStores } from "svelte-ethers-store";
 
 // format an ERC20 amount as a number with 2 decimals
 export const formatAmount = (amount: BigNumberish, ERC20decimals: number) => {
@@ -43,4 +44,31 @@ export async function addToken(
       },
     },
   });
+}
+
+export function connectMetamask() {
+  if (typeof window.ethereum !== "undefined") {
+    if (window.ethereum.selectedAddress) {
+      defaultEvmStores.setProvider();
+    }
+  }
+}
+
+export function disconnectMetamask() {
+  if (typeof window.ethereum !== "undefined") {
+    if (window.ethereum.selectedAddress) {
+      window.ethereum
+        .request({
+          method: "eth_requestAccounts",
+          params: [{ disconnect: true }],
+        })
+        .then(() => {
+          defaultEvmStores.disconnect();
+          console.log("Account disconnected successfully.");
+        })
+        .catch((error) => {
+          console.error("Failed to disconnect account:", error);
+        });
+    }
+  }
 }

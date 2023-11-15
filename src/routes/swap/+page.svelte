@@ -161,7 +161,9 @@
 <div
   class="lg:w-1/3 m-auto mt-4 mb-24 lg:border-2 rounded-lg p-4 lg:bg-gradient"
 >
-  <div class="w-full flex space-x-4 mt-8 p-8 bg-slate-200 rounded-3xl">
+  <div
+    class="w-full flex space-x-4 mt-8 p-8 bg-slate-200 rounded-3xl shadow-lg"
+  >
     <input
       bind:value={amountOut}
       type="text"
@@ -175,7 +177,10 @@
       }}
     />
     <div class="w-1/2">
-      <label for="selectedToken0" tabindex="0" class="w-full btn rounded-full"
+      <label
+        for="selectedToken0"
+        tabindex="0"
+        class="w-full btn rounded-full shadow-lg"
         >{selectedToken0 != undefined
           ? selectedToken0?.info.name || "NUSD"
           : "Select a token"}</label
@@ -194,7 +199,9 @@
       {/if}
     </div>
   </div>
-  <div class="w-full flex space-x-4 mt-4 p-8 bg-slate-200 rounded-3xl relative">
+  <div
+    class="w-full flex space-x-4 mt-4 p-8 bg-slate-200 rounded-3xl relative shadow-lg"
+  >
     <input
       bind:value={amountIn}
       type="text"
@@ -208,7 +215,10 @@
       }}
     />
     <div class="dropdown w-1/2">
-      <label for="selectedToken1" tabindex="0" class="w-full btn rounded-full"
+      <label
+        for="selectedToken1"
+        tabindex="0"
+        class="w-full btn rounded-full shadow-lg"
         >{selectedToken1 != undefined
           ? selectedToken1?.info.name || "NUSD"
           : "Select a token"}</label
@@ -255,13 +265,13 @@
       </div>
     {/if}
   {/if}
-  {#if enter && selectedToken1}
+  <!-- {#if enter && selectedToken1}
     <div class="collapse">
       <input type="checkbox" />
       <div class="collapse-title flex flex-col w-full border-opacity-50">
         <div class="divider">Advanced</div>
       </div>
-      <!-- <div class=" text-xl font-medium">Advanced</div> -->
+      <div class=" text-xl font-medium">Advanced</div>
       <div class="collapse-content">
         <div class="flex justify-between text-lg">
           <strong> Leverage </strong>
@@ -288,7 +298,7 @@
         </div>
       </div>
     </div>
-  {/if}
+  {/if} -->
 
   <button
     class="btn btn-primary btn-lg w-full mt-8"

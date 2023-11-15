@@ -54,7 +54,7 @@
         <div class="dropdown w-full">
           <label
             tabindex="0"
-            class="btn w-full"
+            class="btn btn-outline w-full border border-current"
             class:btn-outline={selectedPool != undefined}
             >{selectedPool?.token?.info?.name || "--"}</label
           >

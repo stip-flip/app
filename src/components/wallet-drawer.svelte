@@ -7,12 +7,19 @@
   } from "svelte-ethers-store";
 
   import { renderSVGIcon } from "@codingwithmanny/blockies";
-  import { switchNetwork } from "src/lib";
+  import { disconnectMetamask, switchNetwork } from "src/lib";
   import Icon from "@iconify/svelte";
+
+  let overlay: HTMLInputElement;
 </script>
 
 <div class="drawer drawer-end absolute z-10">
-  <input id="wallet-drawer" type="checkbox" class="drawer-toggle" />
+  <input
+    id="wallet-drawer"
+    type="checkbox"
+    class="drawer-toggle"
+    bind:this={overlay}
+  />
   <div class="drawer-content">
     <!-- Page content here -->
   </div>
@@ -39,8 +46,8 @@
           <button
             class="btn btn-outline"
             on:click={(_) => {
-              defaultEvmStores.disconnect();
-              sessionStorage.removeItem("accnt");
+              overlay.click();
+              disconnectMetamask();
             }}>Disconnect</button
           >
         </div>

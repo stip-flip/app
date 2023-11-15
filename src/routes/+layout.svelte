@@ -1,33 +1,25 @@
 <script lang="ts">
   import { browser } from "$app/environment";
   import { page } from "$app/stores";
-  import autoAnimate from "@formkit/auto-animate";
   import { onMount } from "svelte";
   import "../app.css";
 
-  import Icon from "@iconify/svelte";
   import Logo from "src/components/logo.svelte";
-  import Wallet from "src/components/wallet.svelte";
   import Theme from "src/components/theme.svelte";
-  import { pendingTransactions, transactions } from "src/hooks/blocknumber";
-  import { chainId, defaultEvmStores, connected } from "svelte-ethers-store";
   import WalletDrawer from "src/components/wallet-drawer.svelte";
+  import Wallet from "src/components/wallet.svelte";
+  import { transactions } from "src/hooks/blocknumber";
+  import { connectMetamask } from "src/lib";
   let theme = "dark";
   let toggled = false;
 
   let overlay: HTMLAreaElement;
 
-  $: {
-    if (browser) {
-      document
-        .getElementsByTagName("html")[0]
-        .setAttribute("data-theme", theme);
-    }
-  }
-
   onMount(() => {
     try {
-      defaultEvmStores.setProvider().catch((e) => console.warn(e));
+      console.log(window.ethereum.selectedAddress);
+      connectMetamask();
+      // defaultEvmStores.setProvider().catch((e) => console.warn(e));
     } catch (e) {
       console.warn(e);
     }
@@ -93,35 +85,35 @@
           </a>
         </div>
         <div class="flex-none hidden lg:block">
-          <ul class="menu menu-horizontal">
+          <ul class="menu menu-horizontal bg-gradient rounded-full p-0">
             <!-- Navbar menu content here -->
             <li>
               <a
                 href="/wallet"
-                class="text-lg"
-                class:underline={$page.route?.id?.startsWith("/wallet")}
+                class="rounded-full"
+                class:shadow-lg={$page.route?.id?.startsWith("/wallet")}
                 >Wallet</a
               >
             </li>
             <li>
               <a
                 href={`/swap/`}
-                class="text-lg"
-                class:underline={$page.route?.id?.startsWith("/swap")}>Swap</a
+                class="rounded-full"
+                class:shadow-lg={$page.route?.id?.startsWith("/swap")}>Swap</a
               >
             </li>
             <li>
               <a
                 href={`/earn/`}
-                class="text-lg"
-                class:underline={$page.route?.id?.startsWith("/earn")}>Earn</a
+                class="rounded-full"
+                class:shadow-lg={$page.route?.id?.startsWith("/earn")}>Earn</a
               >
             </li>
             <li>
               <a
                 href={`/faucet/`}
-                class="text-lg"
-                class:underline={$page.route?.id?.startsWith("/faucet")}
+                class="rounded-full"
+                class:shadow-lg={$page.route?.id?.startsWith("/faucet")}
                 >Faucet</a
               >
             </li>
