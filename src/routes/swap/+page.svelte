@@ -339,9 +339,11 @@
           $sdk.POOL.attach(selectedToken0.info.address)
             .connect($signer)
             .exit(
-              parseUnits(amountOut, selectedToken0.info.decimals),
-              $signerAddress,
-              { gasLimit: 1000000 }
+              parseUnits(
+                amountOut == String(selectedToken0?.balance) ? "0" : amountOut, // if amountOut is max, set to 0
+                selectedToken0.info.decimals
+              ),
+              $signerAddress
             )
         );
       }
