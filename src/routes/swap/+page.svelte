@@ -138,7 +138,7 @@
       }
     }
   }, 1000);
-  $: console.log(amountIn);
+  $: console.log(pnl);
 </script>
 
 <Tokens
@@ -254,14 +254,14 @@
             )} USDC
           </strong>
         </div>
-        {#if !enter && selectedToken0?.info.address && selectedToken1?.info.address}
+        <!-- {#if !enter && selectedToken0?.info.address && selectedToken1?.info.address}
           <div class="flex justify-between my-4 text-lg">
             <strong> PNL </strong>
             <strong>
               {commify(formatUnits(pnl, selectedToken1?.info.decimals || 18))}
             </strong>
           </div>
-        {/if}
+        {/if} -->
       </div>
     {/if}
   {/if}

@@ -185,7 +185,8 @@
                 $signerAddress,
                 lowerFR,
                 upperFR,
-                parseUnits(amount, $usdcInfo.decimals)
+                parseUnits(amount, $usdcInfo.decimals),
+                { gasLimit: 1000000 }
               )
           );
         }}>Add Liquidity</button
