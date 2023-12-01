@@ -187,7 +187,7 @@
       >
       {#if selectedToken0 != undefined}
         <div
-          class="absolute ml-4 text-sm cursor-pointer"
+          class="absolute ml-4 text-sm text-primary-content cursor-pointer"
           on:click={(_) => {
             console.log(selectedToken0?.balance);
             amountOut = String(selectedToken0?.balance || 0);
