@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { commify } from "ethers/lib/utils";
+  import { commify } from "src/lib";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
 
   export let id: string;
@@ -32,7 +32,7 @@
             <a>{token?.info?.name || "NUSD"}</a>
           </strong>
           <span class="mx-2">
-            ({commify(Number(token?.balance || 0).toFixed(2))})
+            ({commify(token?.balance, 4)})
           </span>
         </li>
       {/each}

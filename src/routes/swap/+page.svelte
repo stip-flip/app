@@ -1,15 +1,17 @@
 <script lang="ts">
-  import { BigNumber, ethers } from "ethers";
-  import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils";
+  import { BigNumber } from "ethers";
+  import {
+    formatEther,
+    formatUnits,
+    parseEther,
+    parseUnits,
+  } from "ethers/lib/utils";
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
   import Tokens from "src/components/tokens.svelte";
+  import { useBalance } from "src/hooks/balance";
   import { broadcastTransaction } from "src/hooks/blocknumber";
-  import {
-    useAllowance,
-    useInfoAndBalance,
-    type TokenInfoAndBalance,
-  } from "src/hooks/erc20";
+  import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
   import { commify } from "src/lib";
   import { MAX_FR, sdk } from "src/stores";
@@ -27,33 +29,33 @@
   // do we want to trade in advanced mode?
   let advanced: boolean = false;
 
+  const ZERO_ADDRESS = "0x0";
+
   $: poolInfos = usePoolInfos();
 
-  $: quoteToken = useInfoAndBalance($sdk.USDC.address);
+  $: quoteToken = useBalance;
 
-  $: allowance = useAllowance(
-    selectedToken0?.info.address,
-    selectedPool?.address || ""
-  );
+  // $: allowance = useAllowance(
+  //   selectedToken0?.info.address,
+  //   selectedPool?.address || ""
+  // );
 
   $: tokenInfosAndBalances = [
     ...($poolInfos || []).map((pi) => pi.token),
     $quoteToken,
   ].filter((t) => !!t);
 
-  $: console.log(tokenInfosAndBalances, $poolInfos);
-
   $: filteredSelectedToken1 = tokenInfosAndBalances.filter(
     (t: TokenInfoAndBalance) => {
       if (!selectedToken0) return true;
       if (
-        selectedToken0?.info.address == $sdk.USDC.address &&
-        t.info.address != $sdk.USDC.address
+        selectedToken0?.info.address == ZERO_ADDRESS &&
+        t.info.address != ZERO_ADDRESS
       )
         return true;
       if (
-        selectedToken0?.info.address != $sdk.USDC.address &&
-        t.info.address == $sdk.USDC.address
+        selectedToken0?.info.address != ZERO_ADDRESS &&
+        t.info.address == ZERO_ADDRESS
       )
         return true;
     }
@@ -72,7 +74,7 @@
     }
   }
 
-  $: enter = selectedToken0?.info.address == $sdk.USDC.address;
+  $: enter = selectedToken0?.info.address == ZERO_ADDRESS;
 
   $: selectedPool = $poolInfos.find(
     (pi) =>
@@ -189,12 +191,11 @@
         <div
           class="absolute ml-4 text-sm text-primary-content cursor-pointer"
           on:click={(_) => {
-            console.log(selectedToken0?.balance);
             amountOut = String(selectedToken0?.balance || 0);
             debOut();
           }}
         >
-          Balance: {commify(selectedToken0?.balance)}
+          Balance: {commify(selectedToken0?.balance, 4)}
         </div>
       {/if}
     </div>
@@ -251,7 +252,7 @@
           <strong>
             {commify(
               formatUnits(feeAmount || 0, selectedToken0?.info.decimals || 0)
-            )} USDC
+            )} ETC
           </strong>
         </div>
         <!-- {#if !enter && selectedToken0?.info.address && selectedToken1?.info.address}
@@ -304,33 +305,27 @@
     class="btn btn-primary btn-lg w-full mt-8"
     on:click={(_) => {
       if (enter) {
-        if ($allowance > Number(amountOut)) {
-          broadcastTransaction(
-            "Swapping " +
-              selectedToken0.info.name +
-              " for " +
-              selectedToken1.info.name,
-            $sdk.POOL.attach(selectedToken1.info.address)
-              .connect($signer)
-              .enter(
-                parseUnits(amountOut, selectedToken0.info.decimals),
-                parseUnits(amountOut, selectedToken0.info.decimals).mul(
-                  leverage > 1 ? leverage : 1
-                ),
-                MAX_FR,
-                $signerAddress
-              )
-          );
-        } else {
-          broadcastTransaction(
-            "Increase Allowance",
-            $sdk.USDC.connect($signer).approve(
-              selectedPool?.address || "",
-              ethers.constants.MaxUint256
+        broadcastTransaction(
+          "Swapping " +
+            selectedToken0.info.name +
+            " for " +
+            selectedToken1.info.name,
+          $sdk.POOL.attach(selectedToken1.info.address)
+            .connect($signer)
+            .enter(
+              parseUnits(amountOut, selectedToken0.info.decimals),
+              MAX_FR,
+              $signerAddress,
+              {
+                value: parseEther(amountOut),
+              }
             )
-          );
-        }
+        );
       } else {
+        console.log(
+          "amountOut",
+          amountOut == String(selectedToken0?.balance) ? "0" : amountOut
+        );
         broadcastTransaction(
           "Swapping " +
             selectedToken0.info.name +
@@ -347,9 +342,6 @@
             )
         );
       }
-    }}
-    >{!selectedToken1 || $allowance > Number(amountOut)
-      ? "Swap"
-      : "Approve"}</button
+    }}>Swap</button
   >
 </div>

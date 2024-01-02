@@ -12,8 +12,8 @@
   export let pnl: BigNumberish;
   export let fr: BigNumberish;
 
-  $: details = token?.name.includes("steep")
-    ? "This token represent the long side of " + token?.name.split("steep-")[1]
+  $: details = token?.name.includes("stip")
+    ? "This token represent the long side of " + token?.name.split("stip-")[1]
     : "This token represent the short side of " + token?.name.split("flip-")[1];
 </script>
 
@@ -55,7 +55,7 @@
     <strong>{token?.name}</strong>
   </td>
   <td>
-    {commify(balance, 2)}
+    {commify(balance, 4)}
   </td>
   <td>
     {Number(commify(formatUnits(fr, 18 + 2)))} %

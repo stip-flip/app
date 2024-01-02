@@ -1,8 +1,6 @@
 fragment PoolFragment on Pool {
   id
-  collateral
-  oracle
-  fee
+  long
   ticks {
     id
     index

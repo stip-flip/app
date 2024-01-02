@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { mainDefaultChainId } from "src/stores";
+  import { SUPPORTED_NETWORKS, mainDefaultChainId } from "src/stores";
   import {
     chainId,
     connected,
@@ -21,6 +21,8 @@
       console.log(error, "Something went wrong while connecting wallet");
     }
   }
+
+  $: supportedNetwork = SUPPORTED_NETWORKS.includes(Number($chainId));
 </script>
 
 <div class="relative">
@@ -38,7 +40,7 @@
     <div class="flex items-center relative space-x-4">
       <button
         class={`h-6 flex-col absolute -left-12 -top-1 cursor-pointer ` +
-          ($chainId != mainDefaultChainId ? "" : "hidden")}
+          (!supportedNetwork ? "" : "hidden")}
         on:click={(_) => {
           // alert('Switch to correct network');
           // switchNetwork();
@@ -52,18 +54,18 @@
       </button>
       <label
         for="wallet-drawer"
-        class:border-warning={$chainId != mainDefaultChainId}
+        class:border-warning={!supportedNetwork}
         class="border border-primary rounded-full flex cursor-pointer items-center h-8 bg-gradient"
       >
         <div
           class="text-primary tracking-wider px-4 hidden lg:inline-block"
-          class:text-warning={$chainId != mainDefaultChainId}
+          class:text-warning={!supportedNetwork}
         >
           {$signerAddress.slice(0, 6) + "..." + $signerAddress.slice(-4)}
         </div>
         <div
           class="text-primary tracking-wider lg:hidden"
-          class:text-warning={$chainId != mainDefaultChainId}
+          class:text-warning={!supportedNetwork}
         >
           {#await renderSVGIcon({ seed: $signerAddress || "" }) then icon}
             {@html icon}

@@ -6,6 +6,7 @@
   import { sdk } from "src/stores";
   import { signerAddress } from "svelte-ethers-store";
   import Modal from "./_modal.svelte";
+  import { BigNumber } from "ethers";
 
   export let bytes: string[];
   export let poolName: string;
@@ -31,38 +32,49 @@
     <tbody>
       {#each bytes as b}
         <tr class="hover">
-          <td class="w-1/3 lg:w-auto"
-            >{positions[b].tickLower / 100} to {positions[b].tickUpper /
-              100}%</td
-          >
-          <td class="w-1/3 lg:w-auto"
-            >{formatAmount(positions[b].liquidity, $usdcInfo?.decimals || 18)}
-            <Icon class="inline text-xl" icon="cryptocurrency-color:usdc" /></td
-          >
-          <td class="hidden lg:table-cell"
-            >{commify((positions[b].liquidityActive * 100).toFixed(2))} %</td
-          >
-          <td class="w-1/3 lg:w-auto">
-            {#await $sdk.POOL.attach(poolAddress).positionPnL(positions[b].tickLower, positions[b].tickUpper, $signerAddress) then pnl}
-              {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))}
-              <Icon class="inline text-xl" icon="cryptocurrency-color:usdc" />
-            {:catch err}
-              {positions[b].tickLower}
-              {positions[b].tickUpper}
-              {$signerAddress}
-            {/await}
-          </td>
-          <td class="hidden lg:table-cell">
-            <label
-              for={poolAddress}
-              on:click={(_) => (selectedPosition = positions[b])}
+          {#await $sdk.POOL.attach(poolAddress).positionPnL(positions[b].tickLower, positions[b].tickUpper, $signerAddress) then pnl}
+            <td class="w-1/3 lg:w-auto"
+              >{positions[b].tickLower / 100} to {positions[b].tickUpper /
+                100}%</td
             >
+            <td class="w-1/3 lg:w-auto"
+              >{commify(
+                formatAmount(
+                  BigNumber.from(positions[b].liquidity).add(pnl),
+                  $usdcInfo?.decimals || 18
+                ).toFixed(2)
+              )}
               <Icon
-                icon="material-symbols:upload"
-                class="cursor-pointer w-6 h-6"
-              />
-            </label>
-          </td>
+                class="inline text-xl text-green-600"
+                icon="mdi:ethereum"
+              /></td
+            >
+            <td class="hidden lg:table-cell"
+              >{commify((positions[b].liquidityActive * 100).toFixed(2))} %</td
+            >
+            <td class="w-1/3 lg:w-auto">
+              {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))}
+              <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
+            </td>
+            <td class="hidden lg:table-cell">
+              <label
+                for={poolAddress}
+                on:click={(_) => {
+                  selectedPosition = positions[b];
+                }}
+              >
+                <Icon
+                  icon="material-symbols:upload"
+                  class="cursor-pointer w-6 h-6"
+                />
+              </label>
+            </td>
+          {:catch err}
+            <!-- {err} -->
+            {positions[b].tickLower}
+            {positions[b].tickUpper}
+            {$signerAddress}
+          {/await}
         </tr>
       {/each}
     </tbody>

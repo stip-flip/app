@@ -37,10 +37,8 @@ export enum OrderDirection {
 
 export type Pool = {
   __typename?: 'Pool';
-  collateral: Scalars['Bytes'];
-  fee: Scalars['Int'];
   id: Scalars['ID'];
-  oracle: Scalars['Bytes'];
+  long: Scalars['Boolean'];
   ticks: Array<Tick>;
 };
 
@@ -57,24 +55,6 @@ export type Pool_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Pool_Filter>>>;
-  collateral?: InputMaybe<Scalars['Bytes']>;
-  collateral_contains?: InputMaybe<Scalars['Bytes']>;
-  collateral_gt?: InputMaybe<Scalars['Bytes']>;
-  collateral_gte?: InputMaybe<Scalars['Bytes']>;
-  collateral_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  collateral_lt?: InputMaybe<Scalars['Bytes']>;
-  collateral_lte?: InputMaybe<Scalars['Bytes']>;
-  collateral_not?: InputMaybe<Scalars['Bytes']>;
-  collateral_not_contains?: InputMaybe<Scalars['Bytes']>;
-  collateral_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  fee?: InputMaybe<Scalars['Int']>;
-  fee_gt?: InputMaybe<Scalars['Int']>;
-  fee_gte?: InputMaybe<Scalars['Int']>;
-  fee_in?: InputMaybe<Array<Scalars['Int']>>;
-  fee_lt?: InputMaybe<Scalars['Int']>;
-  fee_lte?: InputMaybe<Scalars['Int']>;
-  fee_not?: InputMaybe<Scalars['Int']>;
-  fee_not_in?: InputMaybe<Array<Scalars['Int']>>;
   id?: InputMaybe<Scalars['ID']>;
   id_gt?: InputMaybe<Scalars['ID']>;
   id_gte?: InputMaybe<Scalars['ID']>;
@@ -83,25 +63,17 @@ export type Pool_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  long?: InputMaybe<Scalars['Boolean']>;
+  long_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  long_not?: InputMaybe<Scalars['Boolean']>;
+  long_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   or?: InputMaybe<Array<InputMaybe<Pool_Filter>>>;
-  oracle?: InputMaybe<Scalars['Bytes']>;
-  oracle_contains?: InputMaybe<Scalars['Bytes']>;
-  oracle_gt?: InputMaybe<Scalars['Bytes']>;
-  oracle_gte?: InputMaybe<Scalars['Bytes']>;
-  oracle_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  oracle_lt?: InputMaybe<Scalars['Bytes']>;
-  oracle_lte?: InputMaybe<Scalars['Bytes']>;
-  oracle_not?: InputMaybe<Scalars['Bytes']>;
-  oracle_not_contains?: InputMaybe<Scalars['Bytes']>;
-  oracle_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   ticks_?: InputMaybe<Tick_Filter>;
 };
 
 export enum Pool_OrderBy {
-  Collateral = 'collateral',
-  Fee = 'fee',
   Id = 'id',
-  Oracle = 'oracle',
+  Long = 'long',
   Ticks = 'ticks'
 }
 
@@ -190,10 +162,8 @@ export enum Position_OrderBy {
   Id = 'id',
   Owner = 'owner',
   Pool = 'pool',
-  PoolCollateral = 'pool__collateral',
-  PoolFee = 'pool__fee',
   PoolId = 'pool__id',
-  PoolOracle = 'pool__oracle',
+  PoolLong = 'pool__long',
   TickLower = 'tickLower',
   TickUpper = 'tickUpper'
 }
@@ -405,10 +375,8 @@ export enum Tick_OrderBy {
   Index = 'index',
   Liquidity = 'liquidity',
   Pool = 'pool',
-  PoolCollateral = 'pool__collateral',
-  PoolFee = 'pool__fee',
   PoolId = 'pool__id',
-  PoolOracle = 'pool__oracle'
+  PoolLong = 'pool__long'
 }
 
 export type _Block_ = {
@@ -445,14 +413,14 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type PoolFragmentFragment = { __typename?: 'Pool', id: string, collateral: any, oracle: any, fee: number, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> };
+export type PoolFragmentFragment = { __typename?: 'Pool', id: string, long: boolean, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> };
 
 export type GetPoolsQueryVariables = Exact<{
   where?: InputMaybe<Pool_Filter>;
 }>;
 
 
-export type GetPoolsQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, collateral: any, oracle: any, fee: number, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> }> };
+export type GetPoolsQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, long: boolean, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> }> };
 
 export type PositionFragmentFragment = { __typename?: 'Position', id: string, owner: any, tickLower: number, tickUpper: number, amount: number };
 
@@ -466,9 +434,7 @@ export type GetPositionsQuery = { __typename?: 'Query', positions: Array<{ __typ
 export const PoolFragmentFragmentDoc = gql`
     fragment PoolFragment on Pool {
   id
-  collateral
-  oracle
-  fee
+  long
   ticks {
     id
     index

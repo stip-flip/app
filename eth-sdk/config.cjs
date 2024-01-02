@@ -3,18 +3,23 @@ const sdk = require("@dethcrypto/eth-sdk");
 module.exports = sdk.defineConfig({
   etherscanURLs: {
     sepolia: "https://api-sepolia.etherscan.io/api",
+    mordor: "https://etc-mordor.blockscout.com/api",
   },
   etherscanKeys: {
     sepolia: "EYBN1WQYRX7ADX3A9XJQUQUEJ15Y73V6GH",
   },
-  // rpc: {
-  //   sepolia: "https://eth-sepolia.g.alchemy.com/v2/p485wpX8q1LUZSlUwcqc_ClbYCle4aKu"
-  // },
+  rpc: {
+    mordor: "https://rpc.mordor.etccooperative.org/",
+  },
   contracts: {
     goerli: {
       USDC: "0xc08b453c3328007f88993717ba77e67e94c79f1b",
-      POOL: "0xc38d66dB689Fcc0Dd5c55B9678AfA917b79FF77F",
+      POOL: "0x79DCcFe27160C2b5c67e866E5edD51596f46Af53",
     },
+    // mordor: {
+    //   USDC: "0x26c922212b440fc48ab8f54c822349cacc9ce91a",
+    //   POOL: "0x5ac308ccfbcfaddea056bd148031a37fdd756ee8",
+    // },
   },
   outputPath: "eth-sdk/build/",
 });

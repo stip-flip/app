@@ -907,9 +907,9 @@
         "type": "uint96"
       },
       {
-        "internalType": "uint128",
-        "name": "sharesRatio",
-        "type": "uint128"
+        "internalType": "int80",
+        "name": "feeGrowthInsideLast",
+        "type": "int80"
       }
     ],
     "stateMutability": "view",
@@ -1047,9 +1047,9 @@
         "type": "int80"
       },
       {
-        "internalType": "uint128",
+        "internalType": "int80",
         "name": "pnl",
-        "type": "uint128"
+        "type": "int80"
       },
       {
         "internalType": "uint96",
@@ -1066,7 +1066,7 @@
     "outputs": [
       {
         "internalType": "uint128",
-        "name": "sharesPerTickX24",
+        "name": "liquidityPerTickX24",
         "type": "uint128"
       },
       {
@@ -1173,18 +1173,18 @@
     "outputs": [
       {
         "internalType": "int128",
-        "name": "netSharesPerTickX24",
+        "name": "netLiquidityPerTickX24",
         "type": "int128"
       },
       {
-        "internalType": "uint128",
-        "name": "ratioInside",
-        "type": "uint128"
+        "internalType": "int80",
+        "name": "feeGrowthInside",
+        "type": "int80"
       },
       {
-        "internalType": "uint128",
-        "name": "ratioOutside",
-        "type": "uint128"
+        "internalType": "int80",
+        "name": "feeGrowthOutside",
+        "type": "int80"
       },
       {
         "internalType": "bool",

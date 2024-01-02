@@ -16,9 +16,8 @@ export type PoolInfo = {
   tick: number;
   feeProtocol: number;
   debt: BigNumber;
-  collateral: string;
   fee: number;
-  liquidityPerTickX24: BigNumber;
+  sharesPerTickX24: BigNumber;
   totalLiquidities: BigNumber;
   traderLiquidities: BigNumber;
   ticks?: Record<number, number>;
@@ -32,31 +31,28 @@ export const poolInfoAsync = async (
   const sdk = get(ethsdk);
   const p = sdk.POOL.attach(address || ethers.constants.AddressZero);
 
-  const [currentPrice, debt, collateral, slot0, slot1, slot2, fee, lp] =
-    await Promise.all([
-      p.getPrice(),
-      p.debt(account || get(signerAddress) || ethers.constants.AddressZero),
-      p.collateral(),
-      p.slot0(),
-      p.slot1(),
-      p.slot2(),
-      p.fee(),
-      p.liquidationPrice(
-        account || get(signerAddress) || ethers.constants.AddressZero
-      ),
-    ]);
+  const [currentPrice, debt, slot0, slot1, slot2, fee, lp] = await Promise.all([
+    p.getPrice(),
+    p.debt(account || get(signerAddress) || ethers.constants.AddressZero),
+    p.slot0(),
+    p.slot1(),
+    p.slot2(),
+    p.fee(),
+    p.liquidationPrice(
+      account || get(signerAddress) || ethers.constants.AddressZero
+    ),
+  ]);
 
   return {
     address,
     lastPrice: slot2.lastPrice,
-    currentPrice: currentPrice.price,
+    currentPrice: currentPrice,
     fr: slot0.fr,
     tick: slot1.tick,
     feeProtocol: 0,
     debt,
-    collateral,
     fee,
-    liquidityPerTickX24: slot1.liquidityPerTickX24,
+    sharesPerTickX24: slot1.sharesPerTickX24,
     totalLiquidities: slot0.totalLiquidities,
     traderLiquidities: slot2.traderLiquidities,
   };
@@ -64,9 +60,9 @@ export const poolInfoAsync = async (
 
 export const usePoolInfos = (): Readable<PoolInfo[]> => {
   return derived(
-    [ethsdk, resolvedTransactions],
-    ([$ethsdk, $pt], set) => {
-      gqlsdk.getPools({}).then(async (res) => {
+    [ethsdk, resolvedTransactions, gqlsdk],
+    ([$ethsdk, $pt, $gqlsdk], set) => {
+      $gqlsdk?.getPools({}).then(async (res) => {
         const poolInfos = await Promise.all(
           res.pools.map(async (p) => {
             if (!p.id) return Promise.resolve({} as PoolInfo);
@@ -99,7 +95,7 @@ export const initializedTickAsync = (
 export const positionsAsync = async (poolAddress: string, account: string) => {
   const sdk = get(ethsdk);
   if (!sdk || !poolAddress || !account) return Promise.resolve([]);
-  const positionResults = await gqlsdk.getPositions({
+  const positionResults = await get(gqlsdk).getPositions({
     where: { pool: poolAddress, owner: account },
   });
   const pool = sdk.POOL.attach(poolAddress);
@@ -141,9 +137,9 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
 };
 
 export const usePositions = derived(
-  [chainId, signerAddress, resolvedTransactions],
-  ([$signer, $signerAddress], set) => {
-    gqlsdk.getPools({}).then(async (res) => {
+  [chainId, signerAddress, resolvedTransactions, gqlsdk],
+  ([$signer, $signerAddress, $resolvedTransactions, $gqlsdk], set) => {
+    $gqlsdk?.getPools({}).then(async (res) => {
       console.log(res.pools);
       const poolAddresses = res.pools.map((p) => p.id);
       const positions = await Promise.all(

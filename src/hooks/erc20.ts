@@ -201,7 +201,10 @@ export const infosAndBalanceAsync = async (address: string) => {
   return { info, balance };
 };
 
-export const useInfoAndBalance = (address: string, account?: string) => {
+export const useInfoAndBalance = (
+  address: string,
+  account?: string
+): Readable<TokenInfoAndBalance> => {
   return derived(
     [chainId, signerAddress, bn],
     ([$chainId, $signerAddress, $bn], set) => {
