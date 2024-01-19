@@ -1,5 +1,5 @@
 import { ethers, utils, type BigNumber } from "ethers";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
@@ -12,12 +12,9 @@ export type PoolInfo = {
   address: string;
   lastPrice: BigNumber;
   currentPrice: BigNumber;
-  fr: BigNumber;
   tick: number;
   feeProtocol: number;
-  debt: BigNumber;
   fee: number;
-  sharesPerTickX24: BigNumber;
   totalLiquidities: BigNumber;
   traderLiquidities: BigNumber;
   ticks?: Record<number, number>;
@@ -31,28 +28,21 @@ export const poolInfoAsync = async (
   const sdk = get(ethsdk);
   const p = sdk.POOL.attach(address || ethers.constants.AddressZero);
 
-  const [currentPrice, debt, slot0, slot1, slot2, fee, lp] = await Promise.all([
+  const [currentPrice, slot0, slot1, slot2, fee] = await Promise.all([
     p.getPrice(),
-    p.debt(account || get(signerAddress) || ethers.constants.AddressZero),
     p.slot0(),
     p.slot1(),
     p.slot2(),
     p.fee(),
-    p.liquidationPrice(
-      account || get(signerAddress) || ethers.constants.AddressZero
-    ),
   ]);
 
   return {
     address,
     lastPrice: slot2.lastPrice,
     currentPrice: currentPrice,
-    fr: slot0.fr,
     tick: slot1.tick,
     feeProtocol: 0,
-    debt,
     fee,
-    sharesPerTickX24: slot1.sharesPerTickX24,
     totalLiquidities: slot0.totalLiquidities,
     traderLiquidities: slot2.traderLiquidities,
   };
@@ -99,36 +89,25 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
     where: { pool: poolAddress, owner: account },
   });
   const pool = sdk.POOL.attach(poolAddress);
-  const slot0 = await pool.slot0();
+  const slot1 = await pool.slot1();
   console.log(positionResults.positions);
   let positions = positionResults.positions.reduce((acc, cur) => {
     const byte = utils.solidityKeccak256(
-      ["address", "int24", "int24"],
-      [account, cur.tickLower, cur.tickUpper]
+      ["address", "int24"],
+      [account, cur.tick]
     );
     console.log(byte);
     return {
       ...acc,
       [byte]: {
-        tickLower: cur.tickLower,
-        tickUpper: cur.tickUpper,
+        tick: cur.tick,
         liquidity: cur.amount,
-        liquidityActive: Math.max(
-          0,
-          Math.min(
-            1,
-            Number(
-              formatEther(slot0.fr.sub(parseEther(cur.tickLower.toString())))
-            ) /
-              Number(
-                formatEther(
-                  parseEther(cur.tickUpper.toString()).sub(
-                    parseEther(cur.tickLower.toString())
-                  )
-                )
-              )
-          )
-        ),
+        liquidityActive:
+          cur.tick > slot1.tick
+            ? 0
+            : cur.tick < slot1.tick
+            ? 1
+            : formatUnits(slot1.tickRatio, 27),
         // pnl: await pool.getPositionPnL(cur.tickLower, cur.tickUpper, account),
       },
     };

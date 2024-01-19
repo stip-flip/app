@@ -14,7 +14,7 @@ module.exports = sdk.defineConfig({
   contracts: {
     goerli: {
       USDC: "0xc08b453c3328007f88993717ba77e67e94c79f1b",
-      POOL: "0x79DCcFe27160C2b5c67e866E5edD51596f46Af53",
+      POOL: "0x6487bd2d1e8125868804a9290090e69c0973059d",
     },
     // mordor: {
     //   USDC: "0x26c922212b440fc48ab8f54c822349cacc9ce91a",

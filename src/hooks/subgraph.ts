@@ -83,8 +83,7 @@ export type Position = {
   id: Scalars['ID'];
   owner: Scalars['Bytes'];
   pool: Pool;
-  tickLower: Scalars['Int'];
-  tickUpper: Scalars['Int'];
+  tick: Scalars['Int'];
 };
 
 export type Position_Filter = {
@@ -139,22 +138,14 @@ export type Position_Filter = {
   pool_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   pool_starts_with?: InputMaybe<Scalars['String']>;
   pool_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  tickLower?: InputMaybe<Scalars['Int']>;
-  tickLower_gt?: InputMaybe<Scalars['Int']>;
-  tickLower_gte?: InputMaybe<Scalars['Int']>;
-  tickLower_in?: InputMaybe<Array<Scalars['Int']>>;
-  tickLower_lt?: InputMaybe<Scalars['Int']>;
-  tickLower_lte?: InputMaybe<Scalars['Int']>;
-  tickLower_not?: InputMaybe<Scalars['Int']>;
-  tickLower_not_in?: InputMaybe<Array<Scalars['Int']>>;
-  tickUpper?: InputMaybe<Scalars['Int']>;
-  tickUpper_gt?: InputMaybe<Scalars['Int']>;
-  tickUpper_gte?: InputMaybe<Scalars['Int']>;
-  tickUpper_in?: InputMaybe<Array<Scalars['Int']>>;
-  tickUpper_lt?: InputMaybe<Scalars['Int']>;
-  tickUpper_lte?: InputMaybe<Scalars['Int']>;
-  tickUpper_not?: InputMaybe<Scalars['Int']>;
-  tickUpper_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  tick?: InputMaybe<Scalars['Int']>;
+  tick_gt?: InputMaybe<Scalars['Int']>;
+  tick_gte?: InputMaybe<Scalars['Int']>;
+  tick_in?: InputMaybe<Array<Scalars['Int']>>;
+  tick_lt?: InputMaybe<Scalars['Int']>;
+  tick_lte?: InputMaybe<Scalars['Int']>;
+  tick_not?: InputMaybe<Scalars['Int']>;
+  tick_not_in?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export enum Position_OrderBy {
@@ -164,8 +155,7 @@ export enum Position_OrderBy {
   Pool = 'pool',
   PoolId = 'pool__id',
   PoolLong = 'pool__long',
-  TickLower = 'tickLower',
-  TickUpper = 'tickUpper'
+  Tick = 'tick'
 }
 
 export type Query = {
@@ -422,14 +412,14 @@ export type GetPoolsQueryVariables = Exact<{
 
 export type GetPoolsQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, long: boolean, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> }> };
 
-export type PositionFragmentFragment = { __typename?: 'Position', id: string, owner: any, tickLower: number, tickUpper: number, amount: number };
+export type PositionFragmentFragment = { __typename?: 'Position', id: string, owner: any, tick: number, amount: number };
 
 export type GetPositionsQueryVariables = Exact<{
   where?: InputMaybe<Position_Filter>;
 }>;
 
 
-export type GetPositionsQuery = { __typename?: 'Query', positions: Array<{ __typename?: 'Position', id: string, owner: any, tickLower: number, tickUpper: number, amount: number }> };
+export type GetPositionsQuery = { __typename?: 'Query', positions: Array<{ __typename?: 'Position', id: string, owner: any, tick: number, amount: number }> };
 
 export const PoolFragmentFragmentDoc = gql`
     fragment PoolFragment on Pool {
@@ -446,8 +436,7 @@ export const PositionFragmentFragmentDoc = gql`
     fragment PositionFragment on Position {
   id
   owner
-  tickLower
-  tickUpper
+  tick
   amount
 }
     `;

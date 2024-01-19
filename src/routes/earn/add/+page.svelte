@@ -1,15 +1,11 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { parseUnits } from "ethers/lib/utils";
+  import { parseEther, parseUnits } from "ethers/lib/utils";
   import { validator } from "src/actions/big-number-input";
   import LiquidityChart from "src/components/liquidity-chart.svelte";
   import { broadcastTransaction } from "src/hooks/blocknumber";
-  import {
-    increaseAllowance,
-    usdcBalance,
-    usdcInfo,
-    useAllowance,
-  } from "src/hooks/erc20";
+  import { useBalance } from "src/hooks/balance";
+  import { increaseAllowance, usdcInfo } from "src/hooks/erc20";
   import { usePoolInfos, type PoolInfo } from "src/hooks/pool";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
@@ -21,10 +17,7 @@
 
   $: pi = usePoolInfos();
 
-  $: usdcAllowance = useAllowance($sdk.USDC.address, selectedPool?.address);
-
-  let lowerFR = -500;
-  let upperFR = 500;
+  let FR = 500;
   // fr is actually a tick here
   function formatFR(fr: number) {
     return fr / 100;
@@ -87,17 +80,20 @@
             on:validated={(v) => (amount = v.detail)}
             use:validator={{
               value: amount,
-              max: $usdcBalance,
+              max: $useBalance?.balance,
             }}
           />
-          <span>USDC</span>
+          <span class="w-24 text-center flex items-center"
+            ><Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
+            ETC</span
+          >
         </label>
         <div
           class="text-right px-4 cursor-pointer"
-          on:click={(_) => (amount = String($usdcBalance))}
+          on:click={(_) => (amount = String($useBalance?.balance))}
         >
           <span class="text-xs text-gray-400">Balance: </span>
-          <span class="text-xs">{commify($usdcBalance)}</span>
+          <span class="text-xs">{commify($useBalance?.balance)}</span>
         </div>
       </div>
     </div>
@@ -107,52 +103,26 @@
       <div class="text-center text-lg mt-4 font-semibold">
         Your liquidity will be active from
       </div>
-      <div class="flex space-x-4">
+      <div class="">
         <div
-          class="w-1/2 border-2 rounded-3xl space-x-4 flex justify-between items-center p-2 mt-8 border-base-content"
+          class="w-1/2 m-auto border-2 rounded-3xl flex justify-between items-center p-2 mt-8 border-base-content"
         >
-          <div
-            class="p-2 text-xl cursor-pointer"
-            on:click={(_) => (lowerFR -= 10)}
-          >
+          <div class="p-2 text-xl cursor-pointer" on:click={(_) => (FR -= 10)}>
             <Icon icon="ic:baseline-minus" />
           </div>
           <div class="flex flex-col justify-between">
-            <div class="text-xs flex-grow h-8">Lower FR</div>
-            <div class="text-lg font-semibold flex-grow text-center h-8">
-              {formatFR(lowerFR)}
-            </div>
+            <div class="flex-grow h-8 text-center">Funding Rate</div>
+            <input
+              class="text-lg font-semibold flex-grow text-center h-8 bg-transparent"
+              value={formatFR(FR)}
+              on:change={(e) => (FR = Number(e.currentTarget.value) * 100)}
+              min="0"
+              max="640"
+            />
+
             <div class="flex-grow h-8" />
           </div>
-          <div
-            class="p-2 text-xl cursor-pointer"
-            on:click={(_) =>
-              (lowerFR = lowerFR < upperFR - 10 ? lowerFR + 10 : lowerFR)}
-          >
-            <Icon icon="material-symbols:add" />
-          </div>
-        </div>
-        <div
-          class="w-1/2 border-2 rounded-3xl space-x-4 flex justify-between items-center p-2 mt-8 border-base-content"
-        >
-          <div
-            class="p-2 text-xl cursor-pointer"
-            on:click={(_) =>
-              (upperFR = upperFR > lowerFR + 10 ? upperFR - 10 : upperFR)}
-          >
-            <Icon icon="ic:baseline-minus" />
-          </div>
-          <div class="flex flex-col justify-between">
-            <div class="text-xs flex-grow h-8">Upper FR</div>
-            <div class="text-lg font-semibold flex-grow text-center h-8">
-              {formatFR(upperFR)}
-            </div>
-            <div class="flex-grow h-8" />
-          </div>
-          <div
-            class="p-2 text-xl cursor-pointer"
-            on:click={(_) => (upperFR += 10)}
-          >
+          <div class="p-2 text-xl cursor-pointer" on:click={(_) => (FR += 10)}>
             <Icon icon="material-symbols:add" />
           </div>
         </div>
@@ -161,44 +131,24 @@
     </div>
     <div class="border-b w-full my-4 border-base-content" />
     {#if selectedPool}
-      <LiquidityChart
-        initializedTicks={selectedPool.ticks}
-        bind:lowerFR
-        bind:upperFR
-      />
+      <LiquidityChart initializedTicks={selectedPool.ticks} bind:FR />
     {:else}
       <div class="text-center h-24">
         <h1 class="pt-8">Your position will appear here</h1>
         <Icon icon="octicon:inbox-24" class="text-4xl m-auto" />
       </div>
     {/if}
-    {#if $usdcAllowance >= Number(amount)}
-      <button
-        class="btn btn-primary w-full mt-8"
-        disabled={!selectedPool || !amount}
-        on:click={(_) => {
-          broadcastTransaction(
-            "Minting liquidity tokens",
-            $sdk.POOL.attach(selectedPool.address)
-              .connect($signer)
-              .mint(
-                $signerAddress,
-                lowerFR,
-                upperFR,
-                parseUnits(amount, $usdcInfo.decimals),
-                { gasLimit: 1000000 }
-              )
-          );
-        }}>Add Liquidity</button
-      >
-    {:else}
-      <button
-        class="btn btn-primary w-full mt-8"
-        disabled={!selectedPool || !amount}
-        on:click={(_) => {
-          increaseAllowance($sdk.USDC.address, selectedPool.address);
-        }}>Approve USDC</button
-      >
-    {/if}
+    <button
+      class="btn btn-primary w-full mt-8"
+      disabled={!selectedPool || !amount}
+      on:click={(_) => {
+        broadcastTransaction(
+          "Minting liquidity tokens",
+          $sdk.POOL.attach(selectedPool.address)
+            .connect($signer)
+            .mint($signerAddress, FR, { value: parseEther(amount) })
+        );
+      }}>Add Liquidity</button
+    >
   </div>
 </div>

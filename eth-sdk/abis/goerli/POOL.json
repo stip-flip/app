@@ -36,20 +36,14 @@
       {
         "indexed": true,
         "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "indexed": true,
-        "internalType": "int24",
-        "name": "tickUpper",
+        "name": "positionTick",
         "type": "int24"
       },
       {
         "indexed": false,
-        "internalType": "int96",
+        "internalType": "uint96",
         "name": "liquidityDelta",
-        "type": "int96"
+        "type": "uint96"
       }
     ],
     "name": "Burn",
@@ -65,22 +59,16 @@
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "int24",
+        "name": "positionTick",
+        "type": "int24"
+      },
+      {
         "indexed": false,
         "internalType": "address",
         "name": "recipient",
         "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "indexed": true,
-        "internalType": "int24",
-        "name": "tickUpper",
-        "type": "int24"
       },
       {
         "indexed": false,
@@ -222,20 +210,14 @@
       {
         "indexed": true,
         "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "indexed": true,
-        "internalType": "int24",
-        "name": "tickUpper",
+        "name": "positionTick",
         "type": "int24"
       },
       {
         "indexed": false,
-        "internalType": "int96",
+        "internalType": "uint96",
         "name": "liquidityDelta",
-        "type": "int96"
+        "type": "uint96"
       }
     ],
     "name": "Mint",
@@ -283,18 +265,6 @@
       },
       {
         "indexed": false,
-        "internalType": "int80",
-        "name": "frAfter",
-        "type": "int80"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "liquidityPerTickX24",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
         "internalType": "int24",
         "name": "tick",
         "type": "int24"
@@ -327,19 +297,6 @@
     ],
     "name": "Transfer",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "COLLATERAL_RATIO",
-    "outputs": [
-      {
-        "internalType": "uint24",
-        "name": "",
-        "type": "uint24"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [],
@@ -478,17 +435,12 @@
     "inputs": [
       {
         "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickUpper",
+        "name": "positionTick",
         "type": "int24"
       },
       {
         "internalType": "uint96",
-        "name": "amount",
+        "name": "liquidityAndPnLDelta",
         "type": "uint96"
       },
       {
@@ -500,25 +452,6 @@
     "name": "burn",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "debt",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -536,11 +469,6 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint96",
-        "name": "amount",
-        "type": "uint96"
-      },
       {
         "internalType": "int80",
         "name": "frLimit",
@@ -669,63 +597,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "isLiquidatable",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "leverage",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "liquidationPrice",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "liquidities",
         "type": "uint256"
@@ -743,6 +614,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "long",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -751,12 +635,7 @@
       },
       {
         "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickUpper",
+        "name": "positionTick",
         "type": "int24"
       }
     ],
@@ -866,12 +745,7 @@
     "inputs": [
       {
         "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickUpper",
+        "name": "positionTick",
         "type": "int24"
       },
       {
@@ -886,6 +760,30 @@
         "internalType": "int256",
         "name": "",
         "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "int24",
+        "name": "positionTick",
+        "type": "int24"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "positionValue",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1042,11 +940,6 @@
     "name": "slot0",
     "outputs": [
       {
-        "internalType": "int80",
-        "name": "fr",
-        "type": "int80"
-      },
-      {
         "internalType": "uint128",
         "name": "pnl",
         "type": "uint128"
@@ -1066,7 +959,7 @@
     "outputs": [
       {
         "internalType": "uint128",
-        "name": "sharesPerTickX24",
+        "name": "tickRatio",
         "type": "uint128"
       },
       {
@@ -1076,12 +969,12 @@
       },
       {
         "internalType": "int24",
-        "name": "leftMostInitializedTick",
+        "name": "rightMostInitializedTick",
         "type": "int24"
       },
       {
         "internalType": "int24",
-        "name": "rightMostInitializedTick",
+        "name": "leftMostInitializedTick",
         "type": "int24"
       }
     ],
@@ -1172,9 +1065,9 @@
     "name": "ticks",
     "outputs": [
       {
-        "internalType": "int128",
-        "name": "netSharesPerTickX24",
-        "type": "int128"
+        "internalType": "uint128",
+        "name": "netShares",
+        "type": "uint128"
       },
       {
         "internalType": "uint128",

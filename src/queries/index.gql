@@ -17,8 +17,7 @@ query getPools($where: Pool_filter) {
 fragment PositionFragment on Position {
   id
   owner
-  tickLower
-  tickUpper
+  tick
   amount
 }
 

@@ -27,12 +27,9 @@
   let pnl = BigNumber.from("0");
 
   $: $sdk.POOL.attach(poolAddress)
-    .positionPnL(
-      selectedPosition?.tickLower,
-      selectedPosition?.tickUpper,
-      $signerAddress
-    )
-    .then((res) => (pnl = res));
+    .positionPnL(selectedPosition?.tick, $signerAddress)
+    .then((res) => (pnl = res))
+    .catch(() => {});
 
   function switchMode() {
     amount = "0";
@@ -48,8 +45,7 @@
           $sdk.POOL.attach(poolAddress)
             .connect($signer)
             .burn(
-              selectedPosition?.tickLower,
-              selectedPosition?.tickUpper,
+              selectedPosition?.tick,
               BigNumber.from(selectedPosition?.liquidity || "0")
                 .mul(parseEther(amount))
                 .div(liquidityAndPnL),
@@ -60,14 +56,9 @@
           "Minting liquidities",
           $sdk.POOL.attach(poolAddress)
             .connect($signer)
-            .mint(
-              $signerAddress,
-              selectedPosition?.tickLower,
-              selectedPosition?.tickUpper,
-              {
-                value: parseEther(amount),
-              }
-            )
+            .mint($signerAddress, selectedPosition?.tick, {
+              value: parseEther(amount),
+            })
         );
   }
 </script>

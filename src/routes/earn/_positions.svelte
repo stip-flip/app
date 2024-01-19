@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { formatUnits } from "ethers/lib/utils";
+  import { formatEther, formatUnits } from "ethers/lib/utils";
   import { usdcInfo } from "src/hooks/erc20";
   import { commify, formatAmount } from "src/lib";
   import { sdk } from "src/stores";
@@ -22,7 +22,7 @@
     <!-- head -->
     <thead>
       <tr>
-        <th class="w-1/3 lg:w-auto">FR Range</th>
+        <th class="w-1/3 lg:w-auto">Funding Rate</th>
         <th class="w-1/3 lg:w-auto">Liquidity</th>
         <th class="hidden lg:table-cell">Liquidity Active</th>
         <th class="w-1/3 lg:w-auto">PnL</th>
@@ -32,17 +32,12 @@
     <tbody>
       {#each bytes as b}
         <tr class="hover">
-          {#await $sdk.POOL.attach(poolAddress).positionPnL(positions[b].tickLower, positions[b].tickUpper, $signerAddress) then pnl}
-            <td class="w-1/3 lg:w-auto"
-              >{positions[b].tickLower / 100} to {positions[b].tickUpper /
-                100}%</td
-            >
+          {#await $sdk.POOL.attach(poolAddress).positionPnL(positions[b].tick, $signerAddress) then pnl}
+            <td class="w-1/3 lg:w-auto">{positions[b].tick / 100}%</td>
             <td class="w-1/3 lg:w-auto"
               >{commify(
-                formatAmount(
-                  BigNumber.from(positions[b].liquidity).add(pnl),
-                  $usdcInfo?.decimals || 18
-                ).toFixed(2)
+                formatEther(BigNumber.from(positions[b].liquidity).add(pnl)),
+                3
               )}
               <Icon
                 class="inline text-xl text-green-600"
@@ -53,7 +48,7 @@
               >{commify((positions[b].liquidityActive * 100).toFixed(2))} %</td
             >
             <td class="w-1/3 lg:w-auto">
-              {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))}
+              {commify(formatEther(pnl), 3)}
               <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
             </td>
             <td class="hidden lg:table-cell">
@@ -71,9 +66,8 @@
             </td>
           {:catch err}
             <!-- {err} -->
-            {positions[b].tickLower}
-            {positions[b].tickUpper}
-            {$signerAddress}
+            <!-- {positions[b].tick}
+            {$signerAddress} -->
           {/await}
         </tr>
       {/each}

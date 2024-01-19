@@ -240,7 +240,7 @@
           {#if Number(amountOut)}
             {commify(formatUnits(frAfter, 18 + 2))} %
           {:else}
-            {commify(formatUnits(selectedPool.fr, 18 + 2))} %
+            {commify(formatUnits(selectedPool.tick, 2))} %
           {/if}
         </strong>
       </div>
@@ -251,7 +251,8 @@
           <strong> Fees </strong>
           <strong>
             {commify(
-              formatUnits(feeAmount || 0, selectedToken0?.info.decimals || 0)
+              formatUnits(feeAmount || 0, selectedToken0?.info.decimals || 0),
+              3
             )} ETC
           </strong>
         </div>
@@ -312,14 +313,9 @@
             selectedToken1.info.name,
           $sdk.POOL.attach(selectedToken1.info.address)
             .connect($signer)
-            .enter(
-              parseUnits(amountOut, selectedToken0.info.decimals),
-              MAX_FR,
-              $signerAddress,
-              {
-                value: parseEther(amountOut),
-              }
-            )
+            .enter(MAX_FR, $signerAddress, {
+              value: parseEther(amountOut),
+            })
         );
       } else {
         console.log(

@@ -10,7 +10,7 @@
   export let leverage: BigNumberish;
   export let liquidationPrice: BigNumberish;
   export let pnl: BigNumberish;
-  export let fr: BigNumberish;
+  export let tick: BigNumberish;
 
   $: details = token?.name.includes("stip")
     ? "This token represent the long side of " + token?.name.split("stip-")[1]
@@ -58,7 +58,7 @@
     {commify(balance, 4)}
   </td>
   <td>
-    {Number(commify(formatUnits(fr, 18 + 2)))} %
+    {Number(commify(formatUnits(tick, 2)))} %
   </td>
   <!-- <td
     ></td

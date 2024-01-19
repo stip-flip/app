@@ -3,9 +3,11 @@
   import * as Pancake from "@sveltejs/pancake";
   import * as _ from "lodash";
 
-  export let lowerFR: number = -500;
-  export let upperFR: number = 500;
+  // export let lowerFR: number = -500;
+  export let FR: number = 500;
   export let initializedTicks: Record<number, number> = {};
+
+  const MAX_TICK = 887272;
 
   function list(initializedTicks: Record<number, number>) {
     if (!initializedTicks) return [];
@@ -17,7 +19,7 @@
     for (var i = 0; i < keys.length; i++) {
       list.push({
         index: Number(keys[i]),
-        width: keys[i + 1] ? Number(keys[i + 1]) - Number(keys[i]) : 0,
+        width: 20,
         height: (liquidityNet += Number(initializedTicks[Number(keys[i])])),
       });
     }
@@ -31,46 +33,26 @@
   $: maxLiquidity = Math.max(...ticks.map((d) => d.height));
 
   $: indexes = ticks.map((d) => d.index);
-  $: x1 = _.min(indexes) - zoom;
-  $: x2 = _.max(indexes) + zoom;
+  $: x1 = FR - zoom;
+  $: x2 = FR + zoom;
 
-  $: console.log(ticks);
+  $: console.log(ticks, maxLiquidity);
 
-  const handle_pointerdown = (e: any, cursor: "lower" | "upper" | "both") => {
+  const handle_pointerdown = (e: any, cursor: "both") => {
     if (!e.isPrimary) return;
 
     const start_x = e.clientX;
-    let start_lower = lowerFR;
-    let start_upper = upperFR;
+    let start = FR;
 
     const handle_pointermove = (e) => {
       if (!e.isPrimary) return;
 
       const d = e.clientX - start_x;
 
-      const step = 1.4;
+      const step = 2.5;
 
       const n = Math.round(d / step);
-      if (cursor == "lower") {
-        lowerFR = Math.max(
-          x1,
-          Math.min(upperFR - 50, start_lower + Math.round(n) * 10)
-        );
-      } else if (cursor == "upper") {
-        upperFR = Math.max(
-          lowerFR + 50,
-          Math.min(x2, start_upper + Math.round(n) * 10)
-        );
-      } else {
-        lowerFR = Math.max(
-          x1,
-          Math.min(upperFR - 50, start_lower + Math.round(n) * 10)
-        );
-        upperFR = Math.max(
-          lowerFR + 50,
-          Math.min(x2, start_upper + Math.round(n) * 10)
-        );
-      }
+      FR = Math.min(x2, Math.max(x1, start + Math.round(n) * 10));
     };
 
     const handle_pointerup = (e) => {
@@ -94,10 +76,10 @@
       <!-- women -->
 
       {#each ticks as t, i}
-        <!-- <Pancake.Box x1={t.index} x2={t.index + t.width} y1="0" y2={t.height}>
+        <Pancake.Box x1={t.index} x2={t.index + t.width} y1="0" y2={t.height}>
           <div class="column f" />
-        </Pancake.Box> -->
-        <Pancake.Columns
+        </Pancake.Box>
+        <!-- <Pancake.Columns
           data={Array.from({ length: t.width / 10 }, (v, j) => ({
             x: t.index + j * 10,
             y: t.height,
@@ -105,7 +87,7 @@
           width={6}
         >
           <div class="column f" />
-        </Pancake.Columns>
+        </Pancake.Columns> -->
       {/each}
       <!-- <Pancake.Grid vertical ticks={birth_years} let:value>
         <span class="x label"
@@ -122,9 +104,9 @@
           <span class="x label">{value / 100} %</span>
         </span>
       </Pancake.Grid>
-      <Pancake.Box
-        x1={lowerFR - 35}
-        x2={lowerFR + 35}
+      <!-- <Pancake.Box
+        x1={FR - 35}
+        x2={FR + 35}
         y1={-(maxLiquidity * 1) / 10}
         y2={(maxLiquidity * 11) / 10}
       >
@@ -132,16 +114,23 @@
           class="column m cursor-col-resize !w-2 z-10"
           on:pointerdown={(e) => handle_pointerdown(e, "lower")}
         />
-      </Pancake.Box>
-      <Pancake.Box x1={lowerFR + 30} x2={upperFR - 30} y1="0" y2={maxLiquidity}>
-        <div
-          class="column m !opacity-30 cursor-crosshair z-0"
-          on:pointerdown={(e) => handle_pointerdown(e, "both")}
-        />
-      </Pancake.Box>
+      </Pancake.Box> -->
       <Pancake.Box
-        x1={upperFR - 35}
-        x2={upperFR + 35}
+        x1={FR + 40}
+        x2={FR - 20}
+        y1={-(maxLiquidity * 1) / 10}
+        y2={(maxLiquidity * 11) / 10}
+      >
+        <div
+          class="column m !opacity-30 cursor-col-resize z-0 !rounded-full"
+          on:pointerdown={(e) => handle_pointerdown(e, "both")}
+        >
+          <div class="w-0 m-auto border-l border-white h-full" />
+        </div>
+      </Pancake.Box>
+      <!-- <Pancake.Box
+        x1={FR - 35}
+        x2={FR + 35}
         y1={-(maxLiquidity * 1) / 10}
         y2={(maxLiquidity * 11) / 10}
       >
@@ -149,7 +138,7 @@
           class="column m cursor-col-resize !w-2 z-10"
           on:pointerdown={(e) => handle_pointerdown(e, "upper")}
         />
-      </Pancake.Box>
+      </Pancake.Box> -->
     </Pancake.Chart>
     <div class="flex space-x-2 absolute top-0 right-0">
       <div

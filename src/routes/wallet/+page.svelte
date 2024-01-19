@@ -17,25 +17,25 @@
     leverage: BigNumberish;
     liquidationPrice: BigNumberish;
     pnl: BigNumberish;
-    fr: BigNumberish;
+    tick: BigNumberish;
   }[] = [];
   $: {
     Promise.all(
       trades?.map(async (t) => {
         const pool = $sdk.POOL.attach(t.address);
         console.log(t.address);
-        const [leverage, liquidationPrice, pnl, slot0] = await Promise.all([
+        const [leverage, liquidationPrice, pnl, slot1] = await Promise.all([
           pool.leverage($signerAddress),
           pool.liquidationPrice($signerAddress).catch((e) => console.log(e)),
           pool.traderPnL($signerAddress),
-          pool.slot0(),
+          pool.slot1(),
         ]);
         console.log(pnl);
         return {
           leverage,
           liquidationPrice,
           pnl,
-          fr: slot0?.fr,
+          tick: slot1?.tick,
         };
       })
     )
@@ -75,7 +75,7 @@
             leverage={ti.leverage}
             liquidationPrice={ti.liquidationPrice}
             pnl={ti.pnl}
-            fr={ti.fr}
+            tick={ti.tick}
           />
         {/each}
       </tbody>
