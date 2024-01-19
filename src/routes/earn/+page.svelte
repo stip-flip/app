@@ -3,9 +3,11 @@
   import { usePoolInfos, usePositions } from "src/hooks/pool";
   import Positions from "./_positions.svelte";
 
-  $: poolInfos = usePoolInfos();
+  $: poolInfos = usePoolInfos;
 
   $: positions = usePositions;
+
+  let positionExist: boolean = true;
 
   $: positionExist = $positions.reduce((acc: boolean, cur: any) => {
     return acc || Object.keys(cur).length;

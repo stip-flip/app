@@ -31,7 +31,7 @@
 
   const ZERO_ADDRESS = "0x0";
 
-  $: poolInfos = usePoolInfos();
+  $: poolInfos = usePoolInfos;
 
   $: quoteToken = useBalance;
 

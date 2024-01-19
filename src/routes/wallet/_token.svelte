@@ -24,21 +24,24 @@
     <h3 class="text-2xl text-center pb-4">{token?.name}</h3>
     <p class="text-center text-sm">{details}</p>
     <div class="border-b m-4" />
-    <div class="flex py-2 p-4">
+    <!-- <div class="flex py-2 p-4">
       <strong class="w-1/3">Leverage: </strong>
       <p>{Number(leverage) == 0 ? "--" : commify(leverage, 2)}</p>
-    </div>
-    <div class="flex py-2 p-4">
+    </div> -->
+    <!-- <div class="flex py-2 p-4">
       <strong class="w-1/3">Liquidation Price: </strong>
       <p>
         {Number(liquidationPrice) == 0
           ? "--"
           : commify(formatUnits(liquidationPrice || "0", 8))}
       </p>
-    </div>
+    </div> -->
     <div class="flex py-2 p-4">
       <strong class="w-1/3">Profit & Loss: </strong>
-      <p>{commify(formatUnits(pnl, 18))} USDC</p>
+      <p>
+        {commify(formatUnits(pnl, 18))}
+        <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
+      </p>
     </div>
     <div class="p-4 text-right">
       <a

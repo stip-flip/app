@@ -8,14 +8,12 @@
   import { signerAddress } from "svelte-ethers-store";
   import Token from "./_token.svelte";
 
-  $: poolInfos = usePoolInfos();
+  $: poolInfos = usePoolInfos;
 
   $: collateralInfo = useInfo($sdk.USDC.address);
 
   $: trades = $poolInfos.filter((pi) => (pi?.token?.balance || 0) > 0);
   let tokenInfos: {
-    leverage: BigNumberish;
-    liquidationPrice: BigNumberish;
     pnl: BigNumberish;
     tick: BigNumberish;
   }[] = [];
@@ -24,16 +22,12 @@
       trades?.map(async (t) => {
         const pool = $sdk.POOL.attach(t.address);
         console.log(t.address);
-        const [leverage, liquidationPrice, pnl, slot1] = await Promise.all([
-          pool.leverage($signerAddress),
-          pool.liquidationPrice($signerAddress).catch((e) => console.log(e)),
+        const [pnl, slot1] = await Promise.all([
           pool.traderPnL($signerAddress),
           pool.slot1(),
         ]);
         console.log(pnl);
         return {
-          leverage,
-          liquidationPrice,
           pnl,
           tick: slot1?.tick,
         };
@@ -72,8 +66,6 @@
           <Token
             token={trades[i].token?.info}
             balance={trades[i].token?.balance}
-            leverage={ti.leverage}
-            liquidationPrice={ti.liquidationPrice}
             pnl={ti.pnl}
             tick={ti.tick}
           />

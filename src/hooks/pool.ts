@@ -48,27 +48,25 @@ export const poolInfoAsync = async (
   };
 };
 
-export const usePoolInfos = (): Readable<PoolInfo[]> => {
-  return derived(
-    [ethsdk, resolvedTransactions, gqlsdk],
-    ([$ethsdk, $pt, $gqlsdk], set) => {
-      $gqlsdk?.getPools({}).then(async (res) => {
-        const poolInfos = await Promise.all(
-          res.pools.map(async (p) => {
-            if (!p.id) return Promise.resolve({} as PoolInfo);
-            return {
-              ...(await poolInfoAsync(p.id)),
-              ticks: initializedTickAsync(p),
-              token: await infosAndBalanceAsync(p.id),
-            };
-          })
-        );
-        set(poolInfos);
-      });
-    },
-    [] as PoolInfo[]
-  );
-};
+export const usePoolInfos = derived(
+  [ethsdk, resolvedTransactions, gqlsdk],
+  ([$ethsdk, $pt, $gqlsdk], set) => {
+    $gqlsdk?.getPools({}).then(async (res) => {
+      const poolInfos = await Promise.all(
+        res.pools.map(async (p) => {
+          if (!p.id) return Promise.resolve({} as PoolInfo);
+          return {
+            ...(await poolInfoAsync(p.id)),
+            ticks: initializedTickAsync(p),
+            token: await infosAndBalanceAsync(p.id),
+          };
+        })
+      );
+      set(poolInfos);
+    });
+  },
+  [] as PoolInfo[]
+);
 
 export const initializedTickAsync = (
   pool: PoolFragmentFragment
@@ -91,17 +89,28 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
   const pool = sdk.POOL.attach(poolAddress);
   const slot1 = await pool.slot1();
   console.log(positionResults.positions);
-  let positions = positionResults.positions.reduce((acc, cur) => {
+  // get all the positions pnl and value
+  const [pnls, liquidities] = await Promise.all([
+    Promise.all(
+      positionResults.positions.map((p) => pool.positionPnL(p.tick, account))
+    ),
+    Promise.all(
+      positionResults.positions.map((p) => pool.positionValue(p.tick, account))
+    ),
+  ]);
+  let positions = positionResults.positions.reduce((acc, cur, index) => {
     const byte = utils.solidityKeccak256(
       ["address", "int24"],
       [account, cur.tick]
     );
-    console.log(byte);
+    if (liquidities[index].isZero()) return acc;
+    // console.log(byte);
     return {
       ...acc,
       [byte]: {
         tick: cur.tick,
-        liquidity: cur.amount,
+        liquidity: liquidities[index],
+        pnl: pnls[index],
         liquidityActive:
           cur.tick > slot1.tick
             ? 0
@@ -116,16 +125,19 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
 };
 
 export const usePositions = derived(
-  [chainId, signerAddress, resolvedTransactions, gqlsdk],
-  ([$signer, $signerAddress, $resolvedTransactions, $gqlsdk], set) => {
-    $gqlsdk?.getPools({}).then(async (res) => {
-      console.log(res.pools);
-      const poolAddresses = res.pools.map((p) => p.id);
-      const positions = await Promise.all(
-        poolAddresses.map((a) => positionsAsync(a, $signerAddress))
-      );
-      set(positions);
-    });
+  [chainId, signerAddress, resolvedTransactions],
+  ([$signer, $signerAddress, $resolvedTransactions], set) => {
+    console.log("ohoh");
+    get(gqlsdk)
+      ?.getPools({})
+      .then(async (res) => {
+        console.log(res.pools);
+        const poolAddresses = res.pools.map((p) => p.id);
+        const positions = await Promise.all(
+          poolAddresses.map((a) => positionsAsync(a, $signerAddress))
+        );
+        set(positions);
+      });
     // Promise.all(
     //   poolAddresses.map((a) => positionsAsync(a, account || $signerAddress))
     // ).then((res) => {

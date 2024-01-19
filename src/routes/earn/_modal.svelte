@@ -1,11 +1,10 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { BigNumber } from "ethers";
-  import { formatEther, parseEther, parseUnits } from "ethers/lib/utils";
+  import { formatEther, parseEther } from "ethers/lib/utils";
   import { validator } from "src/actions/big-number-input";
   import { useBalance } from "src/hooks/balance";
   import { broadcastTransaction } from "src/hooks/blocknumber";
-  import { usdcInfo } from "src/hooks/erc20";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
@@ -15,13 +14,13 @@
 
   let mode: "withdraw" | "deposit" = "withdraw";
   let amount: string = "0";
-  $: liquidityAndPnL = BigNumber.from(selectedPosition?.liquidity || 0).add(
-    pnl
-  );
+  // $: liquidityAndPnL = BigNumber.from(selectedPosition?.liquidity || 0).add(
+  //   pnl
+  // );
 
   $: maxAmount =
     mode == "withdraw"
-      ? formatEther(liquidityAndPnL || "0")
+      ? formatEther(selectedPosition?.liquidity || "0")
       : $useBalance?.balance || 0;
 
   let pnl = BigNumber.from("0");
@@ -44,13 +43,7 @@
           "Collecting liquidities",
           $sdk.POOL.attach(poolAddress)
             .connect($signer)
-            .burn(
-              selectedPosition?.tick,
-              BigNumber.from(selectedPosition?.liquidity || "0")
-                .mul(parseEther(amount))
-                .div(liquidityAndPnL),
-              $signerAddress
-            )
+            .burn(selectedPosition?.tick, parseEther(amount), $signerAddress)
         )
       : broadcastTransaction(
           "Minting liquidities",

@@ -1,11 +1,10 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { parseEther, parseUnits } from "ethers/lib/utils";
+  import { parseEther } from "ethers/lib/utils";
   import { validator } from "src/actions/big-number-input";
   import LiquidityChart from "src/components/liquidity-chart.svelte";
-  import { broadcastTransaction } from "src/hooks/blocknumber";
   import { useBalance } from "src/hooks/balance";
-  import { increaseAllowance, usdcInfo } from "src/hooks/erc20";
+  import { broadcastTransaction } from "src/hooks/blocknumber";
   import { usePoolInfos, type PoolInfo } from "src/hooks/pool";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
@@ -15,7 +14,7 @@
 
   let selectedPool: PoolInfo;
 
-  $: pi = usePoolInfos();
+  $: pi = usePoolInfos;
 
   let FR = 500;
   // fr is actually a tick here
