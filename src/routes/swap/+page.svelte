@@ -16,10 +16,10 @@
   import { commify } from "src/lib";
   import { MAX_FR, sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
+  import Modal from "./_modal.svelte";
 
   let amountOut: string = "0";
   let amountIn: string = "0";
-  let leverage: number = 0;
 
   let selectedToken0: TokenInfoAndBalance;
   let selectedToken1: TokenInfoAndBalance;
@@ -27,7 +27,7 @@
   let enter: boolean = true;
 
   // do we want to trade in advanced mode?
-  let advanced: boolean = false;
+  // let advanced: boolean = false;
 
   const ZERO_ADDRESS = "0x0";
 
@@ -143,14 +143,16 @@
   $: console.log(pnl);
 </script>
 
-<Tokens
+<Modal
   id="selectedToken0"
+  otherTokenSelected={selectedToken1}
   {tokenInfosAndBalances}
   bind:selectedToken={selectedToken0}
 />
 
-<Tokens
+<Modal
   id="selectedToken1"
+  otherTokenSelected={selectedToken0}
   tokenInfosAndBalances={filteredSelectedToken1}
   bind:selectedToken={selectedToken1}
 />
@@ -231,7 +233,9 @@
       <div class="flex justify-between my-4 text-lg">
         <strong> Current Price </strong>
         <strong>
-          {commify(formatUnits(selectedPool.currentPrice, 6))}
+          {commify(
+            formatUnits(selectedPool.currentPrice, selectedPool.oracleDecimals)
+          )}
         </strong>
       </div>
       <div class="flex justify-between my-4 text-lg">

@@ -1,16 +1,11 @@
 <script lang="ts">
   import type { BigNumberish } from "ethers";
-  import { formatUnits, parseEther } from "ethers/lib/utils";
-  import { useInfo } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
-  import { commify } from "src/lib";
   import { sdk } from "src/stores";
   import { signerAddress } from "svelte-ethers-store";
   import Token from "./_token.svelte";
 
   $: poolInfos = usePoolInfos;
-
-  $: collateralInfo = useInfo($sdk.USDC.address);
 
   $: trades = $poolInfos.filter((pi) => (pi?.token?.balance || 0) > 0);
   let tokenInfos: {
@@ -21,12 +16,10 @@
     Promise.all(
       trades?.map(async (t) => {
         const pool = $sdk.POOL.attach(t.address);
-        console.log(t.address);
         const [pnl, slot1] = await Promise.all([
           pool.traderPnL($signerAddress),
           pool.slot1(),
         ]);
-        console.log(pnl);
         return {
           pnl,
           tick: slot1?.tick,

@@ -1,5 +1,5 @@
 import { constants, type BigNumberish, type Signer } from "ethers";
-import { formatUnits } from "ethers/lib/utils.js";
+import { formatUnits, parseEther } from "ethers/lib/utils.js";
 import { formatAmount } from "src/lib";
 import { sdk, type Network } from "src/stores";
 import { chainId, signer, signerAddress } from "svelte-ethers-store";
@@ -66,12 +66,19 @@ export const useAllowance = (
 };
 
 export const asyncBalance = async (tokenAddress: string, account?: string) => {
-  if (!tokenAddress || !(account && get(signerAddress))) return 0;
-  const token = get(sdk).USDC.attach(tokenAddress as string);
-  const aamount = token.balanceOf(account || get(signerAddress));
-  const adecimals = token.decimals();
-  const [amount, decimals] = await Promise.all([aamount, adecimals]);
-  return formatUnits(amount, decimals);
+  try {
+    if (!tokenAddress || !(account && get(signerAddress))) return 0;
+    const token = get(sdk).USDC.attach(tokenAddress as string);
+    const aamount = token.balanceOf(account || get(signerAddress));
+    // const aamount = parseEther("0");
+    const adecimals = token.decimals();
+    // const adecimals = "18";
+    const [amount, decimals] = await Promise.all([aamount, adecimals]);
+    return formatUnits(amount, decimals);
+  } catch (e) {
+    console.warn(e);
+    return 0;
+  }
 };
 
 export const useBalance = (

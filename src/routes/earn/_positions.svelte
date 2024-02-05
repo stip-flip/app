@@ -3,11 +3,12 @@
   import { formatEther } from "ethers/lib/utils";
   import { commify } from "src/lib";
   import Modal from "./_modal.svelte";
+  import type { Position } from "src/hooks/pool";
 
   export let bytes: string[];
   export let poolName: string;
   export let poolAddress: string;
-  export let positions: Record<string, any>;
+  export let positions: Record<string, Position>;
 
   let selectedPosition: any;
   $: console.log(positions);

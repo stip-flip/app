@@ -5,12 +5,13 @@
   import { validator } from "src/actions/big-number-input";
   import { useBalance } from "src/hooks/balance";
   import { broadcastTransaction } from "src/hooks/blocknumber";
+  import type { Position } from "src/hooks/pool";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
 
   export let poolAddress: string;
-  export let selectedPosition: any;
+  export let selectedPosition: Position;
 
   let mode: "withdraw" | "deposit" = "withdraw";
   let amount: string = "0";
@@ -23,27 +24,31 @@
       ? formatEther(selectedPosition?.liquidity || "0")
       : $useBalance?.balance || 0;
 
-  let pnl = BigNumber.from("0");
-
-  $: $sdk.POOL.attach(poolAddress)
-    .positionPnL(selectedPosition?.tick, $signerAddress)
-    .then((res) => (pnl = res))
-    .catch(() => {});
-
   function switchMode() {
     amount = "0";
     mode = mode == "withdraw" ? "deposit" : "withdraw";
   }
 
-  $: console.log(pnl);
-
   function action() {
+    console.log(
+      parseEther(amount)
+        .mul(selectedPosition.shares)
+        .div(selectedPosition.liquidity),
+      selectedPosition.shares,
+      selectedPosition.liquidity
+    );
     mode == "withdraw"
       ? broadcastTransaction(
           "Collecting liquidities",
           $sdk.POOL.attach(poolAddress)
             .connect($signer)
-            .burn(selectedPosition?.tick, parseEther(amount), $signerAddress)
+            .burn(
+              selectedPosition?.tick,
+              parseEther(amount)
+                .mul(selectedPosition.shares)
+                .div(selectedPosition.liquidity),
+              $signerAddress
+            )
         )
       : broadcastTransaction(
           "Minting liquidities",
