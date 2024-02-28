@@ -142,7 +142,7 @@
       disabled={!selectedPool || !amount}
       on:click={(_) => {
         broadcastTransaction(
-          "Minting liquidity tokens",
+          "Depositing liquidities",
           $sdk.POOL.attach(selectedPool.address)
             .connect($signer)
             .mint($signerAddress, FR, { value: parseEther(amount) })

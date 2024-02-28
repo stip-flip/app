@@ -1,10 +1,10 @@
-import { ethers, utils, type BigNumber } from "ethers";
+import { ethers, utils, BigNumber } from "ethers";
 import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
-import { derived, get, type Readable } from "svelte/store";
-import { pendingTransactions, resolvedTransactions } from "./blocknumber";
+import { derived, get } from "svelte/store";
+import { resolvedTransactions } from "./blocknumber";
 import { infosAndBalanceAsync, type TokenInfoAndBalance } from "./erc20";
 import type { PoolFragmentFragment } from "./subgraph";
 
@@ -12,6 +12,7 @@ export type PoolInfo = {
   address: string;
   lastPrice: BigNumber;
   oracleDecimals: number;
+  oracleAddress: string;
   currentPrice: BigNumber;
   tick: number;
   feeProtocol: number;
@@ -27,11 +28,13 @@ export const poolInfoAsync = async (
 ): Promise<PoolInfo> => {
   const sdk = get(ethsdk);
   const p = sdk.POOL.attach(address || ethers.constants.AddressZero);
+  const [oracle, slot] = await Promise.all([p.oracle(), p.oracleSlot()]);
+  const o = sdk.ORACLE.attach(oracle);
 
   const [currentPrice, oracleDecimals, slot0, slot1, slot2, fee] =
     await Promise.all([
       p.getPrice(),
-      p.oracleDecimals(),
+      o.getDecimals(slot),
       p.slot0(),
       p.slot1(),
       p.slot2(),
@@ -42,6 +45,7 @@ export const poolInfoAsync = async (
     address,
     lastPrice: slot2.lastPrice,
     oracleDecimals: oracleDecimals,
+    oracleAddress: o.address,
     currentPrice: currentPrice,
     tick: slot1.tick,
     feeProtocol: 0,
@@ -82,6 +86,7 @@ export const initializedTickAsync = (
   }, {} as Record<number, number>);
   return ticksMap;
 };
+
 export type Position = {
   tick: number;
   liquidity: BigNumber;
@@ -89,7 +94,6 @@ export type Position = {
   shares: BigNumber;
   liquidityActive: number;
 };
-
 export const positionsAsync = async (poolAddress: string, account: string) => {
   const sdk = get(ethsdk);
   if (!sdk || !poolAddress || !account) return Promise.resolve([]);
@@ -98,7 +102,7 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
   });
   const pool = sdk.POOL.attach(poolAddress);
   const slot1 = await pool.slot1();
-  console.log(positionResults.positions);
+  console.log("positionResults", poolAddress, positionResults.positions);
   // get all the positions pnl and value
   const [pnls, liquidities, positionInfos] = await Promise.all([
     Promise.all(
@@ -108,16 +112,23 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
       positionResults.positions.map((p) => pool.positionValue(p.tick, account))
     ),
     Promise.all(
-      positionResults.positions.map((p) => pool.position(p.tick, account))
+      positionResults.positions.map((p) =>
+        pool.positions(
+          ethers.utils.solidityKeccak256(
+            ["address", "int24"],
+            [account, p.tick]
+          )
+        )
+      )
     ),
   ]);
+
   let positions = positionResults.positions.reduce((acc: any, cur, index) => {
     const byte = utils.solidityKeccak256(
       ["address", "int24"],
       [account, cur.tick]
     );
     if (liquidities[index].isZero()) return acc;
-    // console.log(byte);
     return {
       ...acc,
       [byte]: {
@@ -140,15 +151,15 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
 export const usePositions = derived(
   [chainId, signerAddress, resolvedTransactions],
   ([$signer, $signerAddress, $resolvedTransactions], set) => {
-    console.log("ohoh");
     get(gqlsdk)
       ?.getPools({})
       .then(async (res) => {
-        console.log(res.pools);
+        console.log("pools", res.pools);
         const poolAddresses = res.pools.map((p) => p.id);
         const positions = await Promise.all(
           poolAddresses.map((a) => positionsAsync(a, $signerAddress))
         );
+        console.log(positions);
         set(positions);
       });
     // Promise.all(
@@ -158,4 +169,117 @@ export const usePositions = derived(
     // });
   },
   [] as Record<string, Position>[]
+);
+
+export type Claim = {
+  id: string;
+  amount: BigNumber; // the amount of the claim if we know it, 0 otherwise (in kind)
+  estimatedAmount: BigNumber; // the estimated amount of the claim (in kind)
+  exit: Boolean;
+  claimable: Boolean;
+  canceled: Boolean;
+  owner: string;
+  pool: string;
+  round: number;
+  settlementTimestamp: number; // the timestamp for the next settlement
+};
+
+const asyncClaims = async (
+  poolAddress: string,
+  account: string
+): Promise<Claim[]> => {
+  const gql = get(gqlsdk);
+  const eth = get(ethsdk);
+  if (!gql || !poolAddress || !account) return Promise.resolve([]);
+
+  const pool = eth.POOL.attach(poolAddress);
+  const [claimQuery, oracleAddress, slot] = await Promise.all([
+    gql.getClaims({
+      where: { pool: poolAddress, owner: account, claimed: false },
+    }),
+    pool.oracle(),
+    pool.oracleSlot(),
+  ]);
+  // const claimQuery = await gql.getClaims({
+  //   where: { pool: poolAddress, owner: account, claimed: false },
+  // });
+  // const oracleAddress = await pool.oracle();
+  // const slot = await pool.oracleSlot();
+  // extract the useful values from the Oracle
+  const oracle = eth.ORACLE.attach(oracleAddress);
+  console.log("claimQuery", claimQuery);
+  return await Promise.all(
+    claimQuery.claims.map(async (c) => {
+      const [
+        initialized,
+        frequency,
+        roundDuration,
+        lastRound,
+        currentPrice,
+        lastPrice,
+        nextPrice,
+        sharesValue,
+        oracleDecimals,
+      ] = await Promise.all([
+        oracle.initialized(),
+        oracle.frequency(),
+        oracle.roundDuration(),
+        oracle.getLastRound(),
+        oracle["lastPrice(uint8)"](slot),
+        oracle["lastPrice(uint64,uint8)"](c.round, slot),
+        oracle.nextPrice(c.round, slot).catch((e) => parseEther("0")),
+        pool.sharesValueWithRebalance(c.amount),
+        oracle.getDecimals(slot),
+      ]);
+      console.log(
+        oracleDecimals,
+        c.amount,
+        lastRound.toNumber(),
+        c.round,
+        currentPrice.toString(),
+        nextPrice.toString()
+      );
+      return {
+        id: c.id,
+        amount: c.exit
+          ? c.amount
+          : BigNumber.from(c.amount)
+              .div(Math.pow(10, oracleDecimals))
+              .mul(nextPrice),
+        estimatedAmount: c.exit
+          ? c.amount
+          : BigNumber.from(c.amount)
+              .mul(Math.pow(10, oracleDecimals))
+              .div(nextPrice.isZero() ? lastPrice : nextPrice),
+        claimable: !nextPrice.isZero(),
+        canceled: lastRound.toNumber() > Number(c.round) + 1,
+        owner: c.owner,
+        pool: poolAddress,
+        round: c.round,
+        exit: c.exit,
+        settlementTimestamp:
+          lastRound.toNumber() <= Number(c.round)
+            ? initialized.toNumber() +
+              (Number(c.round) + 1) * frequency +
+              roundDuration
+            : 0,
+      };
+    })
+  );
+};
+
+export const useClaims = derived(
+  [chainId, signerAddress, resolvedTransactions],
+  ([$chainId, $signerAddress, $resolvedTransactions], set) => {
+    get(gqlsdk)
+      ?.getPools({})
+      .then(async (res) => {
+        const poolAddresses = res.pools.map((p) => p.id);
+        const claims = await Promise.all(
+          poolAddresses.map((a) => asyncClaims(a, $signerAddress))
+        );
+        set(claims);
+      });
+  },
+  [] as Claim[][]
 );

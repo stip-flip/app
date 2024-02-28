@@ -11,7 +11,7 @@ export const useBalance: Readable<TokenInfoAndBalance> = derived(
     $provider?.getBalance($signerAddress).then((res) => {
       set({
         info: {
-          name: "Ether",
+          name: "Ether Classic",
           icon: "mdi:ethereum",
           address: "0x0",
           symbol: "ETC",

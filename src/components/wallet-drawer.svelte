@@ -70,11 +70,11 @@
 
         <button
           class="btn btn-outline px-4 flex space-x-2 items-center"
-          class:btn-active={$chainId == 5}
-          on:click={(_) => switchNetwork(5)}
+          class:btn-active={$chainId == 63}
+          on:click={(_) => switchNetwork(63)}
         >
           <Icon icon="mdi:ethereum" class="text-green text-2xl" />
-          <span>Ethereum Goerli</span>
+          <span>Ethereum Mordor</span>
         </button>
       {/if}
     </ul>

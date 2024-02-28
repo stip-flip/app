@@ -26,3 +26,18 @@ query getPositions($where: Position_filter) {
     ...PositionFragment
   }
 }
+
+fragment ClaimFragment on Claim {
+  id
+  owner
+  exit
+  amount
+  round
+  claimed
+}
+
+query getClaims($where: Claim_filter) {
+  claims(where: $where) {
+    ...ClaimFragment
+  }
+}

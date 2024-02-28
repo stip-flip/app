@@ -17,6 +17,7 @@
   import { MAX_FR, sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Modal from "./_modal.svelte";
+  import Icon from "@iconify/svelte";
 
   let amountOut: string = "0";
   let amountIn: string = "0";
@@ -163,7 +164,7 @@
   <h1 class="text-3xl">Swap</h1>
 </div>
 <div
-  class="lg:w-1/3 m-auto mt-4 mb-24 lg:border-2 rounded-lg p-4 lg:bg-gradient"
+  class="lg:w-1/3 m-auto mt-4 mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient"
 >
   <div
     class="w-full flex space-x-4 mt-8 p-8 bg-slate-200 rounded-3xl shadow-lg"
@@ -236,6 +237,7 @@
           {commify(
             formatUnits(selectedPool.currentPrice, selectedPool.oracleDecimals)
           )}
+          <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
         </strong>
       </div>
       <div class="flex justify-between my-4 text-lg">
@@ -310,6 +312,7 @@
     class="btn btn-primary btn-lg w-full mt-8"
     on:click={(_) => {
       if (enter) {
+        console.log($sdk.TRADER_PERIPHERY.address);
         broadcastTransaction(
           "Swapping " +
             selectedToken0.info.name +
@@ -317,15 +320,11 @@
             selectedToken1.info.name,
           $sdk.POOL.attach(selectedToken1.info.address)
             .connect($signer)
-            .enter(MAX_FR, $signerAddress, {
+            .enter($signerAddress, $sdk.TRADER_PERIPHERY.address, {
               value: parseEther(amountOut),
             })
         );
       } else {
-        console.log(
-          "amountOut",
-          amountOut == String(selectedToken0?.balance) ? "0" : amountOut
-        );
         broadcastTransaction(
           "Swapping " +
             selectedToken0.info.name +
@@ -338,7 +337,8 @@
                 amountOut == String(selectedToken0?.balance) ? "0" : amountOut, // if amountOut is max, set to 0
                 selectedToken0.info.decimals
               ),
-              $signerAddress
+              $signerAddress,
+              $sdk.TRADER_PERIPHERY.address
             )
         );
       }

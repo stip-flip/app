@@ -55,6 +55,56 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      }
+    ],
+    "name": "ClaimedEnter",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      }
+    ],
+    "name": "ClaimedExit",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "owner",
         "type": "address"
       },
@@ -109,6 +159,80 @@
       }
     ],
     "name": "CollectProtocol",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "claimer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint96",
+        "name": "amountSent",
+        "type": "uint96"
+      }
+    ],
+    "name": "Entered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "claimer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "sharesLocked",
+        "type": "uint128"
+      }
+    ],
+    "name": "Exited",
     "type": "event"
   },
   {
@@ -457,6 +581,57 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "enterees",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "exitees",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint96",
+        "name": "claimFee",
+        "type": "uint96"
+      }
+    ],
+    "name": "claimAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64[]",
+        "name": "entries_",
+        "type": "uint64[]"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "exits_",
+        "type": "uint64[]"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      }
+    ],
+    "name": "claimAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint64",
         "name": "round",
         "type": "uint64"
@@ -468,6 +643,24 @@
       }
     ],
     "name": "claimEnter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      }
+    ],
+    "name": "claimEnterFrom",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -506,59 +699,19 @@
   {
     "inputs": [
       {
-        "internalType": "int80",
-        "name": "frLimit",
-        "type": "int80"
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
       },
       {
         "internalType": "address",
-        "name": "recipient",
+        "name": "claimer",
         "type": "address"
       }
     ],
     "name": "enter",
-    "outputs": [
-      {
-        "internalType": "uint96",
-        "name": "liquidityMoved",
-        "type": "uint96"
-      },
-      {
-        "internalType": "uint256",
-        "name": "feeAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "oracleSwapFees",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "entries",
-    "outputs": [
-      {
-        "internalType": "uint128",
-        "name": "",
-        "type": "uint128"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -572,51 +725,16 @@
         "internalType": "address",
         "name": "recipient",
         "type": "address"
-      }
-    ],
-    "name": "exit",
-    "outputs": [
-      {
-        "internalType": "uint96",
-        "name": "liquidityMoved",
-        "type": "uint96"
-      },
-      {
-        "internalType": "uint96",
-        "name": "swapFees",
-        "type": "uint96"
-      },
-      {
-        "internalType": "uint96",
-        "name": "oracleSwapFees",
-        "type": "uint96"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
       },
       {
         "internalType": "address",
-        "name": "",
+        "name": "claimer",
         "type": "address"
       }
     ],
-    "name": "exits",
-    "outputs": [
-      {
-        "internalType": "uint96",
-        "name": "",
-        "type": "uint96"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "exit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -723,25 +841,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "nonces",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "oracle",
     "outputs": [
@@ -749,19 +848,6 @@
         "internalType": "contract IOracle",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "oracleDecimals",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
       }
     ],
     "stateMutability": "view",
@@ -801,42 +887,6 @@
         "internalType": "uint96",
         "name": "",
         "type": "uint96"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "int24",
-        "name": "positionTick",
-        "type": "int24"
-      },
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "position",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint128",
-            "name": "shares",
-            "type": "uint128"
-          },
-          {
-            "internalType": "uint128",
-            "name": "sharesRatio",
-            "type": "uint128"
-          }
-        ],
-        "internalType": "struct Position.Info",
-        "name": "",
-        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -925,19 +975,26 @@
     "name": "previewEnter",
     "outputs": [
       {
-        "internalType": "int256",
-        "name": "swapOut",
-        "type": "int256"
-      },
-      {
-        "internalType": "uint96",
-        "name": "feeAmount",
-        "type": "uint96"
-      },
-      {
-        "internalType": "int80",
-        "name": "frAfter",
-        "type": "int80"
+        "components": [
+          {
+            "internalType": "int256",
+            "name": "swapOut",
+            "type": "int256"
+          },
+          {
+            "internalType": "uint96",
+            "name": "feeAmount",
+            "type": "uint96"
+          },
+          {
+            "internalType": "int80",
+            "name": "frAfter",
+            "type": "int80"
+          }
+        ],
+        "internalType": "struct Enter.PreviewResult",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -954,19 +1011,26 @@
     "name": "previewExit",
     "outputs": [
       {
-        "internalType": "int256",
-        "name": "swapOut",
-        "type": "int256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "feeAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "int80",
-        "name": "frAfter",
-        "type": "int80"
+        "components": [
+          {
+            "internalType": "int256",
+            "name": "swapOut",
+            "type": "int256"
+          },
+          {
+            "internalType": "uint96",
+            "name": "feeAmount",
+            "type": "uint96"
+          },
+          {
+            "internalType": "int80",
+            "name": "frAfter",
+            "type": "int80"
+          }
+        ],
+        "internalType": "struct Exit.PreviewResult",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -1006,12 +1070,12 @@
         "type": "uint256"
       }
     ],
-    "name": "sharesValue",
+    "name": "sharesValueWithRebalance",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint96",
         "name": "",
-        "type": "uint256"
+        "type": "uint96"
       }
     ],
     "stateMutability": "view",
@@ -1173,25 +1237,6 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "traderPnL",
-    "outputs": [
-      {
-        "internalType": "int256",
-        "name": "",
-        "type": "int256"
       }
     ],
     "stateMutability": "view",

@@ -5,7 +5,7 @@
   import type { TokenInfo } from "src/hooks/erc20";
   import { addToken, commify } from "src/lib";
 
-  export let token: TokenInfo;
+  export let token: TokenInfo | undefined;
   export let balance: BigNumberish = "0";
   export let leverage: BigNumberish;
   export let liquidationPrice: BigNumberish;
@@ -39,7 +39,7 @@
     <div class="flex py-2 p-4">
       <strong class="w-1/3">Profit & Loss: </strong>
       <p>
-        {commify(formatUnits(pnl, 18))}
+        {commify(formatUnits(pnl | 0, 18))}
         <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
       </p>
     </div>
@@ -61,7 +61,7 @@
     {commify(balance, 4)}
   </td>
   <td>
-    {Number(commify(formatUnits(tick, 2)))} %
+    {Number(commify(formatUnits(tick || 0, 2)))} %
   </td>
   <!-- <td
     ></td

@@ -36,23 +36,67 @@
       {
         "indexed": true,
         "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "indexed": true,
-        "internalType": "int24",
-        "name": "tickUpper",
+        "name": "positionTick",
         "type": "int24"
       },
       {
         "indexed": false,
-        "internalType": "int96",
+        "internalType": "uint96",
         "name": "liquidityDelta",
-        "type": "int96"
+        "type": "uint96"
       }
     ],
     "name": "Burn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      }
+    ],
+    "name": "ClaimedEnter",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      }
+    ],
+    "name": "ClaimedExit",
     "type": "event"
   },
   {
@@ -65,22 +109,16 @@
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "int24",
+        "name": "positionTick",
+        "type": "int24"
+      },
+      {
         "indexed": false,
         "internalType": "address",
         "name": "recipient",
         "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "indexed": true,
-        "internalType": "int24",
-        "name": "tickUpper",
-        "type": "int24"
       },
       {
         "indexed": false,
@@ -121,6 +159,80 @@
       }
     ],
     "name": "CollectProtocol",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "claimer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint96",
+        "name": "amountSent",
+        "type": "uint96"
+      }
+    ],
+    "name": "Entered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "claimer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "sharesLocked",
+        "type": "uint128"
+      }
+    ],
+    "name": "Exited",
     "type": "event"
   },
   {
@@ -222,20 +334,14 @@
       {
         "indexed": true,
         "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "indexed": true,
-        "internalType": "int24",
-        "name": "tickUpper",
+        "name": "positionTick",
         "type": "int24"
       },
       {
         "indexed": false,
-        "internalType": "int96",
+        "internalType": "uint96",
         "name": "liquidityDelta",
-        "type": "int96"
+        "type": "uint96"
       }
     ],
     "name": "Mint",
@@ -283,18 +389,6 @@
       },
       {
         "indexed": false,
-        "internalType": "int80",
-        "name": "frAfter",
-        "type": "int80"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "liquidityPerTickX24",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
         "internalType": "int24",
         "name": "tick",
         "type": "int24"
@@ -327,19 +421,6 @@
     ],
     "name": "Transfer",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "COLLATERAL_RATIO",
-    "outputs": [
-      {
-        "internalType": "uint24",
-        "name": "",
-        "type": "uint24"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [],
@@ -478,18 +559,13 @@
     "inputs": [
       {
         "internalType": "int24",
-        "name": "tickLower",
+        "name": "positionTick",
         "type": "int24"
       },
       {
-        "internalType": "int24",
-        "name": "tickUpper",
-        "type": "int24"
-      },
-      {
-        "internalType": "uint96",
-        "name": "amount",
-        "type": "uint96"
+        "internalType": "uint128",
+        "name": "shares_",
+        "type": "uint128"
       },
       {
         "internalType": "address",
@@ -505,20 +581,106 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "enterees",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "exitees",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint96",
+        "name": "claimFee",
+        "type": "uint96"
+      }
+    ],
+    "name": "claimAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64[]",
+        "name": "entries_",
+        "type": "uint64[]"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "exits_",
+        "type": "uint64[]"
+      },
+      {
         "internalType": "address",
-        "name": "",
+        "name": "recipient",
         "type": "address"
       }
     ],
-    "name": "debt",
-    "outputs": [
+    "name": "claimAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
       }
     ],
-    "stateMutability": "view",
+    "name": "claimEnter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      }
+    ],
+    "name": "claimEnterFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "round",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      }
+    ],
+    "name": "claimExit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -537,39 +699,18 @@
   {
     "inputs": [
       {
-        "internalType": "uint96",
-        "name": "amount",
-        "type": "uint96"
-      },
-      {
-        "internalType": "int80",
-        "name": "frLimit",
-        "type": "int80"
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
       },
       {
         "internalType": "address",
-        "name": "recipient",
+        "name": "claimer",
         "type": "address"
       }
     ],
     "name": "enter",
-    "outputs": [
-      {
-        "internalType": "uint96",
-        "name": "liquidityMoved",
-        "type": "uint96"
-      },
-      {
-        "internalType": "uint256",
-        "name": "feeAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "oracleSwapFees",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -584,26 +725,15 @@
         "internalType": "address",
         "name": "recipient",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "claimer",
+        "type": "address"
       }
     ],
     "name": "exit",
-    "outputs": [
-      {
-        "internalType": "uint96",
-        "name": "liquidityMoved",
-        "type": "uint96"
-      },
-      {
-        "internalType": "uint256",
-        "name": "swapFees",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "oracleSwapFees",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -667,14 +797,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "isLiquidatable",
+    "inputs": [],
+    "name": "long",
     "outputs": [
       {
         "internalType": "bool",
@@ -689,74 +813,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "leverage",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "liquidationPrice",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "liquidities",
-        "type": "uint256"
-      }
-    ],
-    "name": "liquidityToShares",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "recipient",
         "type": "address"
       },
       {
         "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickUpper",
+        "name": "positionTick",
         "type": "int24"
       }
     ],
@@ -779,25 +841,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "nonces",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "oracle",
     "outputs": [
@@ -805,19 +848,6 @@
         "internalType": "contract IOracle",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "oracleBounty",
-    "outputs": [
-      {
-        "internalType": "uint96",
-        "name": "",
-        "type": "uint96"
       }
     ],
     "stateMutability": "view",
@@ -866,12 +896,7 @@
     "inputs": [
       {
         "internalType": "int24",
-        "name": "tickLower",
-        "type": "int24"
-      },
-      {
-        "internalType": "int24",
-        "name": "tickUpper",
+        "name": "positionTick",
         "type": "int24"
       },
       {
@@ -894,6 +919,30 @@
   {
     "inputs": [
       {
+        "internalType": "int24",
+        "name": "positionTick",
+        "type": "int24"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "positionValue",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
@@ -902,14 +951,14 @@
     "name": "positions",
     "outputs": [
       {
-        "internalType": "uint96",
-        "name": "liquidity",
-        "type": "uint96"
+        "internalType": "uint128",
+        "name": "shares",
+        "type": "uint128"
       },
       {
-        "internalType": "int80",
-        "name": "feeGrowthInsideLast",
-        "type": "int80"
+        "internalType": "uint128",
+        "name": "sharesRatio",
+        "type": "uint128"
       }
     ],
     "stateMutability": "view",
@@ -926,19 +975,26 @@
     "name": "previewEnter",
     "outputs": [
       {
-        "internalType": "int256",
-        "name": "swapOut",
-        "type": "int256"
-      },
-      {
-        "internalType": "uint96",
-        "name": "feeAmount",
-        "type": "uint96"
-      },
-      {
-        "internalType": "int80",
-        "name": "frAfter",
-        "type": "int80"
+        "components": [
+          {
+            "internalType": "int256",
+            "name": "swapOut",
+            "type": "int256"
+          },
+          {
+            "internalType": "uint96",
+            "name": "feeAmount",
+            "type": "uint96"
+          },
+          {
+            "internalType": "int80",
+            "name": "frAfter",
+            "type": "int80"
+          }
+        ],
+        "internalType": "struct Enter.PreviewResult",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -955,19 +1011,26 @@
     "name": "previewExit",
     "outputs": [
       {
-        "internalType": "int256",
-        "name": "swapOut",
-        "type": "int256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "feeAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "int80",
-        "name": "frAfter",
-        "type": "int80"
+        "components": [
+          {
+            "internalType": "int256",
+            "name": "swapOut",
+            "type": "int256"
+          },
+          {
+            "internalType": "uint96",
+            "name": "feeAmount",
+            "type": "uint96"
+          },
+          {
+            "internalType": "int80",
+            "name": "frAfter",
+            "type": "int80"
+          }
+        ],
+        "internalType": "struct Exit.PreviewResult",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -1007,31 +1070,12 @@
         "type": "uint256"
       }
     ],
-    "name": "sharesToLiquidity",
+    "name": "sharesValueWithRebalance",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint96",
         "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "shares_",
-        "type": "uint256"
-      }
-    ],
-    "name": "sharesValue",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "type": "uint96"
       }
     ],
     "stateMutability": "view",
@@ -1042,14 +1086,9 @@
     "name": "slot0",
     "outputs": [
       {
-        "internalType": "int80",
-        "name": "fr",
-        "type": "int80"
-      },
-      {
-        "internalType": "int80",
+        "internalType": "uint128",
         "name": "pnl",
-        "type": "int80"
+        "type": "uint128"
       },
       {
         "internalType": "uint96",
@@ -1066,7 +1105,7 @@
     "outputs": [
       {
         "internalType": "uint128",
-        "name": "liquidityPerTickX24",
+        "name": "tickRatio",
         "type": "uint128"
       },
       {
@@ -1076,12 +1115,12 @@
       },
       {
         "internalType": "int24",
-        "name": "leftMostInitializedTick",
+        "name": "rightMostInitializedTick",
         "type": "int24"
       },
       {
         "internalType": "int24",
-        "name": "rightMostInitializedTick",
+        "name": "leftMostInitializedTick",
         "type": "int24"
       }
     ],
@@ -1093,9 +1132,9 @@
     "name": "slot2",
     "outputs": [
       {
-        "internalType": "uint96",
-        "name": "traderLiquidities",
-        "type": "uint96"
+        "internalType": "uint128",
+        "name": "totalShares",
+        "type": "uint128"
       },
       {
         "internalType": "uint64",
@@ -1172,24 +1211,19 @@
     "name": "ticks",
     "outputs": [
       {
-        "internalType": "int128",
-        "name": "netLiquidityPerTickX24",
-        "type": "int128"
+        "internalType": "uint128",
+        "name": "netShares",
+        "type": "uint128"
       },
       {
-        "internalType": "int80",
-        "name": "feeGrowthInside",
-        "type": "int80"
+        "internalType": "uint128",
+        "name": "ratioInside",
+        "type": "uint128"
       },
       {
-        "internalType": "int80",
-        "name": "feeGrowthOutside",
-        "type": "int80"
-      },
-      {
-        "internalType": "bool",
-        "name": "initialized",
-        "type": "bool"
+        "internalType": "uint128",
+        "name": "ratioOutside",
+        "type": "uint128"
       }
     ],
     "stateMutability": "view",
@@ -1203,25 +1237,6 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "traderPnL",
-    "outputs": [
-      {
-        "internalType": "int256",
-        "name": "",
-        "type": "int256"
       }
     ],
     "stateMutability": "view",

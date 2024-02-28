@@ -10,8 +10,11 @@
   let positionExist: boolean = true;
 
   $: positionExist = $positions.reduce((acc: boolean, cur: any) => {
-    return acc || Object.keys(cur).length;
+    return acc || !!Object.keys(cur).length;
   }, false);
+
+  $: console.log("positionExist", positionExist);
+  $: console.log("positions", $positions);
 </script>
 
 <div
@@ -21,7 +24,7 @@
   <a class="btn float-right" href="earn/add">+ New Position</a>
 </div>
 <div
-  class="lg:border-2 rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 m-auto mt-4 overflow-scroll"
+  class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 m-auto mt-4 overflow-scroll"
   style="max-height: 60vh"
 >
   {#if !positionExist}

@@ -1,34 +1,26 @@
 import { derived, get, writable, type Readable } from "svelte/store";
 import { chainId, signerAddress } from "svelte-ethers-store";
-import { provider, type Network } from "src/stores/provider";
 import type { ContractTransaction } from "ethers";
+import { provider } from "src/stores";
 
 export const useBlockNumber = (defaultChainId?: number): Readable<number> => {
   const result = derived(
-    [chainId],
-    ([$chainId], set) => {
-      provider($chainId as Network)
-        .getBlockNumber()
-        .then((res: any) => set(res));
+    [chainId, provider],
+    ([$chainId, $provider], set) => {
+      $provider.getBlockNumber().then((res: any) => set(res));
     },
     0
   );
   const blockNumber = derived(
-    [chainId, result],
-    ([$chainId, $result], set) => {
+    [chainId, provider, result],
+    ([$chainId, $provider, $result], set) => {
       set($result as number);
       function handleNewBlock(block: number) {
         set(block);
       }
-      provider($chainId as Network, defaultChainId as Network)?.addListener(
-        "block",
-        handleNewBlock
-      );
+      $provider?.addListener("block", handleNewBlock);
       return function () {
-        provider(
-          $chainId as Network,
-          defaultChainId as Network
-        )?.removeListener("block", handleNewBlock);
+        $provider?.removeListener("block", handleNewBlock);
       };
     },
     0
@@ -37,29 +29,29 @@ export const useBlockNumber = (defaultChainId?: number): Readable<number> => {
 };
 
 export const bn = derived(
-  [chainId],
-  ([$chainId], set) => {
+  [chainId, provider],
+  ([$chainId, $provider], set) => {
     // set($result.data as number);
     function handleNewBlock(block: number) {
       set(block);
     }
-    provider($chainId as Network)?.addListener("block", handleNewBlock);
+    $provider?.addListener("block", handleNewBlock);
     return function () {
-      provider($chainId as Network)?.removeListener("block", handleNewBlock);
+      $provider?.removeListener("block", handleNewBlock);
     };
   },
   0
 );
 
 export const transactions = derived(
-  [chainId, signerAddress],
-  ([$chainId, $signerAddress], set) => {
+  [chainId, provider, signerAddress],
+  ([$chainId, $provider, $signerAddress], set) => {
     function handleFilter() {
       const lastPending =
         get(pendingTransactions).length &&
         get(pendingTransactions)[get(pendingTransactions).length - 1];
       if (lastPending) {
-        provider($chainId as Network)
+        $provider
           .getTransactionReceipt(lastPending.hash)
           .then((res) => {
             console.log("transaction RES\n", res);
@@ -81,7 +73,7 @@ export const transactions = derived(
       }
       // provider($chainId as Network).getTransactionCount($signerAddress);
     }
-    provider($chainId as Network)?.addListener("block", handleFilter);
+    $provider?.addListener("block", handleFilter);
   },
   0
 );

@@ -28,7 +28,8 @@
         ? t.info.name.toLowerCase().includes(search.toLowerCase())
         : true
     )
-    .filter((t) => t.info.address != selectedToken?.info.address);
+    .filter((t) => t.info.address != selectedToken?.info.address)
+    .slice(0, 10);
 
   let checkbox: HTMLInputElement;
 </script>
