@@ -19,6 +19,11 @@ export type Scalars = {
   Int8: any;
 };
 
+export enum Aggregation_Interval {
+  Day = 'day',
+  Hour = 'hour'
+}
+
 export type BlockChangedFilter = {
   number_gte: Scalars['Int'];
 };
@@ -33,6 +38,7 @@ export type Claim = {
   __typename?: 'Claim';
   amount: Scalars['BigInt'];
   claimed?: Maybe<Scalars['Boolean']>;
+  claimer?: Maybe<Scalars['Bytes']>;
   exit: Scalars['Boolean'];
   id: Scalars['ID'];
   owner: Scalars['Bytes'];
@@ -56,6 +62,16 @@ export type Claim_Filter = {
   claimed_in?: InputMaybe<Array<Scalars['Boolean']>>;
   claimed_not?: InputMaybe<Scalars['Boolean']>;
   claimed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  claimer?: InputMaybe<Scalars['Bytes']>;
+  claimer_contains?: InputMaybe<Scalars['Bytes']>;
+  claimer_gt?: InputMaybe<Scalars['Bytes']>;
+  claimer_gte?: InputMaybe<Scalars['Bytes']>;
+  claimer_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  claimer_lt?: InputMaybe<Scalars['Bytes']>;
+  claimer_lte?: InputMaybe<Scalars['Bytes']>;
+  claimer_not?: InputMaybe<Scalars['Bytes']>;
+  claimer_not_contains?: InputMaybe<Scalars['Bytes']>;
+  claimer_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   exit?: InputMaybe<Scalars['Boolean']>;
   exit_in?: InputMaybe<Array<Scalars['Boolean']>>;
   exit_not?: InputMaybe<Scalars['Boolean']>;
@@ -113,6 +129,7 @@ export type Claim_Filter = {
 export enum Claim_OrderBy {
   Amount = 'amount',
   Claimed = 'claimed',
+  Claimer = 'claimer',
   Exit = 'exit',
   Id = 'id',
   Owner = 'owner',
