@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from "@iconify/svelte";
   import { BigNumber } from "ethers";
   import {
     formatEther,
@@ -8,20 +9,19 @@
   } from "ethers/lib/utils";
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
-  import Tokens from "src/components/tokens.svelte";
   import { useBalance } from "src/hooks/balance";
   import { broadcastTransaction } from "src/hooks/blocknumber";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
   import { commify } from "src/lib";
-  import { MAX_FR, sdk } from "src/stores";
+  import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Modal from "./_modal.svelte";
-  import Icon from "@iconify/svelte";
 
   let amountOut: string = "0";
   let amountIn: string = "0";
 
+  let selectToken: "token0" | "token1";
   let selectedToken0: TokenInfoAndBalance;
   let selectedToken1: TokenInfoAndBalance;
 
@@ -145,18 +145,22 @@
 </script>
 
 <Modal
-  id="selectedToken0"
-  otherTokenSelected={selectedToken1}
-  {tokenInfosAndBalances}
-  bind:selectedToken={selectedToken0}
+  id="selectToken"
+  otherTokenSelected={selectToken == "token0" ? selectedToken1 : selectedToken0}
+  tokenInfosAndBalances={selectToken == "token0"
+    ? tokenInfosAndBalances
+    : filteredSelectedToken1}
+  bind:selectToken
+  bind:selectedToken0
+  bind:selectedToken1
 />
 
-<Modal
+<!-- <Modal
   id="selectedToken1"
   otherTokenSelected={selectedToken0}
   tokenInfosAndBalances={filteredSelectedToken1}
   bind:selectedToken={selectedToken1}
-/>
+/> -->
 
 <div
   class="px-8 lg:px-0 lg:w-1/3 m-auto mt-20 lg:mt-40 flex justify-between items-center"
@@ -183,9 +187,12 @@
     />
     <div class="w-1/2">
       <label
-        for="selectedToken0"
+        for="selectToken"
         tabindex="0"
         class="w-full btn rounded-full shadow-lg"
+        on:click={(_) => {
+          selectToken = "token0";
+        }}
         >{selectedToken0 != undefined
           ? selectedToken0?.info.name || "NUSD"
           : "Select a token"}</label
@@ -220,9 +227,12 @@
     />
     <div class="dropdown w-1/2">
       <label
-        for="selectedToken1"
+        for="selectToken"
         tabindex="0"
         class="w-full btn rounded-full shadow-lg"
+        on:click={(_) => {
+          selectToken = "token1";
+        }}
         >{selectedToken1 != undefined
           ? selectedToken1?.info.name || "NUSD"
           : "Select a token"}</label

@@ -7,9 +7,13 @@
 
   export let id: string;
   export let otherTokenSelected: TokenInfoAndBalance;
-  export let selectedToken: TokenInfoAndBalance;
+  export let selectToken: "token0" | "token1";
+  export let selectedToken0: TokenInfoAndBalance;
+  export let selectedToken1: TokenInfoAndBalance;
 
   export let tokenInfosAndBalances: TokenInfoAndBalance[];
+
+  $: selectedToken = selectToken == "token0" ? selectedToken0 : selectedToken1;
 
   let terms: string[] = [];
   let search: string = "";
@@ -36,29 +40,27 @@
 
 <input type="checkbox" {id} class="modal-toggle" bind:this={checkbox} />
 <label for={id} class="modal cursor-pointer">
-  <div class="lg:w-1/3">
-    <label class="lg:bg-opaque lg:rounded-xl lg:shadow-lg block p-4" for="">
+  <label class="lg:w-1/2">
+    <div class="lg:bg-opaque lg:rounded-xl border block p-8" for="">
       <div class="flex justify-around">
         <label
-          for="selectedToken0"
           tabindex="0"
           class="text-lg px-4 cursor-pointer border-primary"
-          class:font-bold={id == "selectedToken0"}
-          class:border-b-2={id == "selectedToken0"}
+          class:font-bold={selectToken == "token0"}
+          class:border-b-2={selectToken == "token0"}
           on:click={(_) => {
-            checkbox.click();
+            selectToken = "token0";
           }}
         >
           Token 1
         </label>
         <label
-          for="selectedToken1"
           tabindex="0"
           class="text-lg px-4 cursor-pointer border-primary"
-          class:font-bold={id == "selectedToken1"}
-          class:border-b-2={id == "selectedToken1"}
+          class:font-bold={selectToken == "token1"}
+          class:border-b-2={selectToken == "token1"}
           on:click={(_) => {
-            checkbox.click();
+            selectToken = "token1";
           }}
         >
           Token 2
@@ -85,8 +87,9 @@
               class="rounded-t-2xl px-6 pb-6 pt-2 cursor-pointer bg-base-100 -mt-4 -mx-4 border-b"
               transition:slide|local
               on:click={(_) => {
-                selectedToken = undefined;
-                // checkbox.click();
+                selectToken == "token0"
+                  ? (selectedToken0 = undefined)
+                  : (selectedToken1 = undefined);
               }}
             >
               <strong class="capitalize">
@@ -100,8 +103,9 @@
               class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200"
               transition:slide|local
               on:click={(_) => {
-                selectedToken = token;
-                console.log(checkbox);
+                selectToken == "token0"
+                  ? (selectedToken0 = token)
+                  : (selectedToken1 = token);
                 // checkbox.click();
               }}
             >
@@ -115,12 +119,11 @@
           {/each}
         </ul>
       </div>
-    </label>
+    </div>
     <div class="flex py-4 justify-between lg:w-full">
       <button
         class="btn !bg-opaque w-2/5 border border-base-100"
         on:click={(_) => {
-          console.log("cliiick");
           checkbox.click();
         }}>Close</button
       >
@@ -129,23 +132,23 @@
           transition:scale|local
           class="btn btn-primary no-animation w-2/5">Token 2</button
         > -->
-        {#if id == "selectedToken0"}
-          <label
-            for="selectedToken1"
-            tabindex="0"
+        {#if selectToken == "token0"}
+          <div
             transition:scale|local
             class="btn btn-primary no-animation w-2/5"
-            on:click={(_) => checkbox.click()}>Token 2</label
+            on:click={(_) => (selectToken = "token1")}
           >
-        {:else if id == "selectedToken1"}
+            Token 2
+          </div>
+        {:else if selectToken == "token1"}
           {#if !otherTokenSelected}
             <label
-              for="selectedToken0"
-              tabindex="0"
               transition:scale|local
               class="btn btn-primary no-animation w-2/5"
               on:click={(_) => {
-                checkbox.click();
+                !otherTokenSelected
+                  ? (selectToken = "token0")
+                  : checkbox.click();
               }}>{!otherTokenSelected ? "Token 1" : "Done"}</label
             >
           {:else}
@@ -160,5 +163,5 @@
       {/if}
       <!-- <buton class="btn btn-primary flex-grow">Token 2</buton> -->
     </div>
-  </div>
+  </label>
 </label>

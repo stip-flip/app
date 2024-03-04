@@ -8,7 +8,7 @@
     id="SvgjsG1240"
     transform="matrix(0.8547047672287809,0,0,0.8547047672287809,113.72647127319618,81.62436052828465)"
     fill="#ffffff"
-    class="fill-primary"
+    class="fill-base-content"
   >
     <path
       xmlns="http://www.w3.org/2000/svg"

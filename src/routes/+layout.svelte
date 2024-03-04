@@ -73,92 +73,98 @@
   <input id="app-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col">
     <!-- Navbar -->
-    <div class="w-full justify-between navbar bg-transparent fixed">
-      {#if homepage}
-        <div class="flex items-center w-content h-8 mr-8">
-          <a href={"/"} class="flex items-center">
-            <Logo />
-          </a>
-        </div>
-        <div class="w-1/4 flex justify-end items-center space-x-4">
-          <a
-            href="https://sf-doc.vercel.app"
-            class="btn-info font-bold p-1 px-2 rounded-md">Documentation</a
+    <div class="fixed w-full p-4 z-10">
+      <div class="justify-between navbar">
+        {#if homepage}
+          <div class="flex items-center w-content mr-8"></div>
+          <div
+            class="lg:w-2/3 flex justify-between items-center rounded-full shadow-sm shadow-base-content bg-opacity-50 lg:bg-gradient min-h-0 px-4"
           >
-          <a
-            href="/swap"
-            class="btn-primary font-bold p-1 px-2 rounded-md flex lg:space-x-1"
-            ><span class="hidden lg:inline-block">Launch</span>
-            <span>App</span></a
-          >
-          <Theme />
-        </div>
-      {:else}
-        <div class="flex items-center w-content h-8 mr-8 w-1/5">
-          <div class="flex-none lg:hidden">
-            <label
-              for="app-drawer"
-              aria-label="open sidebar"
-              class="btn btn-square btn-ghost"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                class="inline-block w-6 h-6 stroke-primary"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                /></svg
+            <a href={"/"} class="flex w-1/2 items-center">
+              <Logo />
+            </a>
+            <div class="flex space-x-4">
+              <a
+                href="https://sf-doc.vercel.app"
+                class="p-1 rounded-md text-base-content hover:text-primary"
+                >Documentation</a
               >
-            </label>
+              <a
+                href="/swap"
+                class="p-1 rounded-md flex lg:space-x-1 hover:text-primary"
+              >
+                <span>App</span></a
+              >
+            </div>
           </div>
-          <a href={"/"} class="items-center hidden lg:flex">
-            <Logo />
-          </a>
-        </div>
-        <div class="flex-none hidden lg:block">
-          <ul class="menu menu-horizontal bg-gradient rounded-full p-0">
-            <!-- Navbar menu content here -->
-            <li>
-              <a
-                href="/wallet"
-                class="rounded-full"
-                class:shadow-lg={$page.route?.id?.startsWith("/wallet")}
-                >Wallet</a
-              >
-            </li>
-            <li>
-              <a
-                href={`/swap/`}
-                class="rounded-full"
-                class:shadow-lg={$page.route?.id?.startsWith("/swap")}>Swap</a
-              >
-            </li>
-            <li>
-              <a
-                href={`/earn/`}
-                class="rounded-full"
-                class:shadow-lg={$page.route?.id?.startsWith("/earn")}>Earn</a
-              >
-            </li>
-            <li>
-              <a
-                href={`/faucet/`}
-                class="rounded-full"
-                class:shadow-lg={$page.route?.id?.startsWith("/faucet")}
-                >Faucet</a
-              >
-            </li>
-          </ul>
-        </div>
-        <div class="space-x-4 lg:w-1/5 flex justify-end">
-          <Wallet />
           <Theme />
-        </div>
-      {/if}
+        {:else}
+          <div class="flex items-center w-content h-8 mr-8 w-1/5">
+            <div class="flex-none lg:hidden">
+              <label
+                for="app-drawer"
+                aria-label="open sidebar"
+                class="btn btn-square btn-ghost"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  class="inline-block w-6 h-6 stroke-primary"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  /></svg
+                >
+              </label>
+            </div>
+            <a href={"/"} class="items-center hidden lg:flex">
+              <Logo />
+            </a>
+          </div>
+          <div class="flex-none hidden lg:block">
+            <ul class="menu menu-horizontal bg-gradient rounded-full p-0">
+              <!-- Navbar menu content here -->
+              <li>
+                <a
+                  href="/wallet"
+                  class="rounded-full"
+                  class:shadow-lg={$page.route?.id?.startsWith("/wallet")}
+                  >Wallet</a
+                >
+              </li>
+              <li>
+                <a
+                  href={`/swap/`}
+                  class="rounded-full"
+                  class:shadow-lg={$page.route?.id?.startsWith("/swap")}>Swap</a
+                >
+              </li>
+              <li>
+                <a
+                  href={`/earn/`}
+                  class="rounded-full"
+                  class:shadow-lg={$page.route?.id?.startsWith("/earn")}>Earn</a
+                >
+              </li>
+              <li>
+                <a
+                  href={`/faucet/`}
+                  class="rounded-full"
+                  class:shadow-lg={$page.route?.id?.startsWith("/faucet")}
+                  >Faucet</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="space-x-4 lg:w-1/5 flex justify-end">
+            <Wallet />
+            <Theme />
+          </div>
+        {/if}
+      </div>
     </div>
     <div class="root h-screen">
       <slot />
