@@ -1,10 +1,10 @@
 import { constants, type BigNumberish, type Signer } from "ethers";
-import { formatUnits, parseEther } from "ethers/lib/utils.js";
+import { formatEther, formatUnits, parseEther } from "ethers/lib/utils.js";
 import { formatAmount } from "src/lib";
 import { sdk, type Network } from "src/stores";
 import { chainId, signer, signerAddress } from "svelte-ethers-store";
 import { derived, get, type Readable } from "svelte/store";
-import { bn, broadcastTransaction } from "./blocknumber";
+import { bn, broadcastTransaction, resolvedTransactions } from "./blocknumber";
 
 export interface TokenInfo {
   icon?: string;
@@ -12,22 +12,25 @@ export interface TokenInfo {
   address: string;
   symbol: string;
   decimals: number;
+  description?: string;
 }
 
 export const extractERC20Info = async (address: string): Promise<TokenInfo> => {
   try {
-    const erc20 = get(sdk).USDC.attach(address);
+    const erc20 = get(sdk).POOL.attach(address);
 
-    const [name, symbol, decimals] = await Promise.all([
+    const [name, symbol, decimals, description] = await Promise.all([
       erc20.name(),
       erc20.symbol(),
       erc20.decimals(),
+      erc20.description().catch(() => ""), // description is NOT part of the ERC20 standard
     ]);
     return {
       name,
       address,
       symbol,
       decimals,
+      description,
     };
   } catch (e) {
     console.warn(e);
@@ -68,6 +71,8 @@ export const useAllowance = (
 export const asyncBalance = async (tokenAddress: string, account?: string) => {
   try {
     if (!tokenAddress || !(account && get(signerAddress))) return 0;
+    if (tokenAddress == "0x0")
+      return formatEther(await get(signer).getBalance());
     const token = get(sdk).USDC.attach(tokenAddress as string);
     const aamount = token.balanceOf(account || get(signerAddress));
     // const aamount = parseEther("0");
@@ -86,8 +91,8 @@ export const useBalance = (
   account?: string | undefined | null
 ): Readable<number> => {
   return derived(
-    [bn, signerAddress, chainId],
-    ([$bn, $signerAddress, $chainId], set) => {
+    [bn, signerAddress, resolvedTransactions, chainId],
+    ([$bn, $signerAddress, $resolvedTransactions, $chainId], set) => {
       asyncBalance(tokenAddress, account || $signerAddress).then((res) => {
         set(Number(res));
       });

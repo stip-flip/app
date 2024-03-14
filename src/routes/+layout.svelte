@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "driver.js/dist/driver.css";
   import "../app.css";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
@@ -12,6 +13,8 @@
   import { chainId } from "svelte-ethers-store";
   import { fly } from "svelte/transition";
   import { quintOut } from "svelte/easing";
+  import Icon from "@iconify/svelte";
+  import { appState } from "src/stores";
   let theme = "dark";
   let toggled = false;
 
@@ -125,13 +128,15 @@
             </a>
           </div>
           <div class="flex-none hidden lg:block">
-            <ul class="menu menu-horizontal bg-gradient rounded-full p-0">
+            <ul
+              class="menu menu-horizontal bg-gradient rounded-full shadow-sm shadow-base-content bg-opacity-50 lg:bg-gradient p-0"
+            >
               <!-- Navbar menu content here -->
               <li>
                 <a
                   href="/wallet"
                   class="rounded-full"
-                  class:shadow-lg={$page.route?.id?.startsWith("/wallet")}
+                  class:text-primary={$page.route?.id?.startsWith("/wallet")}
                   >Wallet</a
                 >
               </li>
@@ -139,21 +144,23 @@
                 <a
                   href={`/swap/`}
                   class="rounded-full"
-                  class:shadow-lg={$page.route?.id?.startsWith("/swap")}>Swap</a
+                  class:text-primary={$page.route?.id?.startsWith("/swap")}
+                  >Swap</a
                 >
               </li>
               <li>
                 <a
                   href={`/earn/`}
                   class="rounded-full"
-                  class:shadow-lg={$page.route?.id?.startsWith("/earn")}>Earn</a
+                  class:text-primary={$page.route?.id?.startsWith("/earn")}
+                  >Earn</a
                 >
               </li>
               <li>
                 <a
                   href={`/faucet/`}
                   class="rounded-full"
-                  class:shadow-lg={$page.route?.id?.startsWith("/faucet")}
+                  class:text-primary={$page.route?.id?.startsWith("/faucet")}
                   >Faucet</a
                 >
               </li>
@@ -166,9 +173,20 @@
         {/if}
       </div>
     </div>
-    <div class="root h-screen">
+    <div class="root h-screen" class:bg={homepage}>
       <slot />
     </div>
+    {#if !homepage}
+      <!-- Help Button -->
+      <div class="fixed bottom-0 right-0 flex items-center p-4">
+        <Icon icon="mdi:help" class="h-12 w-12 p-2 text-primary"></Icon>
+        <input
+          type="checkbox"
+          class="toggle toggle-primary"
+          bind:checked={$appState.help}
+        />
+      </div>
+    {/if}
   </div>
   <div class="drawer-side">
     <label

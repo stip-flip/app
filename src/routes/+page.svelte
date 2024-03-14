@@ -9,7 +9,7 @@
   class="text-center lg:text-start lg:mt-0 lg:bottom-48 lg:left-28 h-full flex justify-between flex-col"
 >
   <div class="" />
-  <div class="text-center h-1/2">
+  <div class="text-center h-1/3">
     <h1 class="text-7xl font-bold">Stip & Flip</h1>
     <h2 class="mt-8 text-4xl text-base-content">
       Decentralised & Permissionless <strong class="text-primary"
@@ -30,7 +30,7 @@
   </div>
 </div>
 
-<div class="bg px-8">
+<div class="bg-2 px-8">
   <Parallax sections={2}>
     <ParallaxLayer
       rate={1.5}

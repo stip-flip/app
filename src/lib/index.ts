@@ -1,6 +1,7 @@
 import { BigNumber, type BigNumberish } from "ethers";
 
 import { commify as com } from "ethers/lib/utils.js";
+import { networkInfos } from "src/stores";
 import { defaultEvmStores } from "svelte-ethers-store";
 
 // format an ERC20 amount as a number with 2 decimals
@@ -20,11 +21,32 @@ export const commify = (value: any, decimals?: number) => {
   return com((Number(value) || 0).toFixed(decimals || 2));
 };
 
-export async function switchNetwork(chainId: number) {
-  await window?.ethereum?.request({
-    method: "wallet_switchEthereumChain",
-    params: [{ chainId: "0x" + chainId.toString(16) }],
-  });
+export async function switchNetwork(chainId: number): boolean {
+  try {
+    await window?.ethereum?.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x" + chainId.toString(16) }],
+    });
+    return true;
+  } catch {
+    await window?.ethereum?.request({
+      method: "wallet_addEthereumChain",
+      params: [
+        {
+          chainId: "0x" + chainId.toString(16),
+          chainName: networkInfos[chainId]?.name,
+          nativeCurrency: {
+            name: networkInfos[chainId]?.name,
+            symbol: networkInfos[chainId]?.symbol,
+            decimals: 18,
+          },
+          rpcUrls: [networkInfos[chainId]?.rpc],
+          blockExplorerUrls: [networkInfos[chainId]?.explorer],
+        },
+      ],
+    });
+    return false;
+  }
 }
 
 export async function addToken(

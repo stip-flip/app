@@ -12,9 +12,10 @@
 
   let amount: string;
 
-  let selectedPool: PoolInfo;
+  let selectedAddress: string;
 
   $: pi = usePoolInfos;
+  $: selectedPool = $pi?.find((p) => p.address == selectedAddress);
 
   let FR = 500;
   // fr is actually a tick here
@@ -56,7 +57,8 @@
           >
             {#each $pi || [] as p}
               <li>
-                <a on:click={(_) => (selectedPool = p)}>{p.token?.info?.name}</a
+                <a on:click={(_) => (selectedAddress = p.address)}
+                  >{p.token?.info?.name}</a
                 >
               </li>
             {/each}
@@ -143,7 +145,7 @@
       on:click={(_) => {
         broadcastTransaction(
           "Depositing liquidities",
-          $sdk.POOL.attach(selectedPool.address)
+          $sdk.POOL.attach(selectedPool?.address || "")
             .connect($signer)
             .mint($signerAddress, FR, { value: parseEther(amount) })
         );

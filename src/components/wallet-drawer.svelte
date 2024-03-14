@@ -1,19 +1,14 @@
 <script lang="ts">
-  import {
-    chainId,
-    connected,
-    defaultEvmStores,
-    signerAddress,
-  } from "svelte-ethers-store";
+  import { chainId, signerAddress } from "svelte-ethers-store";
 
   import { renderSVGIcon } from "@codingwithmanny/blockies";
-  import { disconnectMetamask, switchNetwork } from "src/lib";
   import Icon from "@iconify/svelte";
+  import { disconnectMetamask, switchNetwork } from "src/lib";
 
   let overlay: HTMLInputElement;
 </script>
 
-<div class="drawer drawer-end absolute z-10">
+<div class="drawer drawer-end absolute z-20">
   <input
     id="wallet-drawer"
     type="checkbox"
@@ -23,13 +18,13 @@
   <div class="drawer-content">
     <!-- Page content here -->
   </div>
-  <div class="drawer-side z-10">
+  <div class="drawer-side z-20">
     <label
       for="wallet-drawer"
       aria-label="close sidebar"
       class="drawer-overlay"
     />
-    <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content z-10">
+    <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content z-20">
       <!-- Sidebar content here -->
       {#if $signerAddress}
         <div class="flex justify-between mt-8">

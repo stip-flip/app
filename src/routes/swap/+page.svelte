@@ -10,8 +10,12 @@
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
   import { useBalance } from "src/hooks/balance";
-  import { broadcastTransaction } from "src/hooks/blocknumber";
+  import {
+    broadcastTransaction,
+    resolvedTransactions,
+  } from "src/hooks/blocknumber";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
+  import { useBalance as useBal } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
@@ -27,8 +31,7 @@
 
   let enter: boolean = true;
 
-  // do we want to trade in advanced mode?
-  // let advanced: boolean = false;
+  let automate: boolean = true;
 
   const ZERO_ADDRESS = "0x0";
 
@@ -36,10 +39,7 @@
 
   $: quoteToken = useBalance;
 
-  // $: allowance = useAllowance(
-  //   selectedToken0?.info.address,
-  //   selectedPool?.address || ""
-  // );
+  $: balance0 = useBal(selectedToken0?.info.address, $signerAddress);
 
   $: tokenInfosAndBalances = [
     ...($poolInfos || []).map((pi) => pi.token),
@@ -82,6 +82,7 @@
       pi.address == selectedToken0?.info.address ||
       pi.address == selectedToken1?.info.address
   );
+
   let feeAmount: BigNumber = BigNumber.from(0);
   let frAfter: BigNumber = BigNumber.from(0);
   let pnl: BigNumber = BigNumber.from(0);
@@ -91,10 +92,10 @@
       debOut();
     }
   }
+
   // debounce outgoing amount
   const debOut = _.debounce(async () => {
     if (selectedToken0 && selectedToken1 && selectedPool) {
-      // console.log("debounce");
       if (enter) {
         const enter = await $sdk?.POOL.attach(
           selectedPool?.address
@@ -155,13 +156,6 @@
   bind:selectedToken1
 />
 
-<!-- <Modal
-  id="selectedToken1"
-  otherTokenSelected={selectedToken0}
-  tokenInfosAndBalances={filteredSelectedToken1}
-  bind:selectedToken={selectedToken1}
-/> -->
-
 <div
   class="px-8 lg:px-0 lg:w-1/3 m-auto mt-20 lg:mt-40 flex justify-between items-center"
 >
@@ -182,13 +176,14 @@
       on:input={debOut}
       use:validator={{
         value: amountOut,
-        max: selectedToken0?.balance || 0,
+        max: $balance0 || 0,
       }}
     />
     <div class="w-1/2">
       <label
         for="selectToken"
         tabindex="0"
+        id="token0"
         class="w-full btn rounded-full shadow-lg"
         on:click={(_) => {
           selectToken = "token0";
@@ -199,13 +194,13 @@
       >
       {#if selectedToken0 != undefined}
         <div
-          class="absolute ml-4 text-sm text-primary-content cursor-pointer"
+          class="absolute ml-4 text-sm text-primary cursor-pointer"
           on:click={(_) => {
-            amountOut = String(selectedToken0?.balance || 0);
+            amountOut = String($balance0 || 0);
             debOut();
           }}
         >
-          Balance: {commify(selectedToken0?.balance, 4)}
+          Balance: {commify($balance0, 4)}
         </div>
       {/if}
     </div>
@@ -241,7 +236,7 @@
   </div>
   {#if selectedPool}
     <div class="px-4">
-      <div class="flex justify-between my-4 text-lg">
+      <div id="current-price" class="flex justify-between my-4 text-lg">
         <strong> Current Price </strong>
         <strong>
           {commify(
@@ -250,7 +245,7 @@
           <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
         </strong>
       </div>
-      <div class="flex justify-between my-4 text-lg">
+      <div id="funding-rate" class="flex justify-between my-4 text-lg">
         <strong>Funding Rate</strong>
         <strong>
           {#if Number(amountOut)}
@@ -260,6 +255,18 @@
           {/if}
         </strong>
       </div>
+      <div id="settlement" class="flex justify-between my-4 text-lg">
+        <strong>Next Settlement</strong>
+        <strong> 00:00:00 </strong>
+      </div>
+      <div id="automate" class="flex justify-between my-4 text-lg">
+        <strong>Automate</strong>
+        <input
+          type="checkbox"
+          class="toggle toggle-primary"
+          bind:checked={automate}
+        />
+      </div>
     </div>
     {#if Number(amountOut)}
       <div class="px-4">
@@ -268,61 +275,20 @@
           <strong>
             {commify(
               formatUnits(feeAmount || 0, selectedToken0?.info.decimals || 0),
-              3
-            )} ETC
+              4
+            )}
+            <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
           </strong>
         </div>
-        <!-- {#if !enter && selectedToken0?.info.address && selectedToken1?.info.address}
-          <div class="flex justify-between my-4 text-lg">
-            <strong> PNL </strong>
-            <strong>
-              {commify(formatUnits(pnl, selectedToken1?.info.decimals || 18))}
-            </strong>
-          </div>
-        {/if} -->
       </div>
     {/if}
   {/if}
-  <!-- {#if enter && selectedToken1}
-    <div class="collapse">
-      <input type="checkbox" />
-      <div class="collapse-title flex flex-col w-full border-opacity-50">
-        <div class="divider">Advanced</div>
-      </div>
-      <div class=" text-xl font-medium">Advanced</div>
-      <div class="collapse-content">
-        <div class="flex justify-between text-lg">
-          <strong> Leverage </strong>
-          <strong>
-            {leverage}x
-          </strong>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="10"
-          bind:value={leverage}
-          on:input={debOut}
-          class="range"
-          step="2"
-        />
-        <div class="w-full flex justify-between text-xs px-2">
-          <span>|</span>
-          <span>|</span>
-          <span>|</span>
-          <span>|</span>
-          <span>|</span>
-          <span>|</span>
-        </div>
-      </div>
-    </div>
-  {/if} -->
 
   <button
+    id="swap"
     class="btn btn-primary btn-lg w-full mt-8"
     on:click={(_) => {
       if (enter) {
-        console.log($sdk.TRADER_PERIPHERY.address);
         broadcastTransaction(
           "Swapping " +
             selectedToken0.info.name +
@@ -330,9 +296,13 @@
             selectedToken1.info.name,
           $sdk.POOL.attach(selectedToken1.info.address)
             .connect($signer)
-            .enter($signerAddress, $sdk.TRADER_PERIPHERY.address, {
-              value: parseEther(amountOut),
-            })
+            .enter(
+              $signerAddress,
+              automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress,
+              {
+                value: parseEther(amountOut),
+              }
+            )
         );
       } else {
         broadcastTransaction(
@@ -348,7 +318,7 @@
                 selectedToken0.info.decimals
               ),
               $signerAddress,
-              $sdk.TRADER_PERIPHERY.address
+              automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress
             )
         );
       }

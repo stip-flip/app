@@ -1,12 +1,10 @@
 <script lang="ts">
-  import type { BigNumberish } from "ethers";
+  import Icon from "@iconify/svelte";
   import { useClaims, usePoolInfos } from "src/hooks/pool";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
-  import Token from "./_token.svelte";
   import Otc from "./_otc.svelte";
-  import { broadcastTransaction } from "src/hooks/blocknumber";
-  import Icon from "@iconify/svelte";
+  import Token from "./_token.svelte";
 
   $: poolInfos = usePoolInfos;
   $: claimInfos = useClaims;
@@ -16,26 +14,6 @@
   $: claims = $claimInfos;
 
   $: claimExists = claims?.some((c) => !!c.length);
-
-  let tokenInfos: {
-    tick: BigNumberish;
-  }[] = [];
-  $: {
-    Promise.all(
-      trades?.map(async (t) => {
-        const pool = $sdk.POOL.attach(t.address);
-        const [slot1] = await Promise.all([
-          // pool.traderPnL($signerAddress),
-          pool.slot1(),
-        ]);
-        return {
-          tick: slot1?.tick,
-        };
-      })
-    )
-      .then((res) => (tokenInfos = res))
-      .catch((e) => console.error(e));
-  }
 
   $: console.log("claims", claims);
 </script>
@@ -57,6 +35,7 @@
             <tr>
               <th class="text-left w-1/3">Token</th>
               <th class="text-left">Estimated Amount</th>
+              <th class="text-left">Automated</th>
               <th class="text-right px-8">Next Settlement</th>
               <!-- <th /> -->
             </tr>
@@ -87,18 +66,20 @@
               const exits = (claim || [])
                 .filter((c) => c.exit && c.claimable)
                 .map((c) => c.round);
-              console.log(enters, exits);
-              broadcastTransaction(
-                "Claiming all OTC trades",
-                $sdk.POOL.attach(poolAddress)
-                  .connect($signer)
-                  ["claimAll(uint64[],uint64[],address)"](
-                    enters,
-                    exits,
-                    $signerAddress
-                  )
-              );
-            }}>claim all</button
+
+              console.log("claim all", poolAddress);
+              // broadcastTransaction(
+              //   "Claiming all OTC trades",
+              $sdk.POOL.attach(poolAddress)
+                .connect($signer)
+                [
+                  "claimAll(uint64[],uint64[],address)"
+                ](enters, exits, $signerAddress, { gasLimit: 1000000 });
+              // );
+            }}
+            >{claim.filter((c) => !!c.claimable).length > 1
+              ? "claim all"
+              : "claim"}</button
           >
         </div>
       {/if}
@@ -109,7 +90,7 @@
   <div
     class:mt-20={!claimExists}
     class:lg:mt-40={!claimExists}
-    class="px-8 lg:px-0 lg:w-1/2 m-auto flex justify-between items-center"
+    class="px-8 lg:px-0 lg:w-1/2 lg:mt-4 m-auto flex justify-between items-center"
   >
     <h1 class="text-3xl">Wallet</h1>
   </div>
@@ -127,12 +108,12 @@
         </tr>
       </thead>
       <tbody>
-        {#each tokenInfos as ti, i}
+        {#each trades as t, i}
           <Token
-            token={trades[i].token?.info}
-            balance={trades[i].token?.balance}
-            pnl={ti.pnl}
-            tick={ti.tick}
+            token={t.token?.info}
+            balance={t.token?.balance}
+            pnl={0}
+            tick={t.tick}
           />
         {/each}
       </tbody>

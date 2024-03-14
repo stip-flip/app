@@ -16,21 +16,21 @@ export type Scalars = {
   BigDecimal: any;
   BigInt: number;
   Bytes: any;
-  Int8: any;
 };
 
-export enum Aggregation_Interval {
-  Day = 'day',
-  Hour = 'hour'
-}
-
-export type BlockChangedFilter = {
-  number_gte: Scalars['Int'];
-};
-
+/** The block at which the query should be executed. */
 export type Block_Height = {
+  /** Value containing a block hash */
   hash?: InputMaybe<Scalars['Bytes']>;
+  /** Value containing a block number */
   number?: InputMaybe<Scalars['Int']>;
+  /**
+   * Value containing the minimum block number.
+   * In the case of `number_gte`, the query will be executed on the latest block only if
+   * the subgraph has progressed to or past the minimum block number.
+   * Defaults to the latest block when omitted.
+   *
+   */
   number_gte?: InputMaybe<Scalars['Int']>;
 };
 
@@ -47,8 +47,6 @@ export type Claim = {
 };
 
 export type Claim_Filter = {
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
   amount?: InputMaybe<Scalars['BigInt']>;
   amount_gt?: InputMaybe<Scalars['BigInt']>;
   amount_gte?: InputMaybe<Scalars['BigInt']>;
@@ -57,18 +55,13 @@ export type Claim_Filter = {
   amount_lte?: InputMaybe<Scalars['BigInt']>;
   amount_not?: InputMaybe<Scalars['BigInt']>;
   amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  and?: InputMaybe<Array<InputMaybe<Claim_Filter>>>;
   claimed?: InputMaybe<Scalars['Boolean']>;
   claimed_in?: InputMaybe<Array<Scalars['Boolean']>>;
   claimed_not?: InputMaybe<Scalars['Boolean']>;
   claimed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   claimer?: InputMaybe<Scalars['Bytes']>;
   claimer_contains?: InputMaybe<Scalars['Bytes']>;
-  claimer_gt?: InputMaybe<Scalars['Bytes']>;
-  claimer_gte?: InputMaybe<Scalars['Bytes']>;
   claimer_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  claimer_lt?: InputMaybe<Scalars['Bytes']>;
-  claimer_lte?: InputMaybe<Scalars['Bytes']>;
   claimer_not?: InputMaybe<Scalars['Bytes']>;
   claimer_not_contains?: InputMaybe<Scalars['Bytes']>;
   claimer_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
@@ -84,19 +77,13 @@ export type Claim_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  or?: InputMaybe<Array<InputMaybe<Claim_Filter>>>;
   owner?: InputMaybe<Scalars['Bytes']>;
   owner_contains?: InputMaybe<Scalars['Bytes']>;
-  owner_gt?: InputMaybe<Scalars['Bytes']>;
-  owner_gte?: InputMaybe<Scalars['Bytes']>;
   owner_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  owner_lt?: InputMaybe<Scalars['Bytes']>;
-  owner_lte?: InputMaybe<Scalars['Bytes']>;
   owner_not?: InputMaybe<Scalars['Bytes']>;
   owner_not_contains?: InputMaybe<Scalars['Bytes']>;
   owner_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   pool?: InputMaybe<Scalars['String']>;
-  pool_?: InputMaybe<Pool_Filter>;
   pool_contains?: InputMaybe<Scalars['String']>;
   pool_contains_nocase?: InputMaybe<Scalars['String']>;
   pool_ends_with?: InputMaybe<Scalars['String']>;
@@ -134,8 +121,6 @@ export enum Claim_OrderBy {
   Id = 'id',
   Owner = 'owner',
   Pool = 'pool',
-  PoolId = 'pool__id',
-  PoolLong = 'pool__long',
   Round = 'round'
 }
 
@@ -149,6 +134,7 @@ export type Pool = {
   __typename?: 'Pool';
   id: Scalars['ID'];
   long: Scalars['Boolean'];
+  oracle: Scalars['Bytes'];
   ticks: Array<Tick>;
 };
 
@@ -162,9 +148,6 @@ export type PoolTicksArgs = {
 };
 
 export type Pool_Filter = {
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<Pool_Filter>>>;
   id?: InputMaybe<Scalars['ID']>;
   id_gt?: InputMaybe<Scalars['ID']>;
   id_gte?: InputMaybe<Scalars['ID']>;
@@ -177,13 +160,18 @@ export type Pool_Filter = {
   long_in?: InputMaybe<Array<Scalars['Boolean']>>;
   long_not?: InputMaybe<Scalars['Boolean']>;
   long_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  or?: InputMaybe<Array<InputMaybe<Pool_Filter>>>;
-  ticks_?: InputMaybe<Tick_Filter>;
+  oracle?: InputMaybe<Scalars['Bytes']>;
+  oracle_contains?: InputMaybe<Scalars['Bytes']>;
+  oracle_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  oracle_not?: InputMaybe<Scalars['Bytes']>;
+  oracle_not_contains?: InputMaybe<Scalars['Bytes']>;
+  oracle_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
 export enum Pool_OrderBy {
   Id = 'id',
   Long = 'long',
+  Oracle = 'oracle',
   Ticks = 'ticks'
 }
 
@@ -197,8 +185,6 @@ export type Position = {
 };
 
 export type Position_Filter = {
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
   amount?: InputMaybe<Scalars['BigInt']>;
   amount_gt?: InputMaybe<Scalars['BigInt']>;
   amount_gte?: InputMaybe<Scalars['BigInt']>;
@@ -207,7 +193,6 @@ export type Position_Filter = {
   amount_lte?: InputMaybe<Scalars['BigInt']>;
   amount_not?: InputMaybe<Scalars['BigInt']>;
   amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  and?: InputMaybe<Array<InputMaybe<Position_Filter>>>;
   id?: InputMaybe<Scalars['ID']>;
   id_gt?: InputMaybe<Scalars['ID']>;
   id_gte?: InputMaybe<Scalars['ID']>;
@@ -216,19 +201,13 @@ export type Position_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  or?: InputMaybe<Array<InputMaybe<Position_Filter>>>;
   owner?: InputMaybe<Scalars['Bytes']>;
   owner_contains?: InputMaybe<Scalars['Bytes']>;
-  owner_gt?: InputMaybe<Scalars['Bytes']>;
-  owner_gte?: InputMaybe<Scalars['Bytes']>;
   owner_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  owner_lt?: InputMaybe<Scalars['Bytes']>;
-  owner_lte?: InputMaybe<Scalars['Bytes']>;
   owner_not?: InputMaybe<Scalars['Bytes']>;
   owner_not_contains?: InputMaybe<Scalars['Bytes']>;
   owner_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   pool?: InputMaybe<Scalars['String']>;
-  pool_?: InputMaybe<Pool_Filter>;
   pool_contains?: InputMaybe<Scalars['String']>;
   pool_contains_nocase?: InputMaybe<Scalars['String']>;
   pool_ends_with?: InputMaybe<Scalars['String']>;
@@ -263,8 +242,6 @@ export enum Position_OrderBy {
   Id = 'id',
   Owner = 'owner',
   Pool = 'pool',
-  PoolId = 'pool__id',
-  PoolLong = 'pool__long',
   Tick = 'tick'
 }
 
@@ -459,9 +436,6 @@ export type Tick = {
 };
 
 export type Tick_Filter = {
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<Tick_Filter>>>;
   id?: InputMaybe<Scalars['ID']>;
   id_gt?: InputMaybe<Scalars['ID']>;
   id_gte?: InputMaybe<Scalars['ID']>;
@@ -486,9 +460,7 @@ export type Tick_Filter = {
   liquidity_lte?: InputMaybe<Scalars['BigInt']>;
   liquidity_not?: InputMaybe<Scalars['BigInt']>;
   liquidity_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  or?: InputMaybe<Array<InputMaybe<Tick_Filter>>>;
   pool?: InputMaybe<Scalars['String']>;
-  pool_?: InputMaybe<Pool_Filter>;
   pool_contains?: InputMaybe<Scalars['String']>;
   pool_contains_nocase?: InputMaybe<Scalars['String']>;
   pool_ends_with?: InputMaybe<Scalars['String']>;
@@ -514,9 +486,7 @@ export enum Tick_OrderBy {
   Id = 'id',
   Index = 'index',
   Liquidity = 'liquidity',
-  Pool = 'pool',
-  PoolId = 'pool__id',
-  PoolLong = 'pool__long'
+  Pool = 'pool'
 }
 
 export type _Block_ = {
@@ -525,8 +495,6 @@ export type _Block_ = {
   hash?: Maybe<Scalars['Bytes']>;
   /** The block number */
   number: Scalars['Int'];
-  /** Integer representation of the timestamp stored in blocks for the chain */
-  timestamp?: Maybe<Scalars['Int']>;
 };
 
 /** The type for the top-level _meta field */
@@ -571,14 +539,14 @@ export type GetPositionsQueryVariables = Exact<{
 
 export type GetPositionsQuery = { __typename?: 'Query', positions: Array<{ __typename?: 'Position', id: string, owner: any, tick: number, amount: number }> };
 
-export type ClaimFragmentFragment = { __typename?: 'Claim', id: string, owner: any, exit: boolean, amount: number, round: number, claimed?: boolean | null };
+export type ClaimFragmentFragment = { __typename?: 'Claim', id: string, owner: any, exit: boolean, amount: number, round: number, claimed?: boolean | null, claimer?: any | null };
 
 export type GetClaimsQueryVariables = Exact<{
   where?: InputMaybe<Claim_Filter>;
 }>;
 
 
-export type GetClaimsQuery = { __typename?: 'Query', claims: Array<{ __typename?: 'Claim', id: string, owner: any, exit: boolean, amount: number, round: number, claimed?: boolean | null }> };
+export type GetClaimsQuery = { __typename?: 'Query', claims: Array<{ __typename?: 'Claim', id: string, owner: any, exit: boolean, amount: number, round: number, claimed?: boolean | null, claimer?: any | null }> };
 
 export const PoolFragmentFragmentDoc = gql`
     fragment PoolFragment on Pool {
@@ -607,6 +575,7 @@ export const ClaimFragmentFragmentDoc = gql`
   amount
   round
   claimed
+  claimer
 }
     `;
 export const GetPoolsDocument = gql`

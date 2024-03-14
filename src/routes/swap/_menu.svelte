@@ -5,42 +5,76 @@
   $: terms = Object.keys(selected).filter((term) => selected[term]);
 </script>
 
-<ul class="menu w-50 rounded-box border bg-base-300">
+<ul class="menu w-50">
   <li>
     <a
-      class:text-accent-focus={!!selected["stip"]}
+      class:text-primary={!!selected["stip"]}
+      class:border-l={!!selected["stip"]}
+      class="rounded-none border-primary"
       on:click={(_) => (selected["stip"] = !selected["stip"])}>Bullish</a
     >
   </li>
   <li>
     <a
-      class:text-accent-focus={!!selected["flip"]}
+      class:text-primary={!!selected["flip"]}
+      class:border-l={!!selected["flip"]}
+      class="rounded-none border-primary"
       on:click={(_) => (selected["flip"] = !selected["flip"])}>Bearish</a
     >
   </li>
-  <li>
-    <a class="!bg-transparent !cursor-default">Finance</a>
+  <!-- <li> -->
+  <!-- <a class="!bg-transparent !cursor-default">Finance</a>
     <ul>
       <li>
         <a
-          class:text-accent-focus={!!selected["dgs"]}
+          class:text-primary={!!selected["dgs"]}
+          class:border-l={!!selected["dgs"]}
+          class="rounded-none border-primary"
           on:click={(_) => (selected["dgs"] = !selected["dgs"])}>Treasuries</a
         >
       </li>
       <li>
         <a
-          class:text-accent-focus={!!selected["sec"]}
+          class:text-primary={!!selected["sec"]}
+          class:border-l={!!selected["sec"]}
+          class="rounded-none border-primary"
           on:click={(_) => (selected["sec"] = !selected["sec"])}>Securities</a
         >
       </li>
     </ul>
-  </li>
+  </li> -->
+  <!-- </li> -->
   <li>
-    <a>Price Update</a>
+    <a class="!bg-transparent !cursor-default">Leverage</a>
     <ul>
-      <li><a>Daily</a></li>
-      <li><a>Weekly</a></li>
-      <li><a>Monthly</a></li>
+      <li>
+        <a
+          class:text-primary={!!selected["zero-leverage"]}
+          class:border-l={!!selected["zero-leverage"]}
+          class="rounded-none border-primary"
+          on:click={(_) =>
+            (selected["zero-leverage"] = !selected["zero-leverage"])}>Zero</a
+        >
+      </li>
+      <li>
+        <a
+          class:text-primary={!!selected["squared-leverage"]}
+          class:border-l={!!selected["squared-leverage"]}
+          class="rounded-none border-primary"
+          on:click={(_) =>
+            (selected["squared-leverage"] = !selected["squared-leverage"])}
+          >Squared</a
+        >
+      </li>
+      <li>
+        <a
+          class:text-primary={!!selected["cubed-leverage"]}
+          class:border-l={!!selected["cubed-leverage"]}
+          class="rounded-none border-primary"
+          on:click={(_) =>
+            (selected["cubed-leverage"] = !selected["cubed-leverage"])}>Cubed</a
+        >
+      </li>
     </ul>
   </li>
 </ul>

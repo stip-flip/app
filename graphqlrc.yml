@@ -1,3 +1,3 @@
 schema:
-  - https://api.thegraph.com/subgraphs/name/ticruz38/five
+  - https://mordor-graphiql.sf.exchange/subgraphs/name/sotachi/sf
 documents: "./src/queries/**/*.{gql,js,ts,jsx,tsx}"

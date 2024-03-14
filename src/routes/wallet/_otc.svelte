@@ -33,6 +33,9 @@
   <td class="text-left">
     {commify(formatEther(claim?.estimatedAmount || 0), 4)}
   </td>
+  <td class="text-left">
+    {claim?.automated ? "Yes" : "No"}
+  </td>
   <td class="text-right px-8">
     {#if claim?.canceled}
       <span class="text-warning">Canceled</span>

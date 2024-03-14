@@ -1,6 +1,6 @@
 import { ethers, utils, BigNumber } from "ethers";
 import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
-import { gqlsdk } from "src/stores";
+import { gqlsdk, timestamp10 } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
 import { derived, get } from "svelte/store";
@@ -39,6 +39,7 @@ export const poolInfoAsync = async (
       p.slot1(),
       p.slot2(),
       p.fee(),
+      p.description(),
     ]);
 
   return {
@@ -181,6 +182,7 @@ export type Claim = {
   owner: string;
   pool: string;
   round: number;
+  automated: Boolean;
   settlementTimestamp: number; // the timestamp for the next settlement
 };
 
@@ -252,6 +254,7 @@ const asyncClaims = async (
               .mul(Math.pow(10, oracleDecimals))
               .div(nextPrice.isZero() ? lastPrice : nextPrice),
         claimable: !nextPrice.isZero(),
+        automated: c.claimer.toLowerCase() != account.toLowerCase(),
         canceled: lastRound.toNumber() > Number(c.round) + 1,
         owner: c.owner,
         pool: poolAddress,
@@ -269,8 +272,8 @@ const asyncClaims = async (
 };
 
 export const useClaims = derived(
-  [chainId, signerAddress, resolvedTransactions],
-  ([$chainId, $signerAddress, $resolvedTransactions], set) => {
+  [chainId, signerAddress, resolvedTransactions, timestamp10],
+  ([$chainId, $signerAddress, $resolvedTransactions, $timestamp10], set) => {
     get(gqlsdk)
       ?.getPools({})
       .then(async (res) => {

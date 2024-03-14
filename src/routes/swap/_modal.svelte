@@ -4,6 +4,8 @@
   import Icon from "@iconify/svelte";
   import Menu from "./_menu.svelte";
   import { slide, scale } from "svelte/transition";
+  import { driveOTC } from "./driver";
+  import { appState } from "src/stores";
 
   export let id: string;
   export let otherTokenSelected: TokenInfoAndBalance;
@@ -23,9 +25,15 @@
     .filter(
       (t) =>
         !terms.length ||
-        terms.some((term) =>
-          t.info.name.toLowerCase().includes(term.toLowerCase())
-        )
+        terms.some((term) => {
+          if (term == "zero-leverage")
+            return !t.info.name.toLowerCase().includes("/²|³/");
+          if (term == "squared-leverage")
+            return t.info.name.toLowerCase().includes("²");
+          if (term == "cubed-leverage")
+            return t.info.name.toLowerCase().includes("³");
+          return t.info.name.toLowerCase().includes(term.toLowerCase());
+        })
     )
     .filter((t) =>
       search.length
@@ -84,7 +92,7 @@
         <ul class="p-4 rounded-box shadow-lg border w-full bg-base-300">
           {#if selectedToken}
             <li
-              class="rounded-t-2xl px-6 pb-6 pt-2 cursor-pointer bg-base-100 -mt-4 -mx-4 border-b"
+              class="rounded-t-2xl px-6 pb-2 pt-2 cursor-pointer bg-base-100 -mt-4 -mx-4 border-b"
               transition:slide|local
               on:click={(_) => {
                 selectToken == "token0"
@@ -93,9 +101,10 @@
               }}
             >
               <strong class="capitalize">
-                <a>{selectedToken.info.name}</a> :
+                <a>{selectedToken.info.symbol}</a> :
               </strong>
-              this token is the long side of US treasuries 10 year future
+              {selectedToken?.info?.description ||
+                "Ether Coin, The Ether's native currency."}
             </li>
           {/if}
           {#each sortedTokens || [] as token}
@@ -110,7 +119,7 @@
               }}
             >
               <strong class="capitalize">
-                <a>{token?.info?.name || "NUSD"}</a>
+                <a>{token?.info?.symbol}</a>
               </strong>
               <span class="mx-2">
                 ({commify(token?.balance, 4)})
@@ -154,7 +163,15 @@
           {:else}
             <button
               class="btn btn-primary no-animation w-2/5"
-              on:click={(_) => checkbox.click()}
+              on:click={(_) => {
+                checkbox.click();
+                if ($appState.help) {
+                  driveOTC(
+                    selectedToken0?.info?.symbol,
+                    selectedToken1?.info?.symbol
+                  );
+                }
+              }}
             >
               Done
             </button>

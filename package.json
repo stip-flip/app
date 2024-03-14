@@ -35,6 +35,7 @@
 		"@formkit/auto-animate": "^1.0.0-beta.6",
 		"@sveltejs/pancake": "^0.0.18",
 		"daisyui": "^3",
+		"driver.js": "^1.3.1",
 		"ethers": "^5.7.1",
 		"lightweight-charts": "^3.8.0",
 		"lodash": "^4.17.21",
