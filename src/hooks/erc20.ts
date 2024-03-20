@@ -91,8 +91,8 @@ export const useBalance = (
   account?: string | undefined | null
 ): Readable<number> => {
   return derived(
-    [bn, signerAddress, resolvedTransactions, chainId],
-    ([$bn, $signerAddress, $resolvedTransactions, $chainId], set) => {
+    [signerAddress, resolvedTransactions, chainId],
+    ([$signerAddress, $resolvedTransactions, $chainId], set) => {
       asyncBalance(tokenAddress, account || $signerAddress).then((res) => {
         set(Number(res));
       });

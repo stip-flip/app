@@ -10,6 +10,8 @@
 :root {
   --bg-image-light: url('/sf-mario-day.png');
   --bg-image-dark: url('/sf-mario-night.png');
+
+  --bg-stars: url('/stars.svg');
 }
 
 .popover {
@@ -42,6 +44,10 @@
 
 .bg-opaque {
   background-color: rgb(200, 244, 246);
+}
+
+.bg-stars {
+  /* background-image: var(--bg-stars); */
 }
 
 @media (min-width: 1024px) {

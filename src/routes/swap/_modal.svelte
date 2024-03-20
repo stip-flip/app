@@ -165,12 +165,12 @@
               class="btn btn-primary no-animation w-2/5"
               on:click={(_) => {
                 checkbox.click();
-                if ($appState.help) {
-                  driveOTC(
-                    selectedToken0?.info?.symbol,
-                    selectedToken1?.info?.symbol
-                  );
-                }
+                // if ($appState.help) {
+                //   driveOTC(
+                //     selectedToken0?.info?.symbol,
+                //     selectedToken1?.info?.symbol
+                //   );
+                // }
               }}
             >
               Done

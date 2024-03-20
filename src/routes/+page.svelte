@@ -1,122 +1,137 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-
+  import { LottiePlayer } from "@lottiefiles/svelte-lottie-player";
   import { Parallax, ParallaxLayer, StickyLayer } from "svelte-parallax";
+  import Parrallax0 from "./parrallax0.svelte";
+
+  $: console.log("SSR", import.meta.env.SSR);
+
+  const icons = ["/s-usd.svg", "/s-btc.svg", "s-sol.svg", "s-eth.svg"];
 </script>
 
-<!-- <div class="root"> -->
-<div
-  class="text-center lg:text-start lg:mt-0 lg:bottom-48 lg:left-28 h-full flex justify-between flex-col"
->
-  <div class="" />
-  <div class="text-center h-1/3">
-    <h1 class="text-7xl font-bold">Stip & Flip</h1>
-    <h2 class="mt-8 text-4xl text-base-content">
-      Decentralised & Permissionless <strong class="text-primary"
-        >Real World Assets</strong
-      >
-    </h2>
-  </div>
-  <div class="w-full flex p-4 justify-between space-x-2 mt-8 lg:-ml-8">
-    <div class="flex-grow w-1/4" />
-    <Icon
-      class="text-4xl flex-grow w-1/4 animate-bounce"
-      icon="mingcute:down-fill"
-    />
-    <div class="flex justify-end space-x-4 flex-grow w-1/4">
-      <Icon class="text-4xl" icon="mdi:github" />
-      <Icon class="text-4xl" icon="mdi:twitter" />
+<Parallax sections={5}>
+  <ParallaxLayer rate={1} offset={0}>
+    <div
+      class="text-center lg:text-start lg:mt-0 lg:bottom-48 lg:left-28 h-full flex justify-between flex-col"
+    >
+      <div class="h-1/3" />
+      <div class="text-center h-1/3">
+        <h1 class="text-7xl font-bold">Stip & Flip</h1>
+        <h2 class="mt-8 text-4xl text-base-content">
+          Decentralised & Permissionless <strong class="text-primary"
+            >Real World Assets</strong
+          >
+        </h2>
+      </div>
+      {#if !import.meta.env.SSR}
+        <LottiePlayer
+          class="absolute"
+          src="https://assets-global.website-files.com/649053a6e993a59c07215fb1/64a1a28e8d584d2e53d44d93_header-lottie-loop.json"
+          autoplay={true}
+          loop={true}
+          renderer="svg"
+          background="transparent"
+        />
+      {/if}
+      <div class="w-full flex p-4 justify-between space-x-2 mt-8 lg:-ml-8">
+        <div class="flex-grow w-1/4" />
+        <Icon
+          class="text-4xl flex-grow w-1/4 animate-bounce"
+          icon="mingcute:down-fill"
+        />
+        <div class="flex justify-end space-x-4 flex-grow w-1/4">
+          <Icon class="text-4xl" icon="mdi:github" />
+          <Icon class="text-4xl" icon="mdi:twitter" />
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+  </ParallaxLayer>
+  <!-- <ParallaxLayer rate={1} offset={0} span={4}>
+    <div class="bg-2 h-full"></div></ParallaxLayer
+  > -->
 
-<div class="bg-2 px-8">
-  <Parallax sections={2}>
-    <ParallaxLayer
-      rate={1.5}
-      offset={0}
-      let:progress
-      style="display:flex; justify-content:space-around; align-items:center;"
-    >
-      <div
-        class="lg:w-1/3 lg:h-1/3 shadow-sm shadow-base-content rounded-3xl p-8 bg-opaque"
-        style="opacity: {2.5 - 3 * progress}; transform: translateX({-2 *
-          progress *
-          50}px)"
-      >
-        <h3 class="text-primary text-3xl">No Single Point Of Failure</h3>
-        <p class="mt-12 text-xl">
-          Everything in S&F is incentivised. <br /> Price feeds are submitted by
-          the community. <br /> Funding rates adjust lazily with demand.
-        </p>
+  <StickyLayer rate={2} offset={{ top: 1, bottom: 4 }}>
+    <div class="bg-2 h-full"></div>
+  </StickyLayer>
+
+  <StickyLayer rate={1} offset={{ top: 1, bottom: 1.5 }}>
+    <div class="flex p-8 px-32">
+      <div>
+        <h3 class="text-primary text-5xl mt-24">Trade any synthetic asset</h3>
+        <div class="py-4 text-2xl">
+          <p class="py-4">DeFi now has access to any real world asset</p>
+          <p class="py-4">If you have the data - we can mint it</p>
+        </div>
       </div>
+    </div>
+  </StickyLayer>
+
+  {#each icons as icon, i}
+    <ParallaxLayer rate={1 + Math.random()} offset={1.9}>
       <div
-        class="lg:w-1/3 lg:h-1/3 shadow-sm shadow-base-content rounded-3xl p-8 bg-opaque"
-        style="opacity: {2.5 - 3 * progress}; transform: translateX({progress *
-          100}px)"
+        class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 h-32 w-32 p-4"
+        style="margin-left: {18 + i * 20}%;"
       >
-        <h3 class="text-primary text-3xl">Anyone Can Participate</h3>
-        <p class="mt-12 text-xl">
-          Everything in S&F is permissionless. <br /> You can trade assets
-          <br />
-          Create a new pool <br /> Lend liquidity to traders <br /> Become a price
-          provider
-        </p>
+        <img src={icon} />
       </div>
     </ParallaxLayer>
-    <ParallaxLayer
-      rate={1}
-      offset={0.9}
-      style="display:flex; justify-content:space-around; align-items:center;"
-      let:progress
-    >
-      <div
-        class="lg:w-1/3 lg:h-1/3 shadow-sm shadow-base-content rounded-3xl p-8 bg-opaque"
-        style="opacity: {2 * progress}"
-      >
-        <h3 class="text-primary text-3xl">Trade Anything</h3>
-        <p class="mt-12 text-xl">
-          S&F has no limit on what could be traded. <br /> You can trade
-          commodities
-          <br /> Stocks <br /> Real estate <br /> Presidential polls <br />
-          You name it
-        </p>
+  {/each}
+
+  <StickyLayer rate={2} offset={{ top: 2, bottom: 2.5 }}>
+    <div class="h-full flex justify-end p-8 px-32">
+      <div>
+        <h3 class="text-primary text-5xl mt-24 text-right">AntiFragile</h3>
+        <div class="py-4 text-2xl text-right">
+          <p class="py-4">
+            Put your hard money to work on your <strong>own terms</strong>
+          </p>
+          <p class="py-4">
+            No liquidation thanks to our <strong>embedded leverage</strong>
+          </p>
+        </div>
       </div>
-      <div
-        class="lg:w-1/3 lg:h-1/3 shadow-sm shadow-base-content rounded-3xl p-8 bg-opaque"
-        style="opacity: {2 * progress}"
-      >
-        <h3 class="text-primary text-3xl">Get the Best Price</h3>
-        <p class="mt-12 text-xl">
-          You can either swap on the spot <br /> Or trade Over The Counter and avoid
-          slippage
-        </p>
+      <!-- <h3 class="text-primary text-5xl mt-64 w-1/2 border-b border-white">
+        Limitless
+      </h3>
+      <h3 class="text-primary text-5xl mt-64 w-1/2 border-b border-white">
+        Antifragile
+      </h3> -->
+    </div>
+  </StickyLayer>
+  <StickyLayer rate={2} offset={{ top: 3, bottom: 3.5 }}>
+    <div class="h-full flex justify-around">
+      <div>
+        <h3 class="text-primary text-5xl mt-64">Secure</h3>
+        <div class="py-4 text-2xl">
+          <p class="py-4">Built on the most secure smart contract blockchain</p>
+          <p class="py-4">100% community driven - no single point of failure</p>
+        </div>
       </div>
-    </ParallaxLayer>
-    <ParallaxLayer
-      rate={1}
-      offset={1}
-      style="display:flex; justify-content:space-around; align-items:center;"
-      let:progress
-    >
-      <a
-        href="swap"
-        class="lg:w-1/3 shadow-sm shadow-base-content rounded-3xl p-8 bg-accent"
-        style="opacity: {2 * progress}">Get Started</a
+      <!-- <h3 class="text-primary text-5xl mt-64 w-1/2 border-b border-white">
+        Limitless
+      </h3>
+      <h3 class="text-primary text-5xl mt-64 w-1/2 border-b border-white">
+        Antifragile
+      </h3> -->
+    </div>
+  </StickyLayer>
+  <StickyLayer rate={1} offset={{ top: 4, bottom: 5 }}>
+    <div class="flex justify-around items-center h-1/2">
+      <a class="btn-primary text-white btn btn-lg w-1/3" href="swap"
+        >Start Trading</a
       >
       <a
-        href="https://sf-doc.vercel.app"
-        class="lg:w-1/3 shadow-sm shadow-base-content rounded-3xl p-8 bg-info"
-        style="opacity: {2 * progress}">Learn More</a
+        class="btn-info text-white btn btn-lg w-1/3"
+        href="https://doc.sf.exchange/">Learn more</a
       >
-    </ParallaxLayer>
-  </Parallax>
-
-  <!-- <div>Get the best price</div>
-  <div>Bear or Bull</div> -->
-</div>
-
-<!-- </div> -->
+    </div>
+    <div class="absolute h-1/2 w-full bottom-0 left-0">
+      {#each Array.from({ length: 9 }) as _, i}
+        <div class="bg-slate-{900 - i * 100} h-10 mt-8" />
+      {/each}
+    </div>
+  </StickyLayer>
+</Parallax>
 
 <style>
   .round {

@@ -33,6 +33,7 @@
 		"@0xsequence/multicall": "^0.39.0",
 		"@codingwithmanny/blockies": "^1.1.0",
 		"@formkit/auto-animate": "^1.0.0-beta.6",
+		"@lottiefiles/svelte-lottie-player": "^0.3.1",
 		"@sveltejs/pancake": "^0.0.18",
 		"daisyui": "^3",
 		"driver.js": "^1.3.1",

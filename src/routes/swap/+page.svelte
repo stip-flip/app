@@ -10,10 +10,7 @@
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
   import { useBalance } from "src/hooks/balance";
-  import {
-    broadcastTransaction,
-    resolvedTransactions,
-  } from "src/hooks/blocknumber";
+  import { broadcastTransaction } from "src/hooks/blocknumber";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useBalance as useBal } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
@@ -97,6 +94,12 @@
   const debOut = _.debounce(async () => {
     if (selectedToken0 && selectedToken1 && selectedPool) {
       if (enter) {
+        if (amountOut == "0") {
+          feeAmount = BigNumber.from(0);
+          frAfter = BigNumber.from(0);
+          amountIn = "0";
+          return;
+        }
         const enter = await $sdk?.POOL.attach(
           selectedPool?.address
         ).previewEnter(
@@ -106,6 +109,12 @@
         frAfter = enter.frAfter;
         amountIn = formatEther(enter.swapOut.mul(-1));
       } else {
+        if (amountOut == "0") {
+          feeAmount = BigNumber.from(0);
+          frAfter = BigNumber.from(0);
+          amountIn = "0";
+          return;
+        }
         const exit = await $sdk?.POOL.attach(selectedPool?.address)
           .connect($signerAddress)
           .previewExit(
@@ -260,7 +269,7 @@
         <strong> 00:00:00 </strong>
       </div>
       <div id="automate" class="flex justify-between my-4 text-lg">
-        <strong>Automate</strong>
+        <strong>Automate Claim</strong>
         <input
           type="checkbox"
           class="toggle toggle-primary"
@@ -314,7 +323,7 @@
             .connect($signer)
             .exit(
               parseUnits(
-                amountOut == String(selectedToken0?.balance) ? "0" : amountOut, // if amountOut is max, set to 0
+                amountOut == String($balance0) ? "0" : amountOut, // if amountOut is max, set to 0
                 selectedToken0.info.decimals
               ),
               $signerAddress,
