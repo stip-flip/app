@@ -100,7 +100,8 @@
               >
             </div>
           </div>
-          <Theme />
+          <div />
+          <!-- <Theme /> -->
         {:else}
           <div class="flex items-center w-content h-8 mr-8 w-1/5">
             <div class="flex-none lg:hidden">

@@ -2,9 +2,6 @@
   import Icon from "@iconify/svelte";
   import { LottiePlayer } from "@lottiefiles/svelte-lottie-player";
   import { Parallax, ParallaxLayer, StickyLayer } from "svelte-parallax";
-  import Parrallax0 from "./parrallax0.svelte";
-
-  $: console.log("SSR", import.meta.env.SSR);
 
   const icons = ["/s-usd.svg", "/s-btc.svg", "s-sol.svg", "s-eth.svg"];
 </script>
@@ -46,9 +43,6 @@
       </div>
     </div>
   </ParallaxLayer>
-  <!-- <ParallaxLayer rate={1} offset={0} span={4}>
-    <div class="bg-2 h-full"></div></ParallaxLayer
-  > -->
 
   <StickyLayer rate={2} offset={{ top: 1, bottom: 4 }}>
     <div class="bg-2 h-full"></div>
@@ -90,12 +84,6 @@
           </p>
         </div>
       </div>
-      <!-- <h3 class="text-primary text-5xl mt-64 w-1/2 border-b border-white">
-        Limitless
-      </h3>
-      <h3 class="text-primary text-5xl mt-64 w-1/2 border-b border-white">
-        Antifragile
-      </h3> -->
     </div>
   </StickyLayer>
   <StickyLayer rate={2} offset={{ top: 3, bottom: 3.5 }}>
@@ -107,12 +95,6 @@
           <p class="py-4">100% community driven - no single point of failure</p>
         </div>
       </div>
-      <!-- <h3 class="text-primary text-5xl mt-64 w-1/2 border-b border-white">
-        Limitless
-      </h3>
-      <h3 class="text-primary text-5xl mt-64 w-1/2 border-b border-white">
-        Antifragile
-      </h3> -->
     </div>
   </StickyLayer>
   <StickyLayer rate={1} offset={{ top: 4, bottom: 5 }}>
@@ -126,8 +108,11 @@
       >
     </div>
     <div class="absolute h-1/2 w-full bottom-0 left-0">
-      {#each Array.from({ length: 9 }) as _, i}
-        <div class="bg-slate-{900 - i * 100} h-10 mt-8" />
+      {#each Array.from({ length: 19 }) as _, i}
+        <div
+          class="bg-primary h-4 mt-2"
+          style="opacity: {i * 0.03}; height: {i * 2}px;"
+        />
       {/each}
     </div>
   </StickyLayer>
