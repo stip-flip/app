@@ -18,7 +18,7 @@
 </script>
 
 <div
-  class="px-8 lg:px-0 lg:w-1/2 m-auto mt-20 lg:mt-40 flex justify-between items-center"
+  class="px-4 lg:px-8 lg:px-0 lg:w-1/2 m-auto mt-32 lg:mt-40 flex justify-between items-center"
 >
   <h1 class="text-3xl">Pools</h1>
   <a class="btn float-right" href="earn/add">+ New Position</a>

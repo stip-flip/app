@@ -74,6 +74,7 @@
     #296990 0%,
     #FFFFFF 100%
   );
+  background-image: url("/icon.svg");
 }
 
 @media (min-width: 1024px) {

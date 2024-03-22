@@ -2,6 +2,7 @@
   import Icon from "@iconify/svelte";
   import type { BigNumberish } from "ethers";
   import { formatUnits } from "ethers/lib/utils";
+  import CoinIcon from "src/components/coin-icon.svelte";
   import type { TokenInfo } from "src/hooks/erc20";
   import { addToken, commify } from "src/lib";
 
@@ -54,7 +55,8 @@
 </label>
 
 <tr class="hover cursor-pointer">
-  <td>
+  <td class="flex items-center space-x-2">
+    <CoinIcon symbol={token?.symbol} />
     <strong>{token?.name}</strong>
   </td>
   <td>

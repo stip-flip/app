@@ -106,7 +106,7 @@
       </div>
       <div class="">
         <div
-          class="w-1/2 m-auto border-2 rounded-3xl flex justify-between items-center p-2 mt-8 border-base-content"
+          class="lg:w-1/2 m-auto border-2 rounded-3xl flex justify-between items-center p-2 mt-8 border-base-content"
         >
           <div class="p-2 text-xl cursor-pointer" on:click={(_) => (FR -= 10)}>
             <Icon icon="ic:baseline-minus" />

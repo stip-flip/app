@@ -1,4 +1,5 @@
 <script lang="ts">
+  import CoinIcon from "src/components/coin-icon.svelte";
   import { commify } from "src/lib";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import Icon from "@iconify/svelte";
@@ -48,8 +49,8 @@
 
 <input type="checkbox" {id} class="modal-toggle" bind:this={checkbox} />
 <label for={id} class="modal cursor-pointer">
-  <label class="lg:w-1/2">
-    <div class="lg:bg-opaque lg:rounded-xl border block p-8" for="">
+  <label class="w-full lg:w-1/2">
+    <div class="bg-opaque lg:rounded-xl lg:border block p-8" for="">
       <div class="flex justify-around">
         <label
           tabindex="0"
@@ -87,7 +88,7 @@
           placeholder="Search"
         />
       </div>
-      <div class="flex pt-4 space-x-4">
+      <div class="flex pt-4 lg:space-x-4">
         <Menu bind:terms />
         <ul class="p-4 rounded-box shadow-lg border w-full bg-base-300">
           {#if selectedToken}
@@ -100,16 +101,21 @@
                   : (selectedToken1 = undefined);
               }}
             >
-              <strong class="capitalize">
-                <a>{selectedToken.info.symbol}</a> :
-              </strong>
-              {selectedToken?.info?.description ||
-                "Ether Coin, The Ether's native currency."}
+              <div class="flex space-x-2">
+                <CoinIcon symbol={selectedToken.info.symbol} />
+                <strong class="capitalize">
+                  <a>{selectedToken.info.symbol}</a> :
+                </strong>
+                <p>
+                  {selectedToken?.info?.description ||
+                    "Ether Coin, The Ether's native currency."}
+                </p>
+              </div>
             </li>
           {/if}
           {#each sortedTokens || [] as token}
             <li
-              class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200"
+              class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200 space-x-2"
               transition:slide|local
               on:click={(_) => {
                 selectToken == "token0"
@@ -118,10 +124,11 @@
                 // checkbox.click();
               }}
             >
+              <CoinIcon symbol={token?.info?.symbol} />
               <strong class="capitalize">
                 <a>{token?.info?.symbol}</a>
               </strong>
-              <span class="mx-2">
+              <span>
                 ({commify(token?.balance, 4)})
               </span>
             </li>

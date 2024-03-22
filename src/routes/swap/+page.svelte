@@ -18,6 +18,7 @@
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Modal from "./_modal.svelte";
+  import CoinIcon from "src/components/coin-icon.svelte";
 
   let amountOut: string = "0";
   let amountIn: string = "0";
@@ -197,10 +198,16 @@
         on:click={(_) => {
           selectToken = "token0";
         }}
-        >{selectedToken0 != undefined
-          ? selectedToken0?.info.name || "NUSD"
-          : "Select a token"}</label
       >
+        {#if selectedToken0 != undefined}
+          <div class="flex space-x-2 items-center">
+            <CoinIcon symbol={selectedToken0?.info?.symbol} />
+            <span>{selectedToken0?.info.symbol}</span>
+          </div>
+        {:else}
+          Select a token
+        {/if}
+      </label>
       {#if selectedToken0 != undefined}
         <div
           class="absolute ml-4 text-sm text-primary cursor-pointer"
@@ -237,9 +244,14 @@
         on:click={(_) => {
           selectToken = "token1";
         }}
-        >{selectedToken1 != undefined
-          ? selectedToken1?.info.name || "NUSD"
-          : "Select a token"}</label
+        >{#if selectedToken1 != undefined}
+          <div class="flex space-x-2 items-center">
+            <CoinIcon symbol={selectedToken1?.info?.symbol} />
+            <span>{selectedToken1?.info.symbol}</span>
+          </div>
+        {:else}
+          Select a token
+        {/if}</label
       >
     </div>
   </div>

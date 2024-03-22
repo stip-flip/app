@@ -1,9 +1,47 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { LottiePlayer } from "@lottiefiles/svelte-lottie-player";
+  import CoinIcon from "src/components/coin-icon.svelte";
+  import LiquidityChart from "src/components/liquidity-chart.svelte";
   import { Parallax, ParallaxLayer, StickyLayer } from "svelte-parallax";
 
-  const icons = ["/s-usd.svg", "/s-btc.svg", "s-sol.svg", "s-eth.svg"];
+  const icons = [
+    "/S-USD.svg",
+    "/S-BTC.svg",
+    "/S-SOL.svg",
+    "/S-ETH.svg",
+    "/F-DOGE.svg",
+    "/F-XMR.svg",
+  ];
+
+  import { spring } from "svelte/motion";
+
+  $: FR = spring(500, { stiffness: 0.1, damping: 0.8 });
+
+  let ticks = {
+    0: 1000,
+    50: 1000,
+    100: 200,
+    240: 600,
+    350: 800,
+    500: 100,
+    600: 200,
+  };
+
+  let leveraged = [
+    "/S-ETH².svg",
+    "/F-BTC².svg",
+    "/S-SOL².svg",
+    "/F-ETH.svg",
+    "/S-DOGE².svg",
+    "/F-SOL.svg",
+    "/F-XMR².svg",
+    "/S-BTC.svg",
+  ];
+
+  const onChartProgress = (progress: number) => {
+    FR.set(progress * 1000);
+  };
 </script>
 
 <Parallax sections={5}>
@@ -11,16 +49,31 @@
     <div
       class="text-center lg:text-start lg:mt-0 lg:bottom-48 lg:left-28 h-full flex justify-between flex-col"
     >
-      <div class="h-1/3" />
-      <div class="text-center h-1/3">
-        <h1 class="text-7xl font-bold">Stip & Flip</h1>
-        <h2 class="mt-8 text-4xl text-base-content">
-          Decentralised & Permissionless <strong class="text-primary"
-            >Real World Assets</strong
-          >
-        </h2>
+      <img
+        src="/icon.svg"
+        class="absolute w-1/4 lg:m-0"
+        style="transform: translate(150%, 15%);"
+      />
+      <div class="h-1/2 w-full flex justify-center"></div>
+      <div class="w-1/2 m-auto">
+        <div class="">
+          <h1 class="text-7xl font-bold">Stip&Flip</h1>
+          <h2 class="mt-8 text-4xl text-base-content">
+            Decentralised & Permissionless <strong class="text-primary"
+              >Real World Assets</strong
+            >
+          </h2>
+          <div class="flex justify-between space-x-2 mt-8 lg:h-4">
+            <div class="flex space-x-4 flex-grow w-1/4">
+              <Icon class="text-4xl" icon="mdi:github" />
+              <Icon class="text-4xl" icon="mdi:twitter" />
+            </div>
+            <div class="flex-grow w-1/4" />
+          </div>
+        </div>
       </div>
-      {#if !import.meta.env.SSR}
+      <div class="h-1/4" />
+      <!-- {#if !import.meta.env.SSR}
         <LottiePlayer
           class="absolute"
           src="https://assets-global.website-files.com/649053a6e993a59c07215fb1/64a1a28e8d584d2e53d44d93_header-lottie-loop.json"
@@ -29,17 +82,13 @@
           renderer="svg"
           background="transparent"
         />
-      {/if}
-      <div class="w-full flex p-4 justify-between space-x-2 mt-8 lg:-ml-8">
-        <div class="flex-grow w-1/4" />
-        <Icon
-          class="text-4xl flex-grow w-1/4 animate-bounce"
-          icon="mingcute:down-fill"
-        />
-        <div class="flex justify-end space-x-4 flex-grow w-1/4">
-          <Icon class="text-4xl" icon="mdi:github" />
-          <Icon class="text-4xl" icon="mdi:twitter" />
-        </div>
+      {/if} -->
+      <div class="flex w-full absolute bottom-4">
+        {#each Array.from({ length: 10 }) as _, i}
+          <div class="min-w-32 min-h-32">
+            <img src="/golden-gate-bridge.svg" />
+          </div>
+        {/each}
       </div>
     </div>
   </ParallaxLayer>
@@ -49,7 +98,7 @@
   </StickyLayer>
 
   <StickyLayer rate={1} offset={{ top: 1, bottom: 1.5 }}>
-    <div class="flex p-8 px-32">
+    <div class="flex p-8 px-32 z-10">
       <div>
         <h3 class="text-primary text-5xl mt-24">Trade any synthetic asset</h3>
         <div class="py-4 text-2xl">
@@ -61,31 +110,92 @@
   </StickyLayer>
 
   {#each icons as icon, i}
-    <ParallaxLayer rate={1 + Math.random()} offset={1.9}>
+    <ParallaxLayer rate={1 + Math.random()} offset={1.7} let:progress>
       <div
         class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 h-32 w-32 p-4"
-        style="margin-left: {18 + i * 20}%;"
+        style="margin-left: {25 +
+          i * 10}%; transform: translateY(-{Math.random() * 500}%);"
       >
         <img src={icon} />
       </div>
     </ParallaxLayer>
   {/each}
 
-  <StickyLayer rate={2} offset={{ top: 2, bottom: 2.5 }}>
-    <div class="h-full flex justify-end p-8 px-32">
+  <StickyLayer rate={2} offset={{ top: 2, bottom: 2.5 }} let:progress>
+    <div class="h-1/3 flex justify-end p-8 px-32 z-10">
       <div>
-        <h3 class="text-primary text-5xl mt-24 text-right">AntiFragile</h3>
+        <h3 class="text-primary text-5xl mt-24 text-right">Anti-Fragile</h3>
         <div class="py-4 text-2xl text-right">
-          <p class="py-4">
-            Put your hard money to work on your <strong>own terms</strong>
+          <p
+            class="py-4"
+            style="opacity: {progress > 0.5 ? 0 : 1}; transition: all 1s ease;"
+          >
+            Put your hard money to work on your <strong class="text-primary"
+              >own terms</strong
+            >
           </p>
-          <p class="py-4">
-            No liquidation thanks to our <strong>embedded leverage</strong>
+          <p
+            class="py-4"
+            style="opacity: {progress < 0.5 ? 0 : 1}; transition: all 1s ease;"
+          >
+            <strong class="text-primary">Zero liquidation</strong> risk embedded
+            leverage
           </p>
         </div>
       </div>
     </div>
+    <div
+      class="flex space-x-32 ml-24 mt-8"
+      style="transform: translateX({50 - progress * 100}%); opacity: {progress <
+      0.5
+        ? 0
+        : 1}; transition: opacity 1s ease;"
+    >
+      {#each leveraged as icon, i}
+        <div
+          class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 h-32 w-32 p-4"
+          style="min-width: 8rem;"
+        >
+          <img src={icon} />
+        </div>
+      {/each}
+    </div>
+    <div
+      class="flex space-x-8 items-center ml-24 mt-20 z-10"
+      style="opacity: {progress < 0.5 ? 0 : 1}; transition: all 1s ease;"
+    >
+      <p class="text-2xl font-bold">
+        Trade your synthetic squared or cubed - long or short - stip or flip...
+      </p>
+      <a class="btn btn-outline" href="https://docs.sf.exchange">Learn More</a>
+    </div>
   </StickyLayer>
+  <ParallaxLayer rate={3} offset={2} onProgress={onChartProgress} let:progress>
+    <div class="flex space-x-4 ml-24 mb-8 -mt-24">
+      <div class="btn btn-primary btn-outline btn-wide btn-lg">
+        <CoinIcon symbol="F-BTC" />Flip-Bitcoin
+      </div>
+      <div class="join">
+        <div class="btn btn-outline btn-wide btn-lg join-item">
+          Pool Funding Rate
+        </div>
+        <div class="btn btn-outline btn-lg join-item">0.3%</div>
+      </div>
+    </div>
+    <div
+      class="ml-24 p-4 border border-primary rounded-2xl bg-gradient h-1/4 lg:w-1/2 margin-auto shadow-md shadow-primary"
+    >
+      <LiquidityChart initializedTicks={ticks} FR={$FR} />
+    </div>
+    <div class="join ml-24 mt-8">
+      <div class="btn btn-primary btn-wide btn-lg join-item">
+        Deposit Liquidity at
+      </div>
+      <div class="btn btn-primary btn-outline btn-lg join-item">
+        {($FR / 100).toFixed(2)}%
+      </div>
+    </div>
+  </ParallaxLayer>
   <StickyLayer rate={2} offset={{ top: 3, bottom: 3.5 }}>
     <div class="h-full flex justify-around">
       <div>

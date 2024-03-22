@@ -28,22 +28,34 @@
       </tr>
     </thead>
     <tbody>
-      {#each bytes as b}
+      {#each bytes.sort( (a, b) => (positions[b].tick < positions[a].tick ? 0 : -1) ) as b}
         <tr class="hover">
           <td class="w-1/3 lg:w-auto">{positions[b].tick / 100}%</td>
-          <td class="w-1/3 lg:w-auto"
-            >{commify(formatEther(positions[b].liquidity), 3)}
-            <Icon
-              class="inline text-xl text-green-600"
-              icon="mdi:ethereum"
-            /></td
-          >
-          <td class="hidden lg:table-cell"
-            >{commify((positions[b].liquidityActive * 100).toFixed(2))} %</td
-          >
-          <td class="w-1/3 lg:w-auto">
-            {commify(formatEther(positions[b].pnl), 3)}
+          <td class="w-1/3 lg:w-auto lg:flex items-center">
             <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
+            {commify(formatEther(positions[b].liquidity), 3)}
+          </td>
+          <td class="hidden lg:table-cell">
+            <div
+              class="rounded-full w-full border border-primary relative"
+              class:border-warning={positions[b].liquidityActive < 0.1}
+            >
+              <div
+                class="bg-primary rounded-full whitespace-nowrap"
+                class:text-black={positions[b].liquidityActive > 0.5}
+                style={`width: ${positions[b].liquidityActive * 100}%`}
+              >
+                <span class="pl-2"
+                  >{commify(
+                    (positions[b].liquidityActive * 100).toFixed(2)
+                  )}</span
+                > %
+              </div>
+            </div>
+          </td>
+          <td class="w-1/3 lg:w-auto lg:flex items-center">
+            <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
+            {commify(formatEther(positions[b].pnl), 3)}
           </td>
           <td class="hidden lg:table-cell">
             <label

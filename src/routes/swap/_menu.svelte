@@ -5,7 +5,7 @@
   $: terms = Object.keys(selected).filter((term) => selected[term]);
 </script>
 
-<ul class="menu w-50">
+<ul class="menu w-50 hidden lg:block">
   <li>
     <a
       class:text-primary={!!selected["stip"]}
