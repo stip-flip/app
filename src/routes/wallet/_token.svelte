@@ -8,18 +8,23 @@
 
   export let token: TokenInfo | undefined;
   export let balance: BigNumberish = "0";
-  export let leverage: BigNumberish;
-  export let liquidationPrice: BigNumberish;
   export let pnl: BigNumberish;
   export let tick: BigNumberish;
 
-  $: details = token?.name.includes("stip")
-    ? "This token represent the long side of " + token?.name.split("stip-")[1]
-    : "This token represent the short side of " + token?.name.split("flip-")[1];
+  let input: HTMLInputElement;
+
+  $: details = token?.name.toLowerCase().includes("stip")
+    ? "This token represent the long side of " + token?.name.split("Stip-")[1]
+    : "This token represent the short side of " + token?.name.split("Flip-")[1];
 </script>
 
 <!-- Put this part before </body> tag -->
-<input type="checkbox" id={token?.address} class="modal-toggle" />
+<input
+  type="checkbox"
+  bind:this={input}
+  id={token?.address}
+  class="modal-toggle"
+/>
 <label for={token?.address} class="modal cursor-pointer">
   <label class="modal-box relative" for="">
     <h3 class="text-2xl text-center pb-4">{token?.name}</h3>
@@ -54,7 +59,7 @@
   </label>
 </label>
 
-<tr class="hover cursor-pointer">
+<tr class="hover cursor-pointer" on:click={(_) => input.click()}>
   <td class="flex items-center space-x-2">
     <CoinIcon symbol={token?.symbol} />
     <strong>{token?.name}</strong>
@@ -62,15 +67,15 @@
   <td>
     {commify(balance, 4)}
   </td>
-  <td>
+  <td class="text-right">
     {Number(commify(formatUnits(tick || 0, 2)))} %
   </td>
   <!-- <td
     ></td
   > -->
-  <td>
+  <!-- <td>
     <label for={token?.address}>
       <Icon icon="pepicons-pencil:dots-y" class="cursor-pointer w-6 h-6" />
     </label>
-  </td>
+  </td> -->
 </tr>

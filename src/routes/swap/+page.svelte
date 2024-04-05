@@ -10,7 +10,7 @@
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
   import { useBalance } from "src/hooks/balance";
-  import { broadcastTransaction } from "src/hooks/blocknumber";
+  import { broadcastTransaction } from "src/hooks/transactions";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useBalance as useBal } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
@@ -30,6 +30,8 @@
   let enter: boolean = true;
 
   let automate: boolean = true;
+
+  let checkbox: HTMLInputElement;
 
   const ZERO_ADDRESS = "0x0";
 
@@ -164,6 +166,7 @@
   bind:selectToken
   bind:selectedToken0
   bind:selectedToken1
+  bind:checkbox
 />
 
 <div
@@ -205,12 +208,12 @@
             <span>{selectedToken0?.info.symbol}</span>
           </div>
         {:else}
-          Select a token
+          Sell token
         {/if}
       </label>
       {#if selectedToken0 != undefined}
         <div
-          class="absolute ml-4 text-sm text-primary cursor-pointer"
+          class="absolute ml-4 text-sm text-neutral cursor-pointer"
           on:click={(_) => {
             amountOut = String($balance0 || 0);
             debOut();
@@ -250,7 +253,7 @@
             <span>{selectedToken1?.info.symbol}</span>
           </div>
         {:else}
-          Select a token
+          Buy token
         {/if}</label
       >
     </div>
@@ -280,14 +283,6 @@
         <strong>Next Settlement</strong>
         <strong> 00:00:00 </strong>
       </div>
-      <div id="automate" class="flex justify-between my-4 text-lg">
-        <strong>Automate Claim</strong>
-        <input
-          type="checkbox"
-          class="toggle toggle-primary"
-          bind:checked={automate}
-        />
-      </div>
     </div>
     {#if Number(amountOut)}
       <div class="px-4">
@@ -303,34 +298,41 @@
         </div>
       </div>
     {/if}
+    <div class="divider" />
+    <div id="automate" class="flex justify-between my-4 px-4 text-lg">
+      <strong>Automate Claim</strong>
+      <input
+        type="checkbox"
+        class="toggle toggle-primary"
+        bind:checked={automate}
+      />
+    </div>
   {/if}
 
   <button
     id="swap"
     class="btn btn-primary btn-lg w-full mt-8"
     on:click={(_) => {
+      if (!selectedToken0 || !selectedToken1) checkbox.click();
       if (enter) {
         broadcastTransaction(
           "Swapping " +
-            selectedToken0.info.name +
+            selectedToken0.info.symbol +
             " for " +
-            selectedToken1.info.name,
+            selectedToken1.info.symbol,
           $sdk.POOL.attach(selectedToken1.info.address)
             .connect($signer)
-            .enter(
-              $signerAddress,
-              automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress,
-              {
-                value: parseEther(amountOut),
-              }
-            )
+            .enter(automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress, {
+              value: parseEther(amountOut),
+            }),
+          "Swap Successful 🎉 check your <a class='text-primary' href='/wallet'>wallet</a>"
         );
       } else {
         broadcastTransaction(
           "Swapping " +
-            selectedToken0.info.name +
+            selectedToken0.info.symbol +
             " for " +
-            selectedToken1.info.name,
+            selectedToken1.info.symbol,
           $sdk.POOL.attach(selectedToken0.info.address)
             .connect($signer)
             .exit(
@@ -340,9 +342,18 @@
               ),
               $signerAddress,
               automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress
-            )
+            ),
+          "Swap Successful 🎉 check your <a class='text-primary' href='/wallet'>wallet</a>"
         );
       }
-    }}>Swap</button
+    }}
   >
+    {#if selectedToken0 && selectedToken1}
+      Swap <CoinIcon symbol={selectedToken0.info.symbol} />for <CoinIcon
+        symbol={selectedToken1.info.symbol}
+      />
+    {:else}
+      Select tokens
+    {/if}
+  </button>
 </div>

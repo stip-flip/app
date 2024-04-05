@@ -1,24 +1,28 @@
 <script lang="ts">
-  import "driver.js/dist/driver.css";
-  import "../app.css";
   import { page } from "$app/stores";
+  import "driver.js/dist/driver.css";
   import { onMount } from "svelte";
+  import "../app.css";
 
+  import Icon from "@iconify/svelte";
   import Logo from "src/components/logo.svelte";
   import Theme from "src/components/theme.svelte";
   import WalletDrawer from "src/components/wallet-drawer.svelte";
   import Wallet from "src/components/wallet.svelte";
-  import { pendingTransactions, transactions } from "src/hooks/blocknumber";
+  import {
+    pendingTransactions,
+    resolvedTransactions,
+    transactions,
+  } from "src/hooks/transactions";
   import { connectMetamask } from "src/lib";
-  import { chainId } from "svelte-ethers-store";
-  import { fly } from "svelte/transition";
-  import { quintOut } from "svelte/easing";
-  import Icon from "@iconify/svelte";
   import { appState } from "src/stores";
-  let theme = "dark";
-  let toggled = false;
+  import { chainId } from "svelte-ethers-store";
+  import { quintOut } from "svelte/easing";
+  import { fly } from "svelte/transition";
 
   let overlay: HTMLAreaElement;
+
+  let lastResolvedIndex = 0;
 
   onMount(() => {
     try {
@@ -32,15 +36,23 @@
 
   // keep this right here
   $: console.log($transactions);
+  $: console.log($resolvedTransactions);
 
   $: homepage = $page.route.id == "/";
+
+  $: {
+    if (!!$resolvedTransactions[lastResolvedIndex]) {
+      setTimeout(() => {
+        lastResolvedIndex++;
+      }, 5000);
+    }
+  }
 
   let docurl = "https://sf-doc.vercel.app/docs";
 
   const idToChain: any = {
-    1: "mainnet",
-    5: "goerli",
     61: "etc",
+    63: "etc-mordor",
   };
 </script>
 
@@ -56,20 +68,53 @@
       easing: quintOut,
     }}
   >
-    <div class="alert alert-info block">
-      <div class="text-base-200">{pt.label}</div>
-      <progress class="progress w-56" />
-      <a
-        class="block text-xs text-right text-base-200 underline"
-        target="_blank"
-        rel="noreferrer"
-        href={"https://" + idToChain[$chainId] + ".etherscan.io/tx/" + pt.hash}
-      >
-        View on Explorer
-      </a>
+    <div
+      class="alert alert-info block space-x-2 w-62 h-24"
+      class:flex={!!pt.resolved && pt.status == 1}
+      class:alert-success={pt.status == 1}
+    >
+      {#if pt.status == 1 && pt.resolved}
+        <Icon
+          icon="mdi:check"
+          class="text-3xl text-white bg-primary rounded-full"
+        />
+        <div class="inline text-base">
+          {@html $resolvedTransactions[lastResolvedIndex]?.resolved}
+        </div>
+      {:else}
+        <div class="text-base-200">{pt.label}</div>
+        {#if pt.status == 1}
+          <progress
+            class="progress progress-success w-56 opa"
+            value="100"
+            max="100"
+          />
+        {:else}
+          <progress class="progress w-56" />
+        {/if}
+        <a
+          class="block text-xs text-right text-base-200 underline"
+          target="_blank"
+          rel="noreferrer"
+          href={"https://" +
+            idToChain[$chainId] +
+            ".blockscout.com/tx/" +
+            pt.hash}
+        >
+          View on Explorer
+        </a>
+      {/if}
     </div>
   </div>
 {/each}
+
+<!-- {#if $resolvedTransactions[lastResolvedIndex] && !!$resolvedTransactions[lastResolvedIndex].resolved && $resolvedTransactions[lastResolvedIndex].status == 1}
+  <div class="toast z-10">
+    <div class="alert alert-success flex space-x-2">
+      
+    </div>
+  </div>
+{/if} -->
 
 <WalletDrawer />
 <div class="drawer">
@@ -130,7 +175,7 @@
           </div>
           <div class="flex-none hidden lg:block">
             <ul
-              class="menu menu-horizontal bg-gradient rounded-full shadow-sm shadow-base-content bg-opacity-50 lg:bg-gradient p-0"
+              class="menu menu-md menu-horizontal bg-gradient rounded-full shadow-sm shadow-base-content bg-opacity-50 lg:bg-gradient p-0"
             >
               <!-- Navbar menu content here -->
               <li>
@@ -138,6 +183,7 @@
                   href="/wallet"
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/wallet")}
+                  class:selected={$page.route?.id?.startsWith("/wallet")}
                   >Wallet</a
                 >
               </li>
@@ -146,7 +192,7 @@
                   href={`/swap/`}
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/swap")}
-                  >Swap</a
+                  class:selected={$page.route?.id?.startsWith("/swap")}>Swap</a
                 >
               </li>
               <li>
@@ -154,7 +200,7 @@
                   href={`/earn/`}
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/earn")}
-                  >Earn</a
+                  class:selected={$page.route?.id?.startsWith("/earn")}>Earn</a
                 >
               </li>
               <li>
@@ -162,6 +208,7 @@
                   href={`/faucet/`}
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/faucet")}
+                  class:selected={$page.route?.id?.startsWith("/faucet")}
                   >Faucet</a
                 >
               </li>
@@ -177,17 +224,6 @@
     <div class="root h-screen" class:bg={homepage}>
       <slot />
     </div>
-    {#if !homepage}
-      <!-- Help Button -->
-      <div class="fixed bottom-0 right-0 flex items-center p-4">
-        <Icon icon="mdi:help" class="h-12 w-12 p-2 text-primary"></Icon>
-        <input
-          type="checkbox"
-          class="toggle toggle-primary"
-          bind:checked={$appState.help}
-        />
-      </div>
-    {/if}
   </div>
   <div class="drawer-side">
     <label
@@ -324,3 +360,9 @@
     </aside>
   </div>
 </div>
+
+<style>
+  .selected {
+    background: hsl(var(--bc) / 0.08);
+  }
+</style>

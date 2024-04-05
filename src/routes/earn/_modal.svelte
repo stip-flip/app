@@ -4,17 +4,19 @@
   import { formatEther, parseEther } from "ethers/lib/utils";
   import { validator } from "src/actions/big-number-input";
   import { useBalance } from "src/hooks/balance";
-  import { broadcastTransaction } from "src/hooks/blocknumber";
-  import type { Position } from "src/hooks/pool";
+  import { broadcastTransaction } from "src/hooks/transactions";
+  import type { Position } from "src/hooks/position";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
 
   export let poolAddress: string;
+  export let poolName: string;
   export let selectedPosition: Position;
 
   let mode: "withdraw" | "deposit" = "withdraw";
   let amount: string = "0";
+  let automate: boolean = true;
   // $: liquidityAndPnL = BigNumber.from(selectedPosition?.liquidity || 0).add(
   //   pnl
   // );
@@ -39,7 +41,7 @@
     );
     mode == "withdraw"
       ? broadcastTransaction(
-          "Collecting liquidities",
+          `Collecting liquidities from ${poolName}`,
           $sdk.POOL.attach(poolAddress)
             .connect($signer)
             .burn(
@@ -47,16 +49,20 @@
               parseEther(amount)
                 .mul(selectedPosition.shares)
                 .div(selectedPosition.liquidity),
-              $signerAddress
+              automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress
             )
         )
       : broadcastTransaction(
-          "Minting liquidities",
+          `Depositing liquidities to ${poolName}`,
           $sdk.POOL.attach(poolAddress)
             .connect($signer)
-            .mint($signerAddress, selectedPosition?.tick, {
-              value: parseEther(amount),
-            })
+            .mint(
+              selectedPosition?.tick,
+              automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress,
+              {
+                value: parseEther(amount),
+              }
+            )
         );
   }
 </script>
@@ -115,7 +121,15 @@
       {/await}
     </div> -->
     <!-- <div class="border-b" /> -->
-    <div class="text-right pt-8">
+    <div id="automate" class="flex justify-between my-4 text-lg mx-4">
+      <strong>Automate Claim</strong>
+      <input
+        type="checkbox"
+        class="toggle toggle-primary"
+        bind:checked={automate}
+      />
+    </div>
+    <div class="text-right pt-4">
       <button class="btn btn-primary w-full" on:click={(_) => action()}>
         {#if mode == "withdraw"}
           Collect

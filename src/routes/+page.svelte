@@ -1,6 +1,5 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { LottiePlayer } from "@lottiefiles/svelte-lottie-player";
   import CoinIcon from "src/components/coin-icon.svelte";
   import LiquidityChart from "src/components/liquidity-chart.svelte";
   import { Parallax, ParallaxLayer, StickyLayer } from "svelte-parallax";

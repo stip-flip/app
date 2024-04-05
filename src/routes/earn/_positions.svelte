@@ -3,7 +3,7 @@
   import { formatEther } from "ethers/lib/utils";
   import { commify } from "src/lib";
   import Modal from "./_modal.svelte";
-  import type { Position } from "src/hooks/pool";
+  import type { Position } from "src/hooks/position";
 
   export let bytes: string[];
   export let poolName: string;
@@ -11,25 +11,33 @@
   export let positions: Record<string, Position>;
 
   let selectedPosition: any;
+  let label: HTMLLabelElement;
   $: console.log(positions);
 </script>
 
-<Modal {poolAddress} {selectedPosition} />
+<Modal {poolAddress} {poolName} {selectedPosition} />
+<label for={poolAddress} bind:this={label}></label>
 <div class="overflow-x-auto bg-gradient">
   <table class="table w-full">
     <!-- head -->
     <thead>
       <tr>
-        <th class="w-1/3 lg:w-auto">Funding Rate</th>
-        <th class="w-1/3 lg:w-auto">Liquidity</th>
-        <th class="hidden lg:table-cell">Liquidity Active</th>
-        <th class="w-1/3 lg:w-auto">PnL</th>
-        <th class="hidden lg-table-cell" />
+        <th class="w-1/3 lg:w-1/4">Activation Rate</th>
+        <th class="w-1/3 lg:w-1/4">Liquidity</th>
+        <th class="hidden lg:table-cell lg:w-1/4">Liquidity Active</th>
+        <th class="w-1/3 lg:w-1/4 text-right">PnL</th>
+        <!-- <th class="hidden lg-table-cell" /> -->
       </tr>
     </thead>
     <tbody>
       {#each bytes.sort( (a, b) => (positions[b].tick < positions[a].tick ? 0 : -1) ) as b}
-        <tr class="hover">
+        <tr
+          class="hover cursor-pointer"
+          on:click={(_) => {
+            selectedPosition = positions[b];
+            label.click();
+          }}
+        >
           <td class="w-1/3 lg:w-auto">{positions[b].tick / 100}%</td>
           <td class="w-1/3 lg:w-auto lg:flex items-center">
             <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
@@ -37,12 +45,14 @@
           </td>
           <td class="hidden lg:table-cell">
             <div
-              class="rounded-full w-full border border-primary relative"
+              class="rounded-full w-full border border-primary bg-primary relative overflow-hidden bg-opacity-40"
               class:border-warning={positions[b].liquidityActive < 0.1}
+              class:bg-warning={positions[b].liquidityActive < 0.1}
             >
               <div
-                class="bg-primary rounded-full whitespace-nowrap"
-                class:text-black={positions[b].liquidityActive > 0.5}
+                class="bg-primary whitespace-nowrap text-base-300"
+                class:bg-warning={positions[b].liquidityActive < 0.1}
+                class:text-accent={positions[b].liquidityActive > 0.5}
                 style={`width: ${positions[b].liquidityActive * 100}%`}
               >
                 <span class="pl-2"
@@ -53,11 +63,11 @@
               </div>
             </div>
           </td>
-          <td class="w-1/3 lg:w-auto lg:flex items-center">
+          <td class="w-1/3 lg:w-auto lg:flex items-end justify-end text-right">
             <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
             {commify(formatEther(positions[b].pnl), 3)}
           </td>
-          <td class="hidden lg:table-cell">
+          <!-- <td class="hidden lg:table-cell">
             <label
               for={poolAddress}
               on:click={(_) => {
@@ -69,7 +79,7 @@
                 class="cursor-pointer w-6 h-6"
               />
             </label>
-          </td>
+          </td> -->
         </tr>
       {/each}
     </tbody>

@@ -12,9 +12,9 @@ module.exports = sdk.defineConfig({
   contracts: {
     mordor: {
       USDC: "0x26c922212b440fc48ab8f54c822349cacc9ce91a",
-      POOL: "0x5ac308ccfbcfaddea056bd148031a37fdd756ee8",
+      POOL: "0x536431fffbb75e8f3891ea3b5482a2c62ef4bd03",
       ORACLE: "0x378fB5a7b85F44Eb656Ef0D7C0D2109dE41871A1",
-      TRADER_PERIPHERY: "0x10DFC6EA1f62E4639EEE08Ea2034B927e4915324",
+      TRADER_PERIPHERY: "0xEe9100bdf4822D7D386188dce6996Bb553A45CD0",
     },
     ether: {
       USDC: "0x76d0184CF511788032A74a1FB91146e63F43dd53",

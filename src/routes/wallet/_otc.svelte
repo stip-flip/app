@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { formatEther, formatUnits } from "ethers/lib/utils";
+  import CoinIcon from "src/components/coin-icon.svelte";
   import type { TokenInfo } from "src/hooks/erc20";
   import type { Claim } from "src/hooks/pool";
   import { commify } from "src/lib";
@@ -28,7 +29,13 @@
 
 <tr class="hover cursor-pointer">
   <td>
-    <strong>{claim?.exit ? "Ether Classic" : token?.name}</strong>
+    <strong class="flex space-x-2"
+      >{#if claim?.exit}
+        <CoinIcon symbol={"ETC"} /><span>Ether Classic</span>
+      {:else}
+        <CoinIcon symbol={token?.symbol} /><span>{token?.name}</span
+        >{/if}</strong
+    >
   </td>
   <td class="text-left">
     {commify(formatEther(claim?.estimatedAmount || 0), 4)}

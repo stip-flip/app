@@ -18,7 +18,7 @@ fragment PositionFragment on Position {
   id
   owner
   tick
-  amount
+  shares
 }
 
 query getPositions($where: Position_filter) {
@@ -40,5 +40,22 @@ fragment ClaimFragment on Claim {
 query getClaims($where: Claim_filter) {
   claims(where: $where) {
     ...ClaimFragment
+  }
+}
+
+fragment PositionClaimFragment on PositionClaim {
+  id
+  owner
+  tick
+  burn
+  amount
+  round
+  claimer
+  claimed
+}
+
+query getPositionClaims($where: PositionClaim_filter) {
+  positionClaims(where: $where) {
+    ...PositionClaimFragment
   }
 }

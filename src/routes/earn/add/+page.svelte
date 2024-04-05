@@ -4,18 +4,20 @@
   import { validator } from "src/actions/big-number-input";
   import LiquidityChart from "src/components/liquidity-chart.svelte";
   import { useBalance } from "src/hooks/balance";
-  import { broadcastTransaction } from "src/hooks/blocknumber";
-  import { usePoolInfos, type PoolInfo } from "src/hooks/pool";
+  import { usePoolInfos } from "src/hooks/pool";
+  import { broadcastTransaction } from "src/hooks/transactions";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
-  import { signer, signerAddress } from "svelte-ethers-store";
+  import { signer } from "svelte-ethers-store";
+  import Modal from "./_modal.svelte";
+  import type { TokenInfoAndBalance } from "src/hooks/erc20";
 
   let amount: string;
 
-  let selectedAddress: string;
+  let selectedToken: TokenInfoAndBalance;
 
   $: pi = usePoolInfos;
-  $: selectedPool = $pi?.find((p) => p.address == selectedAddress);
+  $: selectedPool = $pi?.find((p) => p.address == selectedToken?.info?.address);
 
   let FR = 500;
   // fr is actually a tick here
@@ -24,16 +26,22 @@
   }
 </script>
 
+<Modal
+  id="position-modal"
+  bind:selectedToken
+  tokenInfosAndBalances={$pi.map((p) => p.token) || []}
+/>
+
 <div
   class="lg:border-2 rounded-lg p-4 bg-transparent lg:w-1/2 m-auto mt-16 lg:mt-40 bg-gradient"
 >
   <div
-    class="flex justify-between items-center p-4 border-b border-base-content"
+    class="flex justify-between items-center p-4 pb-8 border-b border-base-content"
   >
     <a class="w-1/3" href="/earn">
       <Icon icon="ph-arrow-left-bold" class="text-2xl" />
     </a>
-    <h1 class="text-lg w-1/3 text-center font-semibold">Add Liquidity</h1>
+    <h1 class="text-xl w-1/3 text-center font-semibold">New Position</h1>
     <div class="w-1/3" />
   </div>
   <div class="p-4">
@@ -44,27 +52,12 @@
             >Lend liquidity to</span
           >
         </label>
-        <div class="dropdown w-full">
-          <label
-            tabindex="0"
-            class="btn btn-outline w-full border border-current"
-            class:btn-outline={selectedPool != undefined}
-            >{selectedPool?.token?.info?.name || "--"}</label
-          >
-          <ul
-            tabindex="0"
-            class="dropdown-content menu shadow bg-base-100 rounded-box w-full z-10"
-          >
-            {#each $pi || [] as p}
-              <li>
-                <a on:click={(_) => (selectedAddress = p.address)}
-                  >{p.token?.info?.name}</a
-                >
-              </li>
-            {/each}
-            <!-- <li><a on:click={(_) => (exposure = 2)}>Neutral</a></li> -->
-          </ul>
-        </div>
+        <label
+          for="position-modal"
+          class="btn btn-outline w-full border border-current"
+          class:btn-outline={selectedPool != undefined}
+          >{selectedPool?.token?.info?.name || "--"}</label
+        >
       </div>
       <div class="form-control lg:w-1/2">
         <label class="label">
@@ -112,7 +105,7 @@
             <Icon icon="ic:baseline-minus" />
           </div>
           <div class="flex flex-col justify-between">
-            <div class="flex-grow h-8 text-center">Funding Rate</div>
+            <div class="flex-grow h-8 text-center">Activation Rate</div>
             <input
               class="text-lg font-semibold flex-grow text-center h-8 bg-transparent"
               value={formatFR(FR)}
@@ -121,7 +114,7 @@
               max="640"
             />
 
-            <div class="flex-grow h-8" />
+            <div class="flex-grow h-8 text-center items-end mt-1">% / Year</div>
           </div>
           <div class="p-2 text-xl cursor-pointer" on:click={(_) => (FR += 10)}>
             <Icon icon="material-symbols:add" />
@@ -132,7 +125,11 @@
     </div>
     <div class="border-b w-full my-4 border-base-content" />
     {#if selectedPool}
-      <LiquidityChart initializedTicks={selectedPool.ticks} bind:FR />
+      <LiquidityChart
+        initializedTicks={selectedPool.ticks}
+        bind:FR
+        className="!h-40"
+      />
     {:else}
       <div class="text-center h-24">
         <h1 class="pt-8">Your position will appear here</h1>
@@ -144,10 +141,12 @@
       disabled={!selectedPool || !amount}
       on:click={(_) => {
         broadcastTransaction(
-          "Depositing liquidities",
+          `Depositing liquidities to ${selectedPool?.token?.info?.symbol} pool`,
           $sdk.POOL.attach(selectedPool?.address || "")
             .connect($signer)
-            .mint($signerAddress, FR, { value: parseEther(amount) })
+            .mint(FR, $sdk.TRADER_PERIPHERY.address, {
+              value: parseEther(amount),
+            })
         );
       }}>Add Liquidity</button
     >
