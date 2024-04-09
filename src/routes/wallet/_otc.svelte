@@ -4,26 +4,12 @@
   import CoinIcon from "src/components/coin-icon.svelte";
   import type { TokenInfo } from "src/hooks/erc20";
   import type { Claim } from "src/hooks/pool";
-  import { commify } from "src/lib";
+  import { commify, getTimeDifference } from "src/lib";
   import { timestamp } from "src/stores";
 
   export let token: TokenInfo | undefined = undefined;
   export let claim: Claim | undefined = undefined;
 
-  function getTimeDifference(settlement: number, givenTime: number) {
-    let differenceInSeconds = Math.abs(settlement - givenTime);
-    // console.log(now, givenTime, differenceInSeconds);
-    const hours = Math.floor(differenceInSeconds / 3600);
-    differenceInSeconds %= 3600;
-    const minutes = Math.floor(differenceInSeconds / 60);
-    const seconds = Math.floor(differenceInSeconds % 60);
-
-    const paddedHours = String(hours).padStart(2, "0");
-    const paddedMinutes = String(minutes).padStart(2, "0");
-    const paddedSeconds = String(seconds).padStart(2, "0");
-
-    return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
-  }
   $: timeleft = getTimeDifference(claim?.settlementTimestamp || 0, $timestamp);
 </script>
 

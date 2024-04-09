@@ -13,6 +13,8 @@
     "/F-XMR.svg",
   ];
 
+  const iconsTranslate = [2, 4, 3, 9, 1, 7];
+
   import { spring } from "svelte/motion";
 
   $: FR = spring(500, { stiffness: 0.1, damping: 0.8 });
@@ -43,7 +45,7 @@
   };
 </script>
 
-<Parallax sections={5}>
+<Parallax sections={7}>
   <ParallaxLayer rate={1} offset={0}>
     <div
       class="text-center lg:text-start lg:mt-0 lg:bottom-48 lg:left-28 h-full flex justify-between flex-col"
@@ -92,12 +94,12 @@
     </div>
   </ParallaxLayer>
 
-  <StickyLayer rate={2} offset={{ top: 1, bottom: 4 }}>
+  <StickyLayer rate={2} offset={{ top: 1, bottom: 7 }}>
     <div class="bg-2 h-full"></div>
   </StickyLayer>
 
-  <StickyLayer rate={1} offset={{ top: 1, bottom: 1.5 }}>
-    <div class="flex p-8 px-32 z-10">
+  <StickyLayer rate={1} offset={{ top: 1, bottom: 2 }} let:progress>
+    <div class="flex p-8 px-32 z-10" style="opacity: {2 - 2 * progress};">
       <div>
         <h3 class="text-primary text-5xl mt-24">Trade any synthetic asset</h3>
         <div class="py-4 text-2xl">
@@ -109,19 +111,30 @@
   </StickyLayer>
 
   {#each icons as icon, i}
-    <ParallaxLayer rate={1 + Math.random()} offset={1.7} let:progress>
+    <StickyLayer
+      rate={1 + Math.random()}
+      offset={{ top: 1, bottom: 2 }}
+      let:progress
+    >
       <div
         class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 h-32 w-32 p-4"
-        style="margin-left: {25 +
-          i * 10}%; transform: translateY(-{Math.random() * 500}%);"
+        style="margin-top: 80vh; margin-left: {25 +
+          i * 10}%; transform: translateY(-{progress *
+          (10 - iconsTranslate[i]) *
+          100 +
+          iconsTranslate[i] * 50}%) scale({1 - progress * 0.5}); opacity: {3 -
+          3 * progress};"
       >
         <img src={icon} />
       </div>
-    </ParallaxLayer>
+    </StickyLayer>
   {/each}
 
-  <StickyLayer rate={2} offset={{ top: 2, bottom: 2.5 }} let:progress>
-    <div class="h-1/3 flex justify-end p-8 px-32 z-10">
+  <StickyLayer rate={2} offset={{ top: 2, bottom: 4 }} let:progress>
+    <div
+      class="h-1/3 flex justify-end p-8 px-32 z-10"
+      style="margin-top: {30 - (progress < 0.2 ? 0 : (progress - 0.2) * 40)}vh;"
+    >
       <div>
         <h3 class="text-primary text-5xl mt-24 text-right">Anti-Fragile</h3>
         <div class="py-4 text-2xl text-right">
@@ -160,54 +173,71 @@
       {/each}
     </div>
     <div
-      class="flex space-x-8 items-center ml-24 mt-20 z-10"
+      class="flex space-x-8 items-center justify-around ml-24 mt-20 z-10"
       style="opacity: {progress < 0.5 ? 0 : 1}; transition: all 1s ease;"
     >
-      <p class="text-2xl font-bold">
-        Trade your synthetic squared or cubed - long or short - stip or flip...
+      <p class="text-2xl text-right">
+        Trade your synthetic squared or cubed <br /><br />
+        long or short <br /><br />
+        stip or flip <br /><br />
       </p>
-      <a class="btn btn-outline" href="https://docs.sf.exchange">Learn More</a>
+      <a class="btn btn-outline w-1/3" href="https://docs.sf.exchange"
+        >Learn More</a
+      >
     </div>
   </StickyLayer>
-  <ParallaxLayer rate={3} offset={2} onProgress={onChartProgress} let:progress>
-    <div class="flex space-x-4 ml-24 mb-8 -mt-24">
-      <div class="btn btn-primary btn-outline btn-wide btn-lg">
-        <CoinIcon symbol="F-BTC" />Flip-Bitcoin
-      </div>
-      <div class="join">
-        <div class="btn btn-outline btn-wide btn-lg join-item">
-          Pool Funding Rate
-        </div>
-        <div class="btn btn-outline btn-lg join-item">0.3%</div>
-      </div>
-    </div>
+  <StickyLayer
+    rate={3}
+    offset={{ top: 2, bottom: 3 }}
+    onProgress={onChartProgress}
+    let:progress
+  >
     <div
-      class="ml-24 p-4 border border-primary rounded-2xl bg-gradient h-1/4 lg:w-1/2 margin-auto shadow-md shadow-primary"
+      style="margin-top: 30vh; height: 100vh; transform: scale({0.8 +
+        0.2 * progress});"
     >
-      <LiquidityChart initializedTicks={ticks} FR={$FR} />
-    </div>
-    <div class="join ml-24 mt-8">
-      <div class="btn btn-primary btn-wide btn-lg join-item">
-        Deposit Liquidity at
+      <div class="flex space-x-4 ml-24 mb-8 -mt-24">
+        <div class="btn btn-primary btn-outline btn-wide btn-lg">
+          <CoinIcon symbol="F-BTC" />Flip-Bitcoin
+        </div>
+        <div class="join">
+          <div class="btn btn-outline btn-wide btn-lg join-item">
+            Pool Funding Rate
+          </div>
+          <div class="btn btn-outline btn-lg join-item">0.3%</div>
+        </div>
       </div>
-      <div class="btn btn-primary btn-outline btn-lg join-item">
-        {($FR / 100).toFixed(2)}%
+      <div
+        class="ml-24 p-4 border border-primary rounded-2xl bg-gradient h-1/4 lg:w-1/2 margin-auto shadow-md shadow-primary"
+      >
+        <LiquidityChart initializedTicks={ticks} FR={$FR} />
+      </div>
+      <div class="join ml-24 mt-8">
+        <div class="btn btn-primary btn-wide btn-lg join-item">
+          Deposit Liquidity at
+        </div>
+        <div class="btn btn-primary btn-outline btn-lg join-item">
+          {($FR / 100).toFixed(2)}%
+        </div>
       </div>
     </div>
-  </ParallaxLayer>
-  <StickyLayer rate={2} offset={{ top: 3, bottom: 3.5 }}>
-    <div class="h-full flex justify-around">
+  </StickyLayer>
+  <StickyLayer rate={1} offset={{ top: 5, bottom: 6 }}>
+    <div class="h-1/2 flex justify-around" style="margin-top: -30vh;">
       <div>
         <h3 class="text-primary text-5xl mt-64">Secure</h3>
         <div class="py-4 text-2xl">
           <p class="py-4">Built on the most secure smart contract blockchain</p>
-          <p class="py-4">100% community driven - no single point of failure</p>
+          <p class="py-4">100% Decentralized - no single point of failure</p>
         </div>
       </div>
     </div>
   </StickyLayer>
-  <StickyLayer rate={1} offset={{ top: 4, bottom: 5 }}>
-    <div class="flex justify-around items-center h-1/2">
+  <StickyLayer rate={1} offset={{ top: 5, bottom: 6 }}>
+    <div
+      class="flex justify-around items-center h-1/2"
+      style="margin-top: 15vh;"
+    >
       <a class="btn-primary text-white btn btn-lg w-1/3" href="swap"
         >Start Trading</a
       >

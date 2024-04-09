@@ -14,8 +14,8 @@
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useBalance as useBal } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/pool";
-  import { commify } from "src/lib";
-  import { sdk } from "src/stores";
+  import { commify, getTimeDifference } from "src/lib";
+  import { sdk, timestamp } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Modal from "./_modal.svelte";
   import CoinIcon from "src/components/coin-icon.svelte";
@@ -32,6 +32,8 @@
   let automate: boolean = true;
 
   let checkbox: HTMLInputElement;
+
+  let mode: "OTC" | "MARKET" = "OTC";
 
   const ZERO_ADDRESS = "0x0";
 
@@ -92,6 +94,18 @@
       debOut();
     }
   }
+
+  $: timeleft = getTimeDifference(
+    selectedPool?.settlementTimestamp || 0,
+    $timestamp
+  );
+
+  const reset = () => {
+    amountOut = "0";
+    amountIn = "0";
+    selectedToken0 = undefined;
+    selectedToken1 = undefined;
+  };
 
   // debounce outgoing amount
   const debOut = _.debounce(async () => {
@@ -173,6 +187,37 @@
   class="px-8 lg:px-0 lg:w-1/3 m-auto mt-20 lg:mt-40 flex justify-between items-center"
 >
   <h1 class="text-3xl">Swap</h1>
+  <ul
+    class="relative menu menu-md menu-horizontal bg-gradient rounded-full bg-opacity-50 lg:bg-gradient p-0"
+  >
+    <!-- Navbar menu content here -->
+    <div
+      class="absolute w-1/2 h-full border border-primary rounded-full transition-all"
+      class:right-0={mode == "MARKET"}
+    ></div>
+    <li>
+      <div
+        on:click={(_) => {
+          mode = "OTC";
+          reset();
+        }}
+        class="rounded-full w-20 text-center block"
+      >
+        OTC
+      </div>
+    </li>
+    <li>
+      <div
+        on:click={(_) => {
+          mode = "MARKET";
+          reset();
+        }}
+        class="rounded-full w-20 text-center block"
+      >
+        Market
+      </div>
+    </li>
+  </ul>
 </div>
 <div
   class="lg:w-1/3 m-auto mt-4 mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient"
@@ -223,6 +268,21 @@
         </div>
       {/if}
     </div>
+  </div>
+  <div class="w-full flex justify-center h-0">
+    <span
+      class="z-10"
+      on:click={(_) => {
+        [selectedToken0, selectedToken1] = [selectedToken1, selectedToken0];
+        [amountIn, amountOut] = [amountOut, amountIn];
+        debOut();
+      }}
+    >
+      <Icon
+        class="text-4xl text-primary bg-slate-200 -mt-2 cursor-pointer"
+        icon="mdi:swap-vertical"
+      />
+    </span>
   </div>
   <div
     class="w-full flex space-x-4 mt-4 p-8 bg-slate-200 rounded-3xl relative shadow-lg"
@@ -281,7 +341,7 @@
       </div>
       <div id="settlement" class="flex justify-between my-4 text-lg">
         <strong>Next Settlement</strong>
-        <strong> 00:00:00 </strong>
+        <strong> {timeleft} </strong>
       </div>
     </div>
     {#if Number(amountOut)}

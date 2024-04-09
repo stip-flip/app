@@ -20,6 +20,7 @@ export type PoolInfo = {
   totalLiquidities: BigNumber;
   ticks?: Record<number, number>;
   token?: TokenInfoAndBalance;
+  settlementTimestamp: number;
 };
 
 export const poolInfoAsync = async (
@@ -31,16 +32,29 @@ export const poolInfoAsync = async (
   const [oracle, slot] = await Promise.all([p.oracle(), p.oracleSlot()]);
   const o = sdk.ORACLE.attach(oracle);
 
-  const [currentPrice, oracleDecimals, slot0, slot1, lastPrice, fee] =
-    await Promise.all([
-      p.getPrice(),
-      o.getDecimals(slot),
-      p.slot0(),
-      p.slot1(),
-      p.getPrice(),
-      p.fee(),
-      p.description(),
-    ]);
+  const [
+    currentPrice,
+    slot0,
+    slot1,
+    lastPrice,
+    fee,
+    oracleDecimals,
+    round,
+    frequency,
+    initialized,
+    roundDuration,
+  ] = await Promise.all([
+    p.getPrice(),
+    p.slot0(),
+    p.slot1(),
+    p.getPrice(),
+    p.fee(),
+    o.getDecimals(slot),
+    o.getLastRound(),
+    o.frequency(),
+    o.initialized(),
+    o.roundDuration(),
+  ]);
 
   return {
     address,
@@ -52,6 +66,10 @@ export const poolInfoAsync = async (
     feeProtocol: 0,
     fee,
     totalLiquidities: slot0.totalLiquidities,
+    settlementTimestamp:
+      initialized.toNumber() +
+      (round.toNumber() + 1) * frequency +
+      roundDuration,
   };
 };
 

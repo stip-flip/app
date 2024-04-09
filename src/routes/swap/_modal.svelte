@@ -40,15 +40,15 @@
         ? t.info.name.toLowerCase().includes(search.toLowerCase())
         : true
     )
-    .filter((t) => t.info.address != selectedToken?.info.address)
-    .slice(0, 10);
+    .filter((t) => t.info.address != selectedToken?.info.address);
+  // .slice(0, 10);
 </script>
 
 <input type="checkbox" {id} class="modal-toggle" bind:this={checkbox} />
 <label for={id} class="modal cursor-pointer">
   <label class="w-full lg:w-1/2">
     <div class="bg-opaque lg:rounded-xl lg:border block p-8" for="">
-      <div class="flex justify-around">
+      <div class="flex justify-around pb-4">
         <label
           tabindex="0"
           class="text-lg px-4 cursor-pointer border-primary"
@@ -58,7 +58,7 @@
             selectToken = "token0";
           }}
         >
-          Token 1
+          Sell {selectedToken0?.info?.symbol || "Token 1"}
         </label>
         <label
           tabindex="0"
@@ -69,7 +69,7 @@
             selectToken = "token1";
           }}
         >
-          Token 2
+          Buy {selectedToken1?.info?.symbol || "Token 2"}
         </label>
       </div>
       <div
@@ -87,7 +87,10 @@
       </div>
       <div class="flex pt-4 lg:space-x-4">
         <Menu bind:terms />
-        <ul class="p-4 rounded-box shadow-lg border w-full bg-base-300">
+        <ul
+          class="p-4 rounded-box shadow-lg border w-full bg-base-300"
+          style="height: 50vh;"
+        >
           {#if selectedToken}
             <li
               class="rounded-t-2xl px-6 pb-2 pt-2 cursor-pointer bg-base-100 -mt-4 -mx-4 border-b"

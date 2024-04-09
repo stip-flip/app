@@ -1,3 +1,4 @@
+import type { providers } from "@0xsequence/multicall";
 import type { ContractTransaction } from "ethers";
 import { provider, sdk } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
@@ -71,15 +72,14 @@ export const broadcastTransaction = (
   return t;
 };
 
-// how to watch an eth address and update his total transactions
-
 // Function to watch the address and update the total transactions
-async function watchAddress() {
-  // checj if we are on the server
+async function watchAddress(provider: providers.MulticallProvider) {
+  // check if we are on the server
   if (typeof window === "undefined") return;
   try {
-    const transactionCount = await get(provider)?.getTransactionCount(
-      get(sdk).TRADER_PERIPHERY.address
+    const transactionCount = await provider?.getTransactionCount(
+      get(sdk).TRADER_PERIPHERY.address,
+      "latest"
     );
     totalTraderTransactions.set(transactionCount);
     // Update the total transactions in your store or do any other necessary logic
@@ -91,4 +91,4 @@ async function watchAddress() {
 export const totalTraderTransactions = writable<number>(0);
 
 // Call the watchAddress function periodically to keep updating the total transactions
-setInterval(watchAddress, 2000);
+setInterval((_) => watchAddress(get(provider)), 5000);

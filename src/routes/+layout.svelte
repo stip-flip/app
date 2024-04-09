@@ -15,8 +15,7 @@
     transactions,
   } from "src/hooks/transactions";
   import { connectMetamask } from "src/lib";
-  import { appState } from "src/stores";
-  import { chainId } from "svelte-ethers-store";
+  import { chainId, connected } from "svelte-ethers-store";
   import { quintOut } from "svelte/easing";
   import { fly } from "svelte/transition";
 
@@ -207,6 +206,7 @@
                 <a
                   href={`/faucet/`}
                   class="rounded-full"
+                  class:hidden={!$connected || $chainId != 63}
                   class:text-primary={$page.route?.id?.startsWith("/faucet")}
                   class:selected={$page.route?.id?.startsWith("/faucet")}
                   >Faucet</a

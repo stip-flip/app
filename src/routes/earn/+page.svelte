@@ -34,7 +34,7 @@
 </script>
 
 <div
-  class="px-4 lg:px-8 lg:w-1/2 m-auto mt-32 mb-4 lg:mt-40 flex justify-between items-center"
+  class="px-8 lg:px-0 lg:w-1/2 m-auto mt-32 mb-4 lg:mt-40 flex justify-between items-center"
 >
   <h1 class="text-3xl">Earn</h1>
 </div>
