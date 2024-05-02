@@ -4,7 +4,7 @@
   import { validator } from "src/actions/big-number-input";
   import LiquidityChart from "src/components/liquidity-chart.svelte";
   import { useBalance } from "src/hooks/balance";
-  import { usePoolInfos } from "src/hooks/pool";
+  import { usePoolInfos } from "src/hooks/synth";
   import { broadcastTransaction } from "src/hooks/transactions";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
@@ -22,7 +22,7 @@
   let FR = 500;
   // fr is actually a tick here
   function formatFR(fr: number) {
-    return fr / 100;
+    return Number(fr.toFixed(1)) / 100;
   }
 </script>
 
@@ -107,9 +107,11 @@
           <div class="flex flex-col justify-between">
             <div class="flex-grow h-8 text-center">Activation Rate</div>
             <input
-              class="text-lg font-semibold flex-grow text-center h-8 bg-transparent"
+              class="text-lg font-semibold flex-grow text-center h-8 bg-transparent appearance-none"
               value={formatFR(FR)}
               on:change={(e) => (FR = Number(e.currentTarget.value) * 100)}
+              type="number"
+              step="0.1"
               min="0"
               max="640"
             />
@@ -141,7 +143,7 @@
       disabled={!selectedPool || !amount}
       on:click={(_) => {
         broadcastTransaction(
-          `Depositing liquidities to ${selectedPool?.token?.info?.symbol} pool`,
+          `Depositing liquidities to ${selectedPool?.token?.info?.symbol}`,
           $sdk.POOL.attach(selectedPool?.address || "")
             .connect($signer)
             .mint(FR, $sdk.TRADER_PERIPHERY.address, {
@@ -152,3 +154,11 @@
     >
   </div>
 </div>
+
+<style>
+  :global(input[type="number"]::-webkit-inner-spin-button),
+  :global(input[type="number"]::-webkit-outer-spin-button) {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+</style>

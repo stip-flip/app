@@ -17,7 +17,8 @@
   import { connectMetamask } from "src/lib";
   import { chainId, connected } from "svelte-ethers-store";
   import { quintOut } from "svelte/easing";
-  import { fly } from "svelte/transition";
+  import { crossfade, fly } from "svelte/transition";
+  import { flip } from "svelte/animate";
 
   let overlay: HTMLAreaElement;
 
@@ -53,59 +54,74 @@
     61: "etc",
     63: "etc-mordor",
   };
+
+  const [send, receive] = crossfade({
+    duration: (d) => Math.sqrt(d * 200),
+
+    fallback(node, params) {
+      const style = getComputedStyle(node);
+      const transform = style.transform === "none" ? "" : style.transform;
+
+      return {
+        duration: 600,
+        easing: quintOut,
+        css: (t) => `
+				transform: ${transform} scale(${t});
+				opacity: ${t}
+			`,
+      };
+    },
+  });
 </script>
 
-{#each $pendingTransactions as pt (pt.hash)}
-  <div
-    class="toast z-10"
-    transition:fly={{
-      delay: 0,
-      duration: 1000,
-      x: 500,
-      y: 0,
-      opacity: 0.5,
-      easing: quintOut,
-    }}
-  >
-    <div
-      class="alert alert-info block space-x-2 w-62 h-24"
-      class:flex={!!pt.resolved && pt.status == 1}
-      class:alert-success={pt.status == 1}
+<ul class="fixed bottom-0 right-0 z-10 m-4">
+  {#each $pendingTransactions as pt (pt.hash)}
+    <li
+      class="mt-4"
+      in:receive={{ key: pt.hash }}
+      out:send={{ key: pt.hash }}
+      animate:flip={{ duration: 200 }}
     >
-      {#if pt.status == 1 && pt.resolved}
-        <Icon
-          icon="mdi:check"
-          class="text-3xl text-white bg-primary rounded-full"
-        />
-        <div class="inline text-base">
-          {@html $resolvedTransactions[lastResolvedIndex]?.resolved}
-        </div>
-      {:else}
-        <div class="text-base-200">{pt.label}</div>
-        {#if pt.status == 1}
-          <progress
-            class="progress progress-success w-56 opa"
-            value="100"
-            max="100"
+      <div
+        class="alert alert-info block space-x-2 w-62 h-24"
+        class:flex={!!pt.resolved && pt.status == 1}
+        class:alert-success={pt.status == 1}
+      >
+        {#if pt.status == 1 && pt.resolved}
+          <Icon
+            icon="mdi:check"
+            class="text-3xl text-white bg-primary rounded-full"
           />
+          <div class="inline text-base">
+            {@html $resolvedTransactions[lastResolvedIndex]?.resolved}
+          </div>
         {:else}
-          <progress class="progress w-56" />
+          <div class="text-base-200">{pt.label}</div>
+          {#if pt.status == 1}
+            <progress
+              class="progress progress-success w-56 opa"
+              value="100"
+              max="100"
+            />
+          {:else}
+            <progress class="progress w-56" />
+          {/if}
+          <a
+            class="block text-xs text-right text-base-200 underline"
+            target="_blank"
+            rel="noreferrer"
+            href={"https://" +
+              idToChain[$chainId] +
+              ".blockscout.com/tx/" +
+              pt.hash}
+          >
+            View on Explorer
+          </a>
         {/if}
-        <a
-          class="block text-xs text-right text-base-200 underline"
-          target="_blank"
-          rel="noreferrer"
-          href={"https://" +
-            idToChain[$chainId] +
-            ".blockscout.com/tx/" +
-            pt.hash}
-        >
-          View on Explorer
-        </a>
-      {/if}
-    </div>
-  </div>
-{/each}
+      </div>
+    </li>
+  {/each}
+</ul>
 
 <!-- {#if $resolvedTransactions[lastResolvedIndex] && !!$resolvedTransactions[lastResolvedIndex].resolved && $resolvedTransactions[lastResolvedIndex].status == 1}
   <div class="toast z-10">
@@ -137,7 +153,7 @@
                 >Documentation</a
               >
               <a
-                href="/swap"
+                href="/swap/otc"
                 class="p-1 rounded-md flex lg:space-x-1 hover:text-primary"
               >
                 <span>App</span></a
@@ -188,7 +204,7 @@
               </li>
               <li>
                 <a
-                  href={`/swap/`}
+                  href={`/swap/otc`}
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/swap")}
                   class:selected={$page.route?.id?.startsWith("/swap")}>Swap</a

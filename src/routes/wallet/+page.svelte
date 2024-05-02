@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { sdk } from "src/stores";
-  import { usePoolInfos } from "src/hooks/pool";
+  import { usePoolInfos } from "src/hooks/synth";
   import { useClaims } from "src/hooks/claims";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Otc from "./_otc.svelte";

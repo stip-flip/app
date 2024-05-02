@@ -47,6 +47,12 @@
       },
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "claimer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint128",
         "name": "sharesBurned",
         "type": "uint128"
@@ -117,7 +123,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "sender",
+        "name": "exitee",
         "type": "address"
       },
       {
@@ -142,7 +148,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "owner",
+        "name": "minter",
         "type": "address"
       },
       {
@@ -209,37 +215,6 @@
       },
       {
         "indexed": true,
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "amount0",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "amount1",
-        "type": "uint128"
-      }
-    ],
-    "name": "CollectProtocol",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": true,
         "internalType": "uint64",
         "name": "round",
         "type": "uint64"
@@ -266,13 +241,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "recipient",
+        "name": "exitee",
         "type": "address"
       },
       {
@@ -295,68 +264,6 @@
       }
     ],
     "name": "Exited",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount0",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount1",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "paid0",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "paid1",
-        "type": "uint256"
-      }
-    ],
-    "name": "Flash",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint16",
-        "name": "observationCardinalityNextOld",
-        "type": "uint16"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint16",
-        "name": "observationCardinalityNextNew",
-        "type": "uint16"
-      }
-    ],
-    "name": "IncreaseObservationCardinalityNext",
     "type": "event"
   },
   {
@@ -401,43 +308,18 @@
       },
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "claimer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint96",
         "name": "amountSent",
         "type": "uint96"
       }
     ],
     "name": "Mint",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "feeProtocol0Old",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "feeProtocol1Old",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "feeProtocol0New",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "feeProtocol1New",
-        "type": "uint8"
-      }
-    ],
-    "name": "SetFeeProtocol",
     "type": "event"
   },
   {
@@ -486,68 +368,15 @@
   },
   {
     "inputs": [],
-    "name": "FR_TIME_BASIS",
+    "name": "ORACLE_FEE",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint24",
         "name": "",
-        "type": "uint256"
+        "type": "uint24"
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "_transferShares",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "_transferSharesFrom",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -648,9 +477,19 @@
         "type": "uint64[]"
       },
       {
+        "internalType": "int24[]",
+        "name": "mintTicks",
+        "type": "int24[]"
+      },
+      {
         "internalType": "uint64[]",
         "name": "burns_",
         "type": "uint64[]"
+      },
+      {
+        "internalType": "int24[]",
+        "name": "burnTicks",
+        "type": "int24[]"
       },
       {
         "internalType": "address",
@@ -666,14 +505,14 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "enterees",
-        "type": "address[]"
+        "internalType": "bytes32[]",
+        "name": "mintees",
+        "type": "bytes32[]"
       },
       {
-        "internalType": "address[]",
-        "name": "exitees",
-        "type": "address[]"
+        "internalType": "bytes32[]",
+        "name": "burnees",
+        "type": "bytes32[]"
       },
       {
         "internalType": "uint64",
@@ -687,7 +526,40 @@
       }
     ],
     "name": "claimAllPosition",
-    "outputs": [],
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "int96",
+            "name": "amountToSwap",
+            "type": "int96"
+          },
+          {
+            "internalType": "uint96",
+            "name": "botFees",
+            "type": "uint96"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "tickAndOwner",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "lastRound",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "round",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct ClaimLogic.ClaimPositionState",
+        "name": "state",
+        "type": "tuple"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -750,30 +622,17 @@
         "type": "uint64"
       },
       {
+        "internalType": "bytes32",
+        "name": "tickAndFrom",
+        "type": "bytes32"
+      },
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
       }
     ],
     "name": "claimBurn",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "round",
-        "type": "uint64"
-      },
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      }
-    ],
-    "name": "claimBurnFrom",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -805,24 +664,6 @@
       },
       {
         "internalType": "address",
-        "name": "from",
-        "type": "address"
-      }
-    ],
-    "name": "claimEnterFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "round",
-        "type": "uint64"
-      },
-      {
-        "internalType": "address",
         "name": "recipient",
         "type": "address"
       }
@@ -840,30 +681,17 @@
         "type": "uint64"
       },
       {
+        "internalType": "bytes32",
+        "name": "tickAndFrom",
+        "type": "bytes32"
+      },
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
       }
     ],
     "name": "claimMint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "round",
-        "type": "uint64"
-      },
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      }
-    ],
-    "name": "claimMintFrom",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -916,11 +744,6 @@
       },
       {
         "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "claimer",
         "type": "address"
       }
@@ -949,7 +772,7 @@
     "outputs": [
       {
         "internalType": "uint64",
-        "name": "price",
+        "name": "",
         "type": "uint64"
       }
     ],
@@ -976,6 +799,11 @@
       {
         "internalType": "string",
         "name": "name_",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "symbol_",
         "type": "string"
       },
       {
@@ -1057,13 +885,19 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "oracle",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "contract IOracleView",
+        "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "name": "nonces",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1071,12 +905,12 @@
   },
   {
     "inputs": [],
-    "name": "oracleFee",
+    "name": "oracle",
     "outputs": [
       {
-        "internalType": "uint24",
+        "internalType": "contract IOracleView",
         "name": "",
-        "type": "uint24"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1093,6 +927,73 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "int24",
+        "name": "_int24",
+        "type": "int24"
+      },
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "pack",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "p",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "v",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "r",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "s",
+        "type": "bytes32"
+      }
+    ],
+    "name": "permit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1139,30 +1040,6 @@
         "internalType": "struct Position.Info",
         "name": "",
         "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "int24",
-        "name": "positionTick",
-        "type": "int24"
-      },
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "positionPnL",
-    "outputs": [
-      {
-        "internalType": "int256",
-        "name": "",
-        "type": "int256"
       }
     ],
     "stateMutability": "view",
@@ -1274,6 +1151,25 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "shares",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "shares_",
         "type": "uint256"
@@ -1331,6 +1227,29 @@
         "internalType": "int24",
         "name": "leftMostInitializedTick",
         "type": "int24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "slot2",
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "totalShares",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint64",
+        "name": "lastUpdate",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "lastPrice",
+        "type": "uint64"
       }
     ],
     "stateMutability": "view",
@@ -1409,12 +1328,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "sender",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "recipient",
+        "name": "to",
         "type": "address"
       },
       {
@@ -1432,6 +1351,30 @@
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_bytes",
+        "type": "bytes32"
+      }
+    ],
+    "name": "unpack",
+    "outputs": [
+      {
+        "internalType": "int24",
+        "name": "tick",
+        "type": "int24"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   }
 ]

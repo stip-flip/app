@@ -1,4 +1,4 @@
-fragment PoolFragment on Pool {
+fragment SynthFragment on Synth {
   id
   long
   ticks {
@@ -8,9 +8,9 @@ fragment PoolFragment on Pool {
   }
 }
 
-query getPools($where: Pool_filter) {
-  pools(where: $where) {
-    ...PoolFragment
+query getSynths($where: Synth_filter) {
+  synths(where: $where) {
+    ...SynthFragment
   }
 }
 

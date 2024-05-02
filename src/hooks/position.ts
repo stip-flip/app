@@ -25,9 +25,12 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
   const slot1 = await pool.slot1();
   console.log("positionResults", poolAddress, positionResults.positions);
   // get all the positions pnl and value
-  const [pnls, liquidities, positionInfos] = await Promise.all([
+  const [pnl, liquidities, positionInfos] = await Promise.all([
     Promise.all(
-      positionResults.positions.map((p) => pool.positionPnL(p.tick, account))
+      positionResults.positions.map((p) =>
+        // pool.positionPnL(p.tick, account).catch((_) => BigNumber.from(0))
+        BigNumber.from(0)
+      )
     ),
     Promise.all(
       positionResults.positions.map((p) => pool.positionValue(p.tick, account))
@@ -37,7 +40,12 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
     ),
   ]);
 
-  console.log("ok", pnls, liquidities, positionInfos);
+  const pnls = pnl.map((p, i) => {
+    const l = liquidities[i];
+    const pi = positionInfos[i];
+
+    return l.sub(pi.shares.mul(pi.sharesRatio).div(1e9).div(1e9).div(1e9));
+  });
 
   let positions = positionResults.positions.reduce((acc: any, cur, index) => {
     const byte = utils.solidityKeccak256(
@@ -68,10 +76,10 @@ export const usePositions = derived(
   [chainId, signerAddress, resolvedTransactions],
   ([$signer, $signerAddress, $resolvedTransactions], set) => {
     get(gqlsdk)
-      ?.getPools({})
+      ?.getSynths({})
       .then(async (res) => {
-        console.log("pools", res.pools);
-        const poolAddresses = res.pools.map((p) => p.id);
+        console.log("pools", res.synths);
+        const poolAddresses = res.synths.map((p) => p.id);
         const positions = await Promise.all(
           poolAddresses.map((a) => positionsAsync(a, $signerAddress))
         );

@@ -6,9 +6,9 @@ import { derived, get } from "svelte/store";
 import { resolvedTransactions, totalTraderTransactions } from "./transactions";
 import { useClaims } from "./claims";
 import { infosAndBalanceAsync, type TokenInfoAndBalance } from "./erc20";
-import type { PoolFragmentFragment } from "./subgraph";
+import type { SynthFragmentFragment } from "./subgraph";
 
-export type PoolInfo = {
+export type SynthInfo = {
   address: string;
   lastPrice: BigNumber;
   oracleDecimals: number;
@@ -23,10 +23,10 @@ export type PoolInfo = {
   settlementTimestamp: number;
 };
 
-export const poolInfoAsync = async (
+export const synthInfoAsync = async (
   address: string,
   account?: string
-): Promise<PoolInfo> => {
+): Promise<SynthInfo> => {
   const sdk = get(ethsdk);
   const p = sdk.POOL.attach(address || ethers.constants.AddressZero);
   const [oracle, slot] = await Promise.all([p.oracle(), p.oracleSlot()]);
@@ -76,26 +76,26 @@ export const poolInfoAsync = async (
 export const usePoolInfos = derived(
   [ethsdk, resolvedTransactions, gqlsdk, totalTraderTransactions],
   ([$ethsdk, $pt, $gqlsdk, $totalTraderTransactions], set) => {
-    $gqlsdk?.getPools({}).then(async (res) => {
-      console.log(res.pools);
-      const poolInfos = await Promise.all(
-        res.pools.map(async (p) => {
-          if (!p.id) return Promise.resolve({} as PoolInfo);
+    $gqlsdk?.getSynths({}).then(async (res) => {
+      console.log(res.synths);
+      const synthInfos = await Promise.all(
+        res.synths.map(async (p) => {
+          if (!p.id) return Promise.resolve({} as SynthInfo);
           return {
-            ...(await poolInfoAsync(p.id)),
+            ...(await synthInfoAsync(p.id)),
             ticks: initializedTickAsync(p),
             token: await infosAndBalanceAsync(p.id),
           };
         })
       );
-      set(poolInfos);
+      set(synthInfos);
     });
   },
-  [] as PoolInfo[]
+  [] as SynthInfo[]
 );
 
 export const initializedTickAsync = (
-  pool: PoolFragmentFragment
+  pool: SynthFragmentFragment
 ): Record<number, number> => {
   let ticksMap = pool.ticks.reduce((acc, cur) => {
     return {

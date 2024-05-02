@@ -3,7 +3,7 @@
   import { formatEther, formatUnits } from "ethers/lib/utils";
   import CoinIcon from "src/components/coin-icon.svelte";
   import type { TokenInfo } from "src/hooks/erc20";
-  import type { Claim } from "src/hooks/pool";
+  import type { Claim } from "src/hooks/synth";
   import { commify, getTimeDifference } from "src/lib";
   import { timestamp } from "src/stores";
 

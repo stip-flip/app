@@ -84,21 +84,22 @@
       on:click={(_) => {
         const poolAddress = claims?.[0].pool;
         if (!poolAddress) return;
-        const mints = (claims || [])
-          .filter((c) => !c.burn && c.claimable)
-          .map((c) => c.round);
-        const burns = (claims || [])
-          .filter((c) => c.burn && c.claimable)
-          .map((c) => c.round);
+        const mints = (claims || []).filter((c) => !c.burn && c.claimable);
+
+        const burns = (claims || []).filter((c) => c.burn && c.claimable);
 
         console.log("claim all", poolAddress, mints, burns);
         broadcastTransaction(
           `Claiming all ${poolName} positions`,
           $sdk.POOL.attach(poolAddress)
             .connect($signer)
-            [
-              "claimAllPosition(uint64[],uint64[],address)"
-            ](mints, burns, $signerAddress)
+            ["claimAllPosition(uint64[],int24[],uint64[],int24[],address)"](
+              mints.map((m) => m.round),
+              mints.map((m) => m.tick),
+              burns.map((b) => b.round),
+              burns.map((b) => b.tick),
+              $signerAddress
+            )
         );
       }}
       >{claims.filter((c) => !!c.claimable).length > 1

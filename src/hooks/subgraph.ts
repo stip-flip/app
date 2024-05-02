@@ -42,7 +42,7 @@ export type Claim = {
   exit: Scalars['Boolean'];
   id: Scalars['ID'];
   owner: Scalars['Bytes'];
-  pool: Pool;
+  pool: Synth;
   round: Scalars['BigInt'];
 };
 
@@ -130,56 +130,11 @@ export enum OrderDirection {
   Desc = 'desc'
 }
 
-export type Pool = {
-  __typename?: 'Pool';
-  id: Scalars['ID'];
-  long: Scalars['Boolean'];
-  oracle: Scalars['Bytes'];
-  ticks: Array<Tick>;
-};
-
-
-export type PoolTicksArgs = {
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Tick_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<Tick_Filter>;
-};
-
-export type Pool_Filter = {
-  id?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  long?: InputMaybe<Scalars['Boolean']>;
-  long_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  long_not?: InputMaybe<Scalars['Boolean']>;
-  long_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  oracle?: InputMaybe<Scalars['Bytes']>;
-  oracle_contains?: InputMaybe<Scalars['Bytes']>;
-  oracle_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  oracle_not?: InputMaybe<Scalars['Bytes']>;
-  oracle_not_contains?: InputMaybe<Scalars['Bytes']>;
-  oracle_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-};
-
-export enum Pool_OrderBy {
-  Id = 'id',
-  Long = 'long',
-  Oracle = 'oracle',
-  Ticks = 'ticks'
-}
-
 export type Position = {
   __typename?: 'Position';
   id: Scalars['ID'];
   owner: Scalars['Bytes'];
-  pool: Pool;
+  pool: Synth;
   shares: Scalars['BigInt'];
   tick: Scalars['Int'];
 };
@@ -192,9 +147,10 @@ export type PositionClaim = {
   claimer?: Maybe<Scalars['Bytes']>;
   id: Scalars['ID'];
   owner: Scalars['Bytes'];
-  pool: Pool;
+  pool: Synth;
   round: Scalars['BigInt'];
   tick: Scalars['Int'];
+  tickAndOwner: Scalars['Bytes'];
 };
 
 export type PositionClaim_Filter = {
@@ -263,6 +219,12 @@ export type PositionClaim_Filter = {
   round_not?: InputMaybe<Scalars['BigInt']>;
   round_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   tick?: InputMaybe<Scalars['Int']>;
+  tickAndOwner?: InputMaybe<Scalars['Bytes']>;
+  tickAndOwner_contains?: InputMaybe<Scalars['Bytes']>;
+  tickAndOwner_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  tickAndOwner_not?: InputMaybe<Scalars['Bytes']>;
+  tickAndOwner_not_contains?: InputMaybe<Scalars['Bytes']>;
+  tickAndOwner_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   tick_gt?: InputMaybe<Scalars['Int']>;
   tick_gte?: InputMaybe<Scalars['Int']>;
   tick_in?: InputMaybe<Array<Scalars['Int']>>;
@@ -281,7 +243,8 @@ export enum PositionClaim_OrderBy {
   Owner = 'owner',
   Pool = 'pool',
   Round = 'round',
-  Tick = 'tick'
+  Tick = 'tick',
+  TickAndOwner = 'tickAndOwner'
 }
 
 export type Position_Filter = {
@@ -351,12 +314,12 @@ export type Query = {
   _meta?: Maybe<_Meta_>;
   claim?: Maybe<Claim>;
   claims: Array<Claim>;
-  pool?: Maybe<Pool>;
-  pools: Array<Pool>;
   position?: Maybe<Position>;
   positionClaim?: Maybe<PositionClaim>;
   positionClaims: Array<PositionClaim>;
   positions: Array<Position>;
+  synth?: Maybe<Synth>;
+  synths: Array<Synth>;
   tick?: Maybe<Tick>;
   ticks: Array<Tick>;
 };
@@ -382,24 +345,6 @@ export type QueryClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Claim_Filter>;
-};
-
-
-export type QueryPoolArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryPoolsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Pool_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<Pool_Filter>;
 };
 
 
@@ -439,6 +384,24 @@ export type QueryPositionsArgs = {
 };
 
 
+export type QuerySynthArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerySynthsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Synth_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Synth_Filter>;
+};
+
+
 export type QueryTickArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID'];
@@ -462,12 +425,12 @@ export type Subscription = {
   _meta?: Maybe<_Meta_>;
   claim?: Maybe<Claim>;
   claims: Array<Claim>;
-  pool?: Maybe<Pool>;
-  pools: Array<Pool>;
   position?: Maybe<Position>;
   positionClaim?: Maybe<PositionClaim>;
   positionClaims: Array<PositionClaim>;
   positions: Array<Position>;
+  synth?: Maybe<Synth>;
+  synths: Array<Synth>;
   tick?: Maybe<Tick>;
   ticks: Array<Tick>;
 };
@@ -493,24 +456,6 @@ export type SubscriptionClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Claim_Filter>;
-};
-
-
-export type SubscriptionPoolArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionPoolsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Pool_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<Pool_Filter>;
 };
 
 
@@ -550,6 +495,24 @@ export type SubscriptionPositionsArgs = {
 };
 
 
+export type SubscriptionSynthArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionSynthsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Synth_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Synth_Filter>;
+};
+
+
 export type SubscriptionTickArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID'];
@@ -567,12 +530,57 @@ export type SubscriptionTicksArgs = {
   where?: InputMaybe<Tick_Filter>;
 };
 
+export type Synth = {
+  __typename?: 'Synth';
+  id: Scalars['ID'];
+  long: Scalars['Boolean'];
+  oracle: Scalars['Bytes'];
+  ticks: Array<Tick>;
+};
+
+
+export type SynthTicksArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Tick_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<Tick_Filter>;
+};
+
+export type Synth_Filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  long?: InputMaybe<Scalars['Boolean']>;
+  long_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  long_not?: InputMaybe<Scalars['Boolean']>;
+  long_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  oracle?: InputMaybe<Scalars['Bytes']>;
+  oracle_contains?: InputMaybe<Scalars['Bytes']>;
+  oracle_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  oracle_not?: InputMaybe<Scalars['Bytes']>;
+  oracle_not_contains?: InputMaybe<Scalars['Bytes']>;
+  oracle_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+};
+
+export enum Synth_OrderBy {
+  Id = 'id',
+  Long = 'long',
+  Oracle = 'oracle',
+  Ticks = 'ticks'
+}
+
 export type Tick = {
   __typename?: 'Tick';
   id: Scalars['ID'];
   index: Scalars['Int'];
   liquidity: Scalars['BigInt'];
-  pool: Pool;
+  pool: Synth;
 };
 
 export type Tick_Filter = {
@@ -661,14 +669,14 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type PoolFragmentFragment = { __typename?: 'Pool', id: string, long: boolean, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> };
+export type SynthFragmentFragment = { __typename?: 'Synth', id: string, long: boolean, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> };
 
-export type GetPoolsQueryVariables = Exact<{
-  where?: InputMaybe<Pool_Filter>;
+export type GetSynthsQueryVariables = Exact<{
+  where?: InputMaybe<Synth_Filter>;
 }>;
 
 
-export type GetPoolsQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, long: boolean, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> }> };
+export type GetSynthsQuery = { __typename?: 'Query', synths: Array<{ __typename?: 'Synth', id: string, long: boolean, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> }> };
 
 export type PositionFragmentFragment = { __typename?: 'Position', id: string, owner: any, tick: number, shares: number };
 
@@ -697,8 +705,8 @@ export type GetPositionClaimsQueryVariables = Exact<{
 
 export type GetPositionClaimsQuery = { __typename?: 'Query', positionClaims: Array<{ __typename?: 'PositionClaim', id: string, owner: any, tick: number, burn: boolean, amount: number, round: number, claimer?: any | null, claimed?: boolean | null }> };
 
-export const PoolFragmentFragmentDoc = gql`
-    fragment PoolFragment on Pool {
+export const SynthFragmentFragmentDoc = gql`
+    fragment SynthFragment on Synth {
   id
   long
   ticks {
@@ -739,13 +747,13 @@ export const PositionClaimFragmentFragmentDoc = gql`
   claimed
 }
     `;
-export const GetPoolsDocument = gql`
-    query getPools($where: Pool_filter) {
-  pools(where: $where) {
-    ...PoolFragment
+export const GetSynthsDocument = gql`
+    query getSynths($where: Synth_filter) {
+  synths(where: $where) {
+    ...SynthFragment
   }
 }
-    ${PoolFragmentFragmentDoc}`;
+    ${SynthFragmentFragmentDoc}`;
 export const GetPositionsDocument = gql`
     query getPositions($where: Position_filter) {
   positions(where: $where) {
@@ -775,8 +783,8 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    getPools(variables?: GetPoolsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetPoolsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetPoolsQuery>(GetPoolsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getPools', 'query');
+    getSynths(variables?: GetSynthsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetSynthsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetSynthsQuery>(GetSynthsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getSynths', 'query');
     },
     getPositions(variables?: GetPositionsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetPositionsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetPositionsQuery>(GetPositionsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getPositions', 'query');

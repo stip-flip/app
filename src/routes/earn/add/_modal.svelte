@@ -4,7 +4,7 @@
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { commify } from "src/lib";
   import { slide } from "svelte/transition";
-  import Menu from "src/routes/swap/_menu.svelte";
+  import Menu from "src/routes/swap/components/_menu.svelte";
 
   export let id: string;
   export let selectedToken: TokenInfoAndBalance | undefined;
@@ -19,7 +19,7 @@
     .filter(
       (t) =>
         !terms.length ||
-        terms.some((term) => {
+        terms.every((term) => {
           if (term == "zero-leverage")
             return !t.info.name.toLowerCase().includes("/²|³/");
           if (term == "squared-leverage")
@@ -34,8 +34,7 @@
         ? t.info.name.toLowerCase().includes(search.toLowerCase())
         : true
     )
-    .filter((t) => t.info.address != selectedToken?.info.address)
-    .slice(0, 10);
+    .filter((t) => t.info.address != selectedToken?.info.address);
 
   let checkbox: HTMLInputElement;
 </script>
@@ -59,7 +58,10 @@
       </div>
       <div class="flex pt-4 lg:space-x-4">
         <Menu bind:terms />
-        <ul class="p-4 rounded-box shadow-lg border w-full bg-base-300">
+        <ul
+          class="p-4 rounded-box shadow-lg border w-full bg-base-300 overflow-scroll"
+          style="height: 40vh;"
+        >
           {#if selectedToken}
             <li
               class="rounded-t-2xl px-6 pb-2 pt-2 cursor-pointer bg-base-100 -mt-4 -mx-4 border-b"

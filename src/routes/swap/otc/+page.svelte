@@ -13,11 +13,11 @@
   import { broadcastTransaction } from "src/hooks/transactions";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useBalance as useBal } from "src/hooks/erc20";
-  import { usePoolInfos } from "src/hooks/pool";
+  import { usePoolInfos } from "src/hooks/synth";
   import { commify, getTimeDifference } from "src/lib";
   import { sdk, timestamp } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
-  import Modal from "./_modal.svelte";
+  import Modal from "../components/_modal.svelte";
   import CoinIcon from "src/components/coin-icon.svelte";
 
   let amountOut: string = "0";
@@ -168,7 +168,6 @@
       }
     }
   }, 1000);
-  $: console.log(pnl);
 </script>
 
 <Modal
@@ -183,42 +182,6 @@
   bind:checkbox
 />
 
-<div
-  class="px-8 lg:px-0 lg:w-1/3 m-auto mt-20 lg:mt-40 flex justify-between items-center"
->
-  <h1 class="text-3xl">Swap</h1>
-  <ul
-    class="relative menu menu-md menu-horizontal bg-gradient rounded-full bg-opacity-50 lg:bg-gradient p-0"
-  >
-    <!-- Navbar menu content here -->
-    <div
-      class="absolute w-1/2 h-full border border-primary rounded-full transition-all"
-      class:right-0={mode == "MARKET"}
-    ></div>
-    <li>
-      <div
-        on:click={(_) => {
-          mode = "OTC";
-          reset();
-        }}
-        class="rounded-full w-20 text-center block"
-      >
-        OTC
-      </div>
-    </li>
-    <li>
-      <div
-        on:click={(_) => {
-          mode = "MARKET";
-          reset();
-        }}
-        class="rounded-full w-20 text-center block"
-      >
-        Market
-      </div>
-    </li>
-  </ul>
-</div>
 <div
   class="lg:w-1/3 m-auto mt-4 mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient"
 >
@@ -400,7 +363,6 @@
                 amountOut == String($balance0) ? "0" : amountOut, // if amountOut is max, set to 0
                 selectedToken0.info.decimals
               ),
-              $signerAddress,
               automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress
             ),
           "Swap Successful 🎉 check your <a class='text-primary' href='/wallet'>wallet</a>"

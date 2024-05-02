@@ -124,11 +124,11 @@ export const useClaims = derived(
     set
   ) => {
     get(gqlsdk)
-      ?.getPools({})
+      ?.getSynths({})
       .then(async (res) => {
-        const poolAddresses = res.pools.map((p) => p.id);
+        const synthAddresses = res.synths.map((p) => p.id);
         const claims = await Promise.all(
-          poolAddresses.map((a) => asyncClaims(a, $signerAddress))
+          synthAddresses.map((a) => asyncClaims(a, $signerAddress))
         );
         set(claims);
       });

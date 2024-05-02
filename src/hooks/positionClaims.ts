@@ -15,6 +15,7 @@ export type PositionClaim = {
   owner: string;
   pool: string;
   round: number;
+  tick: number;
   automated: Boolean;
   settlementTimestamp: number; // the timestamp for the next settlement
 };
@@ -42,7 +43,7 @@ const asyncClaims = async (
   // const slot = await pool.oracleSlot();
   // extract the useful values from the Oracle
   const oracle = eth.ORACLE.attach(oracleAddress);
-  console.log("claimQuery", claimQuery);
+
   return await Promise.all(
     claimQuery.positionClaims
       .map(async (c) => {
@@ -74,6 +75,7 @@ const asyncClaims = async (
           pool: poolAddress,
           round: c.round,
           burn: c.burn,
+          tick: c.tick,
           settlementTimestamp:
             lastRound.toNumber() <= Number(c.round)
               ? initialized.toNumber() +
@@ -105,9 +107,9 @@ export const usePositionClaims = derived(
     set
   ) => {
     get(gqlsdk)
-      ?.getPools({})
+      ?.getSynths({})
       .then(async (res) => {
-        const poolAddresses = res.pools.map((p) => p.id);
+        const poolAddresses = res.synths.map((p) => p.id);
         let claims = await Promise.all(
           poolAddresses.map((a) => asyncClaims(a, $signerAddress))
         );

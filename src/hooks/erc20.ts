@@ -44,7 +44,8 @@ export const asyncAllowance = async (
   account?: string
 ) => {
   if (!tokenAddress || !(account && get(signerAddress))) return 0;
-  const token = get(sdk).USDC.connect(tokenAddress);
+  if (tokenAddress == "0x0") tokenAddress = get(sdk).WETC9.address;
+  const token = get(sdk).USDC.attach(tokenAddress);
   const aallowance = token.allowance(account || get(signerAddress), spender);
   const adecimals = token.decimals();
   const [allowance, decimals] = await Promise.all([aallowance, adecimals]);

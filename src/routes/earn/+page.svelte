@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { usePoolInfos } from "src/hooks/pool";
+  import { usePoolInfos } from "src/hooks/synth";
   import Positions from "./_positions.svelte";
   import { usePositionClaims } from "src/hooks/positionClaims";
   import Claims from "./_claims.svelte";

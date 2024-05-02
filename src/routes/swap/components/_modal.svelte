@@ -25,7 +25,7 @@
     .filter(
       (t) =>
         !terms.length ||
-        terms.some((term) => {
+        terms.every((term) => {
           if (term == "zero-leverage")
             return !t.info.name.toLowerCase().includes("/²|³/");
           if (term == "squared-leverage")
@@ -88,7 +88,7 @@
       <div class="flex pt-4 lg:space-x-4">
         <Menu bind:terms />
         <ul
-          class="p-4 rounded-box shadow-lg border w-full bg-base-300"
+          class="p-4 rounded-box shadow-lg border w-full bg-base-300 overflow-scroll"
           style="height: 50vh;"
         >
           {#if selectedToken}
