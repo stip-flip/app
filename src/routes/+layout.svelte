@@ -212,7 +212,7 @@
               </li>
               <li>
                 <a
-                  href={`/earn/`}
+                  href={`/earn/otc`}
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/earn")}
                   class:selected={$page.route?.id?.startsWith("/earn")}>Earn</a

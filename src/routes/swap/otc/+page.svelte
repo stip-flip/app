@@ -13,7 +13,7 @@
   import { broadcastTransaction } from "src/hooks/transactions";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useBalance as useBal } from "src/hooks/erc20";
-  import { usePoolInfos } from "src/hooks/synth";
+  import { useSynthInfos } from "src/hooks/sf/synth";
   import { commify, getTimeDifference } from "src/lib";
   import { sdk, timestamp } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
@@ -37,7 +37,7 @@
 
   const ZERO_ADDRESS = "0x0";
 
-  $: poolInfos = usePoolInfos;
+  $: poolInfos = useSynthInfos;
 
   $: quoteToken = useBalance;
 

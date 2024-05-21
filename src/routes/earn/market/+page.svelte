@@ -1,0 +1,118 @@
+<script lang="ts">
+  import Icon from "@iconify/svelte";
+  import CoinIcon from "src/components/coin-icon.svelte";
+  import { usePoolInfos } from "src/hooks/uniswap/pool";
+  import { useUniPositions } from "src/hooks/uniswap/position";
+  import { commify } from "src/lib";
+  import Positions from "./_positions.svelte";
+
+  $: poolInfos = usePoolInfos;
+
+  $: positionInfos = useUniPositions;
+
+  $: console.log("positionInfos", $positionInfos);
+  $: console.log("poolInfos", $poolInfos);
+  $: console.log(
+    "yes?",
+    $positionInfos.some(
+      (p) =>
+        p.token0 + p.token1 ==
+        $poolInfos[0]?.token0?.info?.address +
+          $poolInfos[0]?.token1?.info?.address
+    )
+  );
+  $: positionExist = !!$positionInfos.length;
+</script>
+
+<div class="flex flex-wrap justify-end lg:w-1/2 m-auto space-x-4">
+  <!-- <div class="join flex-grow">
+    <div
+      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
+    >
+      Total Deposit
+    </div>
+    <div
+      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
+    >
+      <CoinIcon symbol="ETC" />{commify(
+        formatEther($positionsStats?.totalDeposited || "0")
+      )}
+    </div>
+  </div>
+  <div class="join flex-grow">
+    <div
+      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
+    >
+      APY
+    </div>
+    <div
+      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
+    >
+      {$positionsStats?.APY / 100}%
+    </div>
+  </div>
+  <div class="join flex-grow">
+    <div
+      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
+    >
+      Profit & Loss
+    </div>
+    <div
+      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
+    >
+      <CoinIcon symbol="ETC" />{commify(
+        formatEther($positionsStats?.pnl || "0")
+      )}
+    </div>
+  </div> -->
+  <a class="btn btn-primary" href="/earn/market/add">+ New Position</a>
+</div>
+<div
+  class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
+  style="max-height: 60vh"
+>
+  {#if !positionExist}
+    <div
+      class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
+      style="max-height: 60vh"
+    >
+      <div class="text-center">
+        <Icon icon="octicon:inbox-24" class="text-5xl m-auto" />
+        <p class="text-lg mt-4">
+          Your active liquidity positions will appear here
+        </p>
+      </div>
+    </div>
+  {:else}
+    {#each $poolInfos as pool}
+      {#if $positionInfos.some((p) => p.token0 + p.token1 == (pool.token0?.info?.address || "") + (pool.token1?.info?.address || ""))}
+        <div class="divider odd:first:hidden mb-0"></div>
+        <h1 class="p-2 py-4 flex justify-between">
+          <strong class="flex space-x-2"
+            ><CoinIcon symbol={pool?.synth?.info?.symbol || ""} /><span
+              >{pool?.synth?.info?.name}</span
+            ></strong
+          >
+          <strong
+            >Price: {commify(pool.price)}
+            <Icon
+              class="inline text-xl text-green-600"
+              icon="mdi:ethereum"
+            /></strong
+          >
+        </h1>
+        <Positions
+          {pool}
+          positions={$positionInfos.filter(
+            (p) =>
+              p.token0 + p.token1 ==
+              (pool.token0?.info?.address || "") +
+                (pool.token1?.info?.address || "")
+          )}
+        />
+      {:else}
+        <div class="divider odd:first:hidden mb-0">Nope</div>
+      {/if}
+    {/each}
+  {/if}
+</div>

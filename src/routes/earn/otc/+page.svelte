@@ -1,16 +1,16 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { usePoolInfos } from "src/hooks/synth";
-  import Positions from "./_positions.svelte";
-  import { usePositionClaims } from "src/hooks/positionClaims";
-  import Claims from "./_claims.svelte";
-  import CoinIcon from "src/components/coin-icon.svelte";
-  import { usePositions, usePositionsStats } from "src/hooks/position";
   import { formatEther } from "ethers/lib/utils";
-  import { commify, formatAmount } from "src/lib";
+  import CoinIcon from "src/components/coin-icon.svelte";
+  import { usePositions, usePositionsStats } from "src/hooks/sf/position";
+  import { usePositionClaims } from "src/hooks/sf/positionClaims";
+  import { useSynthInfos } from "src/hooks/sf/synth";
+  import { commify } from "src/lib";
+  import Claims from "./_claims.svelte";
+  import Positions from "./_positions.svelte";
   // import {  } from "svelte/transition";
 
-  $: poolInfos = usePoolInfos;
+  $: synthInfos = useSynthInfos;
 
   $: positions = usePositions;
 
@@ -33,11 +33,6 @@
   $: console.log("claims", $claims);
 </script>
 
-<div
-  class="px-8 lg:px-0 lg:w-1/2 m-auto mt-32 mb-4 lg:mt-40 flex justify-between items-center"
->
-  <h1 class="text-3xl">Earn</h1>
-</div>
 <div class="flex flex-wrap justify-around lg:w-1/2 m-auto space-x-4">
   <div class="join flex-grow">
     <div
@@ -79,7 +74,7 @@
       )}
     </div>
   </div>
-  <a class="btn btn-primary flex-grow" href="earn/add">+ New Position</a>
+  <a class="btn btn-primary flex-grow" href="/earn/otc/add">+ New Position</a>
 </div>
 <div
   class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
@@ -93,7 +88,7 @@
       </p>
     </div>
   {:else}
-    {#each $poolInfos as pi, i}
+    {#each $synthInfos as pi, i}
       <!-- <h1 class="p-2 py-4 flex mt-8 items-center space-x-2">
         <CoinIcon symbol={pi?.token?.info?.symbol} />
         <strong>{pi?.token?.info?.name}</strong>

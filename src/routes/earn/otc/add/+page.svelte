@@ -4,19 +4,19 @@
   import { validator } from "src/actions/big-number-input";
   import LiquidityChart from "src/components/liquidity-chart.svelte";
   import { useBalance } from "src/hooks/balance";
-  import { usePoolInfos } from "src/hooks/synth";
+  import { useSynthInfos } from "src/hooks/sf/synth";
   import { broadcastTransaction } from "src/hooks/transactions";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
   import { signer } from "svelte-ethers-store";
-  import Modal from "./_modal.svelte";
+  import Modal from "../../_modal.svelte";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
 
   let amount: string;
 
   let selectedToken: TokenInfoAndBalance;
 
-  $: pi = usePoolInfos;
+  $: pi = useSynthInfos;
   $: selectedPool = $pi?.find((p) => p.address == selectedToken?.info?.address);
 
   let FR = 500;
@@ -33,12 +33,12 @@
 />
 
 <div
-  class="lg:border-2 rounded-lg p-4 bg-transparent lg:w-1/2 m-auto mt-16 lg:mt-40 bg-gradient"
+  class="lg:border-2 rounded-lg p-4 bg-transparent lg:w-1/2 m-auto bg-gradient"
 >
   <div
     class="flex justify-between items-center p-4 pb-8 border-b border-base-content"
   >
-    <a class="w-1/3" href="/earn">
+    <a class="w-1/3" href="/earn/otc">
       <Icon icon="ph-arrow-left-bold" class="text-2xl" />
     </a>
     <h1 class="text-xl w-1/3 text-center font-semibold">New Position</h1>

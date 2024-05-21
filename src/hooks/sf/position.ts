@@ -1,5 +1,5 @@
 import { derived, get, type Readable } from "svelte/store";
-import { resolvedTransactions } from "./transactions";
+import { resolvedTransactions } from "../transactions";
 import { chainId, signerAddress } from "svelte-ethers-store";
 import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";

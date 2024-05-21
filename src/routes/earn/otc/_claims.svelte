@@ -3,7 +3,7 @@
   import { formatEther } from "ethers/lib/utils";
   import { commify } from "src/lib";
   import Modal from "./_modal.svelte";
-  import type { PositionClaim } from "src/hooks/positionClaims";
+  import type { PositionClaim } from "src/hooks/sf/positionClaims";
   import { sdk, timestamp } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
   import { broadcastTransaction } from "src/hooks/transactions";

@@ -4,7 +4,7 @@ import { gqlsdk, timestamp10 } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
 import { derived, get } from "svelte/store";
-import { resolvedTransactions, totalTraderTransactions } from "./transactions";
+import { resolvedTransactions, totalTraderTransactions } from "../transactions";
 
 export type PositionClaim = {
   id: string;

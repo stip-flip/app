@@ -13,7 +13,7 @@
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Modal from "../components/_modal.svelte";
-  import { usePoolInfos } from "src/hooks/synth";
+  import { useSynthInfos } from "src/hooks/sf/synth";
   import { signPermit } from "src/actions/sign";
 
   let amountOut: string = "0";
@@ -31,7 +31,7 @@
 
   const ZERO_ADDRESS = "0x0";
 
-  $: poolInfos = usePoolInfos;
+  $: poolInfos = useSynthInfos;
 
   $: quoteToken = useBalance;
 
@@ -389,6 +389,7 @@
           console.log("signature");
           signature = await signPermit(
             selectedToken0.info.address,
+            $sdk.ROUTER.address,
             parseEther(amountOut),
             Math.round(Date.now() / 1000 + 60 * 60)
           );
@@ -404,7 +405,7 @@
               !!signature
                 ? $sdk.POOL.interface.encodeFunctionData("permit", [
                     $signerAddress,
-                    $sdk.POOL.address,
+                    $sdk.ROUTER.address,
                     parseEther(amountOut),
                     signature.deadline,
                     signature?.v,

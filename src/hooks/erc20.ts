@@ -206,7 +206,9 @@ export const useInfo = (tokenAddress: string): Readable<TokenInfo> => {
   });
 };
 
-export const infosAndBalanceAsync = async (address: string) => {
+export const infosAndBalanceAsync = async (
+  address: string
+): Promise<TokenInfoAndBalance | undefined> => {
   if (!address) return;
   const infoPromise = extractERC20Info(address);
   const balancePromise = asyncBalance(address, get(signerAddress));
@@ -230,7 +232,7 @@ export const useInfoAndBalance = (
 
 export type TokenInfoAndBalance = {
   info: TokenInfo;
-  balance: number;
+  balance: string | number;
 };
 
 export const useInfosAndBalances = (

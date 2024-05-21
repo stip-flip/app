@@ -1,14 +1,14 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { sdk } from "src/stores";
-  import { usePoolInfos } from "src/hooks/synth";
+  import { useSynthInfos } from "src/hooks/sf/synth";
   import { useClaims } from "src/hooks/claims";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Otc from "./_otc.svelte";
   import Token from "./_token.svelte";
   import { broadcastTransaction } from "src/hooks/transactions";
 
-  $: poolInfos = usePoolInfos;
+  $: poolInfos = useSynthInfos;
   $: claimInfos = useClaims;
 
   $: trades = $poolInfos.filter((pi) => (pi?.token?.balance || 0) > 0);

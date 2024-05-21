@@ -1,12 +1,12 @@
 import { BigNumber, ethers } from "ethers";
-import { formatEther } from "ethers/lib/utils";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { derived, get } from "svelte/store";
-import { resolvedTransactions, totalTraderTransactions } from "./transactions";
-import { useClaims } from "./claims";
-import { infosAndBalanceAsync, type TokenInfoAndBalance } from "./erc20";
-import type { SynthFragmentFragment } from "./subgraph";
+import { resolvedTransactions, totalTraderTransactions } from "../transactions";
+import { useClaims } from "../claims";
+import { infosAndBalanceAsync, type TokenInfoAndBalance } from "../erc20";
+import type { SynthFragmentFragment } from "../subgraph";
 
 export type SynthInfo = {
   address: string;
@@ -21,6 +21,7 @@ export type SynthInfo = {
   ticks?: Record<number, number>;
   token?: TokenInfoAndBalance;
   settlementTimestamp: number;
+  poolRatio: BigNumber;
 };
 
 export const synthInfoAsync = async (
@@ -43,6 +44,7 @@ export const synthInfoAsync = async (
     frequency,
     initialized,
     roundDuration,
+    poolRatio,
   ] = await Promise.all([
     p.getPrice(),
     p.slot0(),
@@ -54,6 +56,7 @@ export const synthInfoAsync = async (
     o.frequency(),
     o.initialized(),
     o.roundDuration(),
+    p.sharesValueWithRebalance(parseEther("1")),
   ]);
 
   return {
@@ -70,10 +73,11 @@ export const synthInfoAsync = async (
       initialized.toNumber() +
       (round.toNumber() + 1) * frequency +
       roundDuration,
+    poolRatio,
   };
 };
 
-export const usePoolInfos = derived(
+export const useSynthInfos = derived(
   [ethsdk, resolvedTransactions, gqlsdk, totalTraderTransactions],
   ([$ethsdk, $pt, $gqlsdk, $totalTraderTransactions], set) => {
     $gqlsdk?.getSynths({}).then(async (res) => {

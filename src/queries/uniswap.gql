@@ -1,0 +1,31 @@
+fragment UniPosition on UniPosition {
+  id
+  owner
+  liquidity
+  token0
+  token1
+  tickLower
+  tickUpper
+  tokensOwed0
+  tokensOwed1
+}
+
+query getUniPositions($where: UniPosition_filter) {
+  uniPositions(where: $where) {
+    ...UniPosition
+  }
+}
+
+fragment Pool on Pool {
+  id
+  token0
+  token1
+  fee
+  tickSpacing
+}
+
+query getPools($where: Pool_filter) {
+  pools(where: $where) {
+    ...Pool
+  }
+}

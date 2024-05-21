@@ -1,142 +1,129 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { BigNumber } from "ethers";
-  import { formatEther, parseEther } from "ethers/lib/utils";
-  import { validator } from "src/actions/big-number-input";
-  import { useBalance } from "src/hooks/balance";
-  import { broadcastTransaction } from "src/hooks/transactions";
-  import type { Position } from "src/hooks/position";
+  import CoinIcon from "src/components/coin-icon.svelte";
+  import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { commify } from "src/lib";
-  import { sdk } from "src/stores";
-  import { signer, signerAddress } from "svelte-ethers-store";
+  import { slide } from "svelte/transition";
+  import Menu from "src/routes/swap/components/_menu.svelte";
 
-  export let poolAddress: string;
-  export let poolName: string;
-  export let selectedPosition: Position;
+  export let id: string;
+  export let selectedToken: TokenInfoAndBalance | undefined;
 
-  let mode: "withdraw" | "deposit" = "withdraw";
-  let amount: string = "0";
-  let automate: boolean = true;
-  // $: liquidityAndPnL = BigNumber.from(selectedPosition?.liquidity || 0).add(
-  //   pnl
-  // );
+  export let tokenInfosAndBalances: TokenInfoAndBalance[];
 
-  $: maxAmount =
-    mode == "withdraw"
-      ? formatEther(selectedPosition?.liquidity || "0")
-      : $useBalance?.balance || 0;
+  let terms: string[] = [];
+  let search: string = "";
 
-  function switchMode() {
-    amount = "0";
-    mode = mode == "withdraw" ? "deposit" : "withdraw";
-  }
+  $: sortedTokens = (tokenInfosAndBalances || [])
+    .sort((a, b) => (a.balance > b.balance ? -1 : 1))
+    .filter(
+      (t) =>
+        !terms.length ||
+        terms.every((term) => {
+          if (term == "zero-leverage")
+            return !t.info.name.toLowerCase().includes("/²|³/");
+          if (term == "squared-leverage")
+            return t.info.name.toLowerCase().includes("²");
+          if (term == "cubed-leverage")
+            return t.info.name.toLowerCase().includes("³");
+          return t.info.name.toLowerCase().includes(term.toLowerCase());
+        })
+    )
+    .filter((t) =>
+      search.length
+        ? t.info.name.toLowerCase().includes(search.toLowerCase())
+        : true
+    )
+    .filter((t) => t.info.address != selectedToken?.info.address);
 
-  function action() {
-    console.log(
-      parseEther(amount)
-        .mul(selectedPosition.shares)
-        .div(selectedPosition.liquidity),
-      selectedPosition.shares,
-      selectedPosition.liquidity
-    );
-    mode == "withdraw"
-      ? broadcastTransaction(
-          `Collecting liquidities from ${poolName}`,
-          $sdk.POOL.attach(poolAddress)
-            .connect($signer)
-            .burn(
-              selectedPosition?.tick,
-              parseEther(amount)
-                .mul(selectedPosition.shares)
-                .div(selectedPosition.liquidity),
-              automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress
-            )
-        )
-      : broadcastTransaction(
-          `Depositing liquidities to ${poolName}`,
-          $sdk.POOL.attach(poolAddress)
-            .connect($signer)
-            .mint(
-              selectedPosition?.tick,
-              automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress,
-              {
-                value: parseEther(amount),
-              }
-            )
-        );
-  }
+  let checkbox: HTMLInputElement;
 </script>
 
-<input type="checkbox" id={poolAddress} class="modal-toggle" />
-<label for={poolAddress} class="modal cursor-pointer">
-  <label class="modal-box relative" for="">
-    <div class="tabs tabs-boxed">
-      <a
-        class="tab tab-lg w-1/2"
-        on:click={switchMode}
-        class:tab-active={mode == "withdraw"}>Withdraw</a
+<input type="checkbox" {id} class="modal-toggle" bind:this={checkbox} />
+<label for={id} class="modal cursor-pointer">
+  <label class="w-full lg:w-2/5">
+    <div class="bg-opaque lg:rounded-xl lg:border block p-8" for="">
+      <div
+        class="join shadow-lg rounded-full border border-gray-200 w-full mt-2 bg-base-300"
       >
-      <a
-        class="tab tab-lg w-1/2"
-        on:click={switchMode}
-        class:tab-active={mode == "deposit"}>Deposit</a
-      >
+        <div class="border-b m-4">
+          <Icon icon="akar-icons:search" class=" text-lg text-slate-300" />
+        </div>
+        <input
+          type="text"
+          class="input input-ghost w-full join-item"
+          bind:value={search}
+          placeholder="Search"
+        />
+      </div>
+      <div class="flex pt-4 lg:space-x-4">
+        <Menu bind:terms />
+        <ul
+          class="p-4 rounded-box shadow-lg border w-full bg-base-300 overflow-scroll"
+          style="height: 40vh;"
+        >
+          {#if selectedToken}
+            <li
+              class="rounded-t-2xl px-6 pb-2 pt-2 cursor-pointer bg-base-100 -mt-4 -mx-4 border-b"
+              transition:slide|local
+              on:click={(_) => {
+                selectedToken = undefined;
+              }}
+            >
+              <div class="flex space-x-2">
+                <CoinIcon symbol={selectedToken.info.symbol} />
+                <strong class="capitalize">
+                  <a>{selectedToken.info.symbol}</a> :
+                </strong>
+                <p>
+                  {selectedToken?.info?.description ||
+                    "Ether Coin, The Ether's native currency."}
+                </p>
+              </div>
+            </li>
+          {/if}
+          {#each sortedTokens || [] as token}
+            <li
+              class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200 space-x-2"
+              transition:slide|local
+              on:click={(_) => {
+                selectedToken = token;
+                // checkbox.click();
+              }}
+            >
+              <CoinIcon symbol={token?.info?.symbol} />
+              <strong class="capitalize">
+                <a>{token?.info?.symbol}</a>
+              </strong>
+              <span>
+                ({commify(token?.balance, 4)})
+              </span>
+            </li>
+          {/each}
+        </ul>
+      </div>
     </div>
-    <!-- <div class="border-b my-4 mt-8" /> -->
-    <label class="input-group w-full p-4 mt-8">
-      <input
-        bind:value={amount}
-        type="text"
-        placeholder="Liquidity to withdraw"
-        class="input input-bordered w-full"
-        on:validated={(v) => (amount = v.detail)}
-        use:validator={{
-          value: amount,
-          max: maxAmount,
-        }}
-      />
-      <span class="w-24 text-center flex items-center">
-        <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
-        ETC</span
-      >
-    </label>
-    <div
-      class="cursor-pointer ml-6 -mt-4"
-      on:click={(_) => (amount = String(maxAmount))}
-    >
-      Max: {commify(maxAmount)}
-    </div>
-    <!-- <div class="m-4 mx-12 p-2 font-light bg-blend-lighten rounded-lg">
-      Fees accumulated:
-      {#await $sdk.POOL.attach(poolAddress).positionPnL(selectedPosition?.tickLower, selectedPosition?.tickUpper, $signerAddress) then pnl}
-        {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))}
-        <br />
-        Liquidities after: {commify(
-          formatAmount(selectedPosition?.liquidity, $usdcInfo?.decimals || 18) +
-            (mode == "deposit" ? Number(amount) : -Number(amount)) +
-            Number(formatUnits(pnl, $usdcInfo?.decimals || 18))
-        )}
-      {:catch err}
-        0
-      {/await}
-    </div> -->
-    <!-- <div class="border-b" /> -->
-    <div id="automate" class="flex justify-between my-4 text-lg mx-4">
-      <strong>Automate Claim</strong>
-      <input
-        type="checkbox"
-        class="toggle toggle-primary"
-        bind:checked={automate}
-      />
-    </div>
-    <div class="text-right pt-4">
-      <button class="btn btn-primary w-full" on:click={(_) => action()}>
-        {#if mode == "withdraw"}
-          Collect
-        {:else}
-          Mint
-        {/if}
-      </button>
+    <div class="flex py-4 justify-end lg:w-full">
+      {#if selectedToken}
+        <!-- <button
+          transition:scale|local
+          class="btn btn-primary no-animation w-2/5">Token 2</button
+        > -->
+        <button
+          class="btn btn-primary no-animation w-2/5"
+          on:click={(_) => {
+            checkbox.click();
+            // if ($appState.help) {
+            //   driveOTC(
+            //     selectedToken0?.info?.symbol,
+            //     selectedToken1?.info?.symbol
+            //   );
+            // }
+          }}
+        >
+          OK
+        </button>
+      {/if}
     </div>
   </label>
 </label>

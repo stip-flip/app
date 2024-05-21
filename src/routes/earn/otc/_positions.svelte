@@ -3,7 +3,7 @@
   import { formatEther } from "ethers/lib/utils";
   import { commify } from "src/lib";
   import Modal from "./_modal.svelte";
-  import type { Position } from "src/hooks/position";
+  import type { Position } from "src/hooks/sf/position";
 
   export let bytes: string[];
   export let poolName: string;

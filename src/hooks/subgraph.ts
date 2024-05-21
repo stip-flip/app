@@ -130,6 +130,62 @@ export enum OrderDirection {
   Desc = 'desc'
 }
 
+export type Pool = {
+  __typename?: 'Pool';
+  fee: Scalars['Int'];
+  id: Scalars['ID'];
+  tickSpacing: Scalars['Int'];
+  token0: Scalars['Bytes'];
+  token1: Scalars['Bytes'];
+};
+
+export type Pool_Filter = {
+  fee?: InputMaybe<Scalars['Int']>;
+  fee_gt?: InputMaybe<Scalars['Int']>;
+  fee_gte?: InputMaybe<Scalars['Int']>;
+  fee_in?: InputMaybe<Array<Scalars['Int']>>;
+  fee_lt?: InputMaybe<Scalars['Int']>;
+  fee_lte?: InputMaybe<Scalars['Int']>;
+  fee_not?: InputMaybe<Scalars['Int']>;
+  fee_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  tickSpacing?: InputMaybe<Scalars['Int']>;
+  tickSpacing_gt?: InputMaybe<Scalars['Int']>;
+  tickSpacing_gte?: InputMaybe<Scalars['Int']>;
+  tickSpacing_in?: InputMaybe<Array<Scalars['Int']>>;
+  tickSpacing_lt?: InputMaybe<Scalars['Int']>;
+  tickSpacing_lte?: InputMaybe<Scalars['Int']>;
+  tickSpacing_not?: InputMaybe<Scalars['Int']>;
+  tickSpacing_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  token0?: InputMaybe<Scalars['Bytes']>;
+  token0_contains?: InputMaybe<Scalars['Bytes']>;
+  token0_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  token0_not?: InputMaybe<Scalars['Bytes']>;
+  token0_not_contains?: InputMaybe<Scalars['Bytes']>;
+  token0_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  token1?: InputMaybe<Scalars['Bytes']>;
+  token1_contains?: InputMaybe<Scalars['Bytes']>;
+  token1_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  token1_not?: InputMaybe<Scalars['Bytes']>;
+  token1_not_contains?: InputMaybe<Scalars['Bytes']>;
+  token1_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+};
+
+export enum Pool_OrderBy {
+  Fee = 'fee',
+  Id = 'id',
+  TickSpacing = 'tickSpacing',
+  Token0 = 'token0',
+  Token1 = 'token1'
+}
+
 export type Position = {
   __typename?: 'Position';
   id: Scalars['ID'];
@@ -150,7 +206,6 @@ export type PositionClaim = {
   pool: Synth;
   round: Scalars['BigInt'];
   tick: Scalars['Int'];
-  tickAndOwner: Scalars['Bytes'];
 };
 
 export type PositionClaim_Filter = {
@@ -219,12 +274,6 @@ export type PositionClaim_Filter = {
   round_not?: InputMaybe<Scalars['BigInt']>;
   round_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   tick?: InputMaybe<Scalars['Int']>;
-  tickAndOwner?: InputMaybe<Scalars['Bytes']>;
-  tickAndOwner_contains?: InputMaybe<Scalars['Bytes']>;
-  tickAndOwner_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  tickAndOwner_not?: InputMaybe<Scalars['Bytes']>;
-  tickAndOwner_not_contains?: InputMaybe<Scalars['Bytes']>;
-  tickAndOwner_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   tick_gt?: InputMaybe<Scalars['Int']>;
   tick_gte?: InputMaybe<Scalars['Int']>;
   tick_in?: InputMaybe<Array<Scalars['Int']>>;
@@ -243,8 +292,7 @@ export enum PositionClaim_OrderBy {
   Owner = 'owner',
   Pool = 'pool',
   Round = 'round',
-  Tick = 'tick',
-  TickAndOwner = 'tickAndOwner'
+  Tick = 'tick'
 }
 
 export type Position_Filter = {
@@ -314,6 +362,8 @@ export type Query = {
   _meta?: Maybe<_Meta_>;
   claim?: Maybe<Claim>;
   claims: Array<Claim>;
+  pool?: Maybe<Pool>;
+  pools: Array<Pool>;
   position?: Maybe<Position>;
   positionClaim?: Maybe<PositionClaim>;
   positionClaims: Array<PositionClaim>;
@@ -322,6 +372,8 @@ export type Query = {
   synths: Array<Synth>;
   tick?: Maybe<Tick>;
   ticks: Array<Tick>;
+  uniPosition?: Maybe<UniPosition>;
+  uniPositions: Array<UniPosition>;
 };
 
 
@@ -345,6 +397,24 @@ export type QueryClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Claim_Filter>;
+};
+
+
+export type QueryPoolArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryPoolsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Pool_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Pool_Filter>;
 };
 
 
@@ -419,12 +489,32 @@ export type QueryTicksArgs = {
   where?: InputMaybe<Tick_Filter>;
 };
 
+
+export type QueryUniPositionArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryUniPositionsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<UniPosition_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<UniPosition_Filter>;
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
   claim?: Maybe<Claim>;
   claims: Array<Claim>;
+  pool?: Maybe<Pool>;
+  pools: Array<Pool>;
   position?: Maybe<Position>;
   positionClaim?: Maybe<PositionClaim>;
   positionClaims: Array<PositionClaim>;
@@ -433,6 +523,8 @@ export type Subscription = {
   synths: Array<Synth>;
   tick?: Maybe<Tick>;
   ticks: Array<Tick>;
+  uniPosition?: Maybe<UniPosition>;
+  uniPositions: Array<UniPosition>;
 };
 
 
@@ -456,6 +548,24 @@ export type SubscriptionClaimsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Claim_Filter>;
+};
+
+
+export type SubscriptionPoolArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionPoolsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Pool_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Pool_Filter>;
 };
 
 
@@ -528,6 +638,24 @@ export type SubscriptionTicksArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Tick_Filter>;
+};
+
+
+export type SubscriptionUniPositionArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionUniPositionsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<UniPosition_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<UniPosition_Filter>;
 };
 
 export type Synth = {
@@ -637,6 +765,100 @@ export enum Tick_OrderBy {
   Pool = 'pool'
 }
 
+export type UniPosition = {
+  __typename?: 'UniPosition';
+  id: Scalars['ID'];
+  liquidity: Scalars['BigInt'];
+  owner: Scalars['Bytes'];
+  tickLower: Scalars['Int'];
+  tickUpper: Scalars['Int'];
+  token0: Scalars['Bytes'];
+  token1: Scalars['Bytes'];
+  tokensOwed0: Scalars['BigInt'];
+  tokensOwed1: Scalars['BigInt'];
+};
+
+export type UniPosition_Filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  liquidity?: InputMaybe<Scalars['BigInt']>;
+  liquidity_gt?: InputMaybe<Scalars['BigInt']>;
+  liquidity_gte?: InputMaybe<Scalars['BigInt']>;
+  liquidity_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  liquidity_lt?: InputMaybe<Scalars['BigInt']>;
+  liquidity_lte?: InputMaybe<Scalars['BigInt']>;
+  liquidity_not?: InputMaybe<Scalars['BigInt']>;
+  liquidity_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  owner?: InputMaybe<Scalars['Bytes']>;
+  owner_contains?: InputMaybe<Scalars['Bytes']>;
+  owner_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  owner_not?: InputMaybe<Scalars['Bytes']>;
+  owner_not_contains?: InputMaybe<Scalars['Bytes']>;
+  owner_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  tickLower?: InputMaybe<Scalars['Int']>;
+  tickLower_gt?: InputMaybe<Scalars['Int']>;
+  tickLower_gte?: InputMaybe<Scalars['Int']>;
+  tickLower_in?: InputMaybe<Array<Scalars['Int']>>;
+  tickLower_lt?: InputMaybe<Scalars['Int']>;
+  tickLower_lte?: InputMaybe<Scalars['Int']>;
+  tickLower_not?: InputMaybe<Scalars['Int']>;
+  tickLower_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  tickUpper?: InputMaybe<Scalars['Int']>;
+  tickUpper_gt?: InputMaybe<Scalars['Int']>;
+  tickUpper_gte?: InputMaybe<Scalars['Int']>;
+  tickUpper_in?: InputMaybe<Array<Scalars['Int']>>;
+  tickUpper_lt?: InputMaybe<Scalars['Int']>;
+  tickUpper_lte?: InputMaybe<Scalars['Int']>;
+  tickUpper_not?: InputMaybe<Scalars['Int']>;
+  tickUpper_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  token0?: InputMaybe<Scalars['Bytes']>;
+  token0_contains?: InputMaybe<Scalars['Bytes']>;
+  token0_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  token0_not?: InputMaybe<Scalars['Bytes']>;
+  token0_not_contains?: InputMaybe<Scalars['Bytes']>;
+  token0_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  token1?: InputMaybe<Scalars['Bytes']>;
+  token1_contains?: InputMaybe<Scalars['Bytes']>;
+  token1_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  token1_not?: InputMaybe<Scalars['Bytes']>;
+  token1_not_contains?: InputMaybe<Scalars['Bytes']>;
+  token1_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  tokensOwed0?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed0_gt?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed0_gte?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed0_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  tokensOwed0_lt?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed0_lte?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed0_not?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed0_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  tokensOwed1?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed1_gt?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed1_gte?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed1_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  tokensOwed1_lt?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed1_lte?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed1_not?: InputMaybe<Scalars['BigInt']>;
+  tokensOwed1_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+};
+
+export enum UniPosition_OrderBy {
+  Id = 'id',
+  Liquidity = 'liquidity',
+  Owner = 'owner',
+  TickLower = 'tickLower',
+  TickUpper = 'tickUpper',
+  Token0 = 'token0',
+  Token1 = 'token1',
+  TokensOwed0 = 'tokensOwed0',
+  TokensOwed1 = 'tokensOwed1'
+}
+
 export type _Block_ = {
   __typename?: '_Block_';
   /** The hash of the block */
@@ -705,6 +927,24 @@ export type GetPositionClaimsQueryVariables = Exact<{
 
 export type GetPositionClaimsQuery = { __typename?: 'Query', positionClaims: Array<{ __typename?: 'PositionClaim', id: string, owner: any, tick: number, burn: boolean, amount: number, round: number, claimer?: any | null, claimed?: boolean | null }> };
 
+export type UniPositionFragment = { __typename?: 'UniPosition', id: string, owner: any, liquidity: number, token0: any, token1: any, tickLower: number, tickUpper: number, tokensOwed0: number, tokensOwed1: number };
+
+export type GetUniPositionsQueryVariables = Exact<{
+  where?: InputMaybe<UniPosition_Filter>;
+}>;
+
+
+export type GetUniPositionsQuery = { __typename?: 'Query', uniPositions: Array<{ __typename?: 'UniPosition', id: string, owner: any, liquidity: number, token0: any, token1: any, tickLower: number, tickUpper: number, tokensOwed0: number, tokensOwed1: number }> };
+
+export type PoolFragment = { __typename?: 'Pool', id: string, token0: any, token1: any, fee: number, tickSpacing: number };
+
+export type GetPoolsQueryVariables = Exact<{
+  where?: InputMaybe<Pool_Filter>;
+}>;
+
+
+export type GetPoolsQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, token0: any, token1: any, fee: number, tickSpacing: number }> };
+
 export const SynthFragmentFragmentDoc = gql`
     fragment SynthFragment on Synth {
   id
@@ -747,6 +987,28 @@ export const PositionClaimFragmentFragmentDoc = gql`
   claimed
 }
     `;
+export const UniPositionFragmentDoc = gql`
+    fragment UniPosition on UniPosition {
+  id
+  owner
+  liquidity
+  token0
+  token1
+  tickLower
+  tickUpper
+  tokensOwed0
+  tokensOwed1
+}
+    `;
+export const PoolFragmentDoc = gql`
+    fragment Pool on Pool {
+  id
+  token0
+  token1
+  fee
+  tickSpacing
+}
+    `;
 export const GetSynthsDocument = gql`
     query getSynths($where: Synth_filter) {
   synths(where: $where) {
@@ -775,6 +1037,20 @@ export const GetPositionClaimsDocument = gql`
   }
 }
     ${PositionClaimFragmentFragmentDoc}`;
+export const GetUniPositionsDocument = gql`
+    query getUniPositions($where: UniPosition_filter) {
+  uniPositions(where: $where) {
+    ...UniPosition
+  }
+}
+    ${UniPositionFragmentDoc}`;
+export const GetPoolsDocument = gql`
+    query getPools($where: Pool_filter) {
+  pools(where: $where) {
+    ...Pool
+  }
+}
+    ${PoolFragmentDoc}`;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -794,6 +1070,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getPositionClaims(variables?: GetPositionClaimsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetPositionClaimsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetPositionClaimsQuery>(GetPositionClaimsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getPositionClaims', 'query');
+    },
+    getUniPositions(variables?: GetUniPositionsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUniPositionsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUniPositionsQuery>(GetUniPositionsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUniPositions', 'query');
+    },
+    getPools(variables?: GetPoolsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetPoolsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetPoolsQuery>(GetPoolsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getPools', 'query');
     }
   };
 }
