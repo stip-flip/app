@@ -248,7 +248,7 @@
       >
       <a
         class="btn-info text-white btn btn-lg w-1/3"
-        href="https://doc.sf.exchange/">Learn more</a
+        href="https://docs.sf.exchange/">Learn more</a
       >
     </div>
     <div class="absolute h-1/2 w-full bottom-0 left-0">
