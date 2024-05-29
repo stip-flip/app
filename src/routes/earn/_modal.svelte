@@ -21,7 +21,10 @@
         !terms.length ||
         terms.every((term) => {
           if (term == "zero-leverage")
-            return !t.info.name.toLowerCase().includes("/²|³/");
+            return (
+              !t.info.name.toLowerCase().includes("²") &&
+              !t.info.name.toLowerCase().includes("³")
+            );
           if (term == "squared-leverage")
             return t.info.name.toLowerCase().includes("²");
           if (term == "cubed-leverage")

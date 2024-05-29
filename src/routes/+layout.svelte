@@ -157,7 +157,7 @@
                 >Documentation</a
               >
               <a
-                href="/swap/otc"
+                href="/swap"
                 class="p-1 rounded-md flex lg:space-x-1 hover:text-primary"
               >
                 <span>App</span></a

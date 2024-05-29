@@ -2,7 +2,12 @@
   import Icon from "@iconify/svelte";
   import CoinIcon from "src/components/coin-icon.svelte";
   import LiquidityChart from "src/components/liquidity-chart.svelte";
+  import { onMount } from "svelte";
   import { Parallax, ParallaxLayer, StickyLayer } from "svelte-parallax";
+
+  onMount(() => {
+    document.getElementsByTagName("html")[0].setAttribute("data-theme", "dark");
+  });
 
   const icons = [
     "/S-USD.svg",

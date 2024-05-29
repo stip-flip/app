@@ -5,6 +5,7 @@ import { derived, get } from "svelte/store";
 import { infosAndBalanceAsync, type TokenInfoAndBalance } from "../erc20";
 import type { PoolFragment } from "../subgraph";
 import { resolvedTransactions } from "../transactions";
+import { reverseRatio } from "src/lib/sf/reverse";
 
 // synth token is expected to be token 0 accross the app
 // sometimes it is token1, we note the pool as reversed in that case
@@ -58,9 +59,10 @@ export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
   const ratio = sqrtRatio * sqrtRatio;
 
   console.log("ratio", ratio, slot0.sqrtPriceX96.toString());
-
+  const reversed = pool.token0.toLowerCase() == sdk.WETC9.address.toLowerCase();
   const price =
-    (Number(formatUnits(synthPrice, oracleDecimals)) * ratio) /
+    (Number(formatUnits(synthPrice, oracleDecimals)) *
+      reverseRatio(ratio, reversed)) /
     Number(formatEther(synthRatio));
 
   return {
@@ -76,7 +78,7 @@ export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
     synthIndex:
       pool.token0.toLowerCase() == sdk.WETC9.address.toLowerCase() ? 1 : 0,
     synth: synthAddress == pool.token0 ? token0Info : token1Info,
-    reversed: pool.token0.toLowerCase() == sdk.WETC9.address.toLowerCase(),
+    reversed,
   };
 };
 
