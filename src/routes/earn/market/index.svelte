@@ -1,10 +1,12 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
   import CoinIcon from "src/components/coin-icon.svelte";
   import { usePoolInfos } from "src/hooks/uniswap/pool";
   import { useUniPositions } from "src/hooks/uniswap/position";
   import { commify } from "src/lib";
   import Positions from "./_positions.svelte";
+  import { navigate } from "src/lib/path";
 
   $: poolInfos = usePoolInfos;
 
@@ -22,6 +24,8 @@
     )
   );
   $: positionExist = !!$positionInfos.length;
+
+  $: url = new URL($page.url);
 </script>
 
 <div class="flex flex-wrap justify-end lg:w-1/2 m-auto space-x-4">
@@ -65,25 +69,26 @@
       )}
     </div>
   </div> -->
-  <a class="btn btn-primary" href="/earn/market/add">+ New Position</a>
+  <a class="btn btn-primary" href={navigate("/earn/add", url)}>+ New Position</a
+  >
 </div>
-<div
-  class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
-  style="max-height: 60vh"
->
-  {#if !positionExist}
-    <div
-      class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
-      style="max-height: 60vh"
-    >
-      <div class="text-center">
-        <Icon icon="octicon:inbox-24" class="text-5xl m-auto" />
-        <p class="text-lg mt-4">
-          Your active liquidity positions will appear here
-        </p>
-      </div>
+{#if !positionExist}
+  <div
+    class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
+    style="max-height: 60vh"
+  >
+    <div class="text-center">
+      <Icon icon="octicon:inbox-24" class="text-5xl m-auto" />
+      <p class="text-lg mt-4">
+        Your active liquidity positions will appear here
+      </p>
     </div>
-  {:else}
+  </div>
+{:else}
+  <div
+    class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
+    style="max-height: 60vh"
+  >
     {#each $poolInfos as pool}
       {#if $positionInfos.some((p) => p.token0 + p.token1 == (pool.token0?.info?.address || "") + (pool.token1?.info?.address || ""))}
         <div class="divider odd:first:hidden mb-0"></div>
@@ -114,5 +119,5 @@
         <div class="divider odd:first:hidden mb-0">Nope</div>
       {/if}
     {/each}
-  {/if}
-</div>
+  </div>
+{/if}

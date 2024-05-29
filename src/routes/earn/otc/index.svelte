@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
   import { formatEther } from "ethers/lib/utils";
   import CoinIcon from "src/components/coin-icon.svelte";
@@ -8,6 +9,7 @@
   import { commify } from "src/lib";
   import Claims from "./_claims.svelte";
   import Positions from "./_positions.svelte";
+  import { navigate } from "src/lib/path";
   // import {  } from "svelte/transition";
 
   $: synthInfos = useSynthInfos;
@@ -27,6 +29,8 @@
   $: claimsExist = $claims.reduce((acc: boolean, cur: any) => {
     return acc || !!cur.length;
   }, false);
+
+  $: url = new URL($page.url);
 
   $: console.log("positionExist", positionExist);
   $: console.log("positions", $positions);
@@ -74,7 +78,9 @@
       )}
     </div>
   </div>
-  <a class="btn btn-primary flex-grow" href="/earn/otc/add">+ New Position</a>
+  <a class="btn btn-primary flex-grow" href={navigate("/earn/add", url)}
+    >+ New Position</a
+  >
 </div>
 <div
   class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"

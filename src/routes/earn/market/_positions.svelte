@@ -17,11 +17,11 @@
 
   let label: HTMLLabelElement;
 
-  console.log("debug", pool.sqrtRatio, pool.ratio);
+  console.log("debug", pool, pool.reversed);
 </script>
 
 <Modal {pool} {selectedPosition} />
-<label for={selectedPosition?.id} bind:this={label}></label>
+<label for={pool.address} bind:this={label}></label>
 <div class="overflow-x-auto bg-gradient">
   <table class="table w-full">
     <!-- head -->
@@ -46,20 +46,22 @@
         >
           <td class="table-cell"
             >{commify(
-              uniRatioToSynthPrice(
-                getRatioForTick(position.tickLower),
-                pool.synthPrice,
-                pool.synthRatio
-              )
+              (getRatioForTick(
+                pool.reversed ? -position.tickUpper : position.tickLower
+              ) *
+                pool.synthPrice) /
+                pool.synthRatio,
+              4
             )}</td
           >
           <td class="table-cell">
             {commify(
-              uniRatioToSynthPrice(
-                getRatioForTick(position.tickUpper),
-                pool.synthPrice,
-                pool.synthRatio
-              )
+              (getRatioForTick(
+                pool.reversed ? -position.tickLower : position.tickUpper
+              ) *
+                pool.synthPrice) /
+                pool.synthRatio,
+              4
             )}
           </td>
           <td class="table-cell">
@@ -85,16 +87,18 @@
               {commify(
                 formatEther(
                   String(
-                    getSynthAmount(
-                      getAmountsDelta(
-                        getRatioForTick(position.tickLower),
-                        getRatioForTick(position.tickUpper),
-                        pool.ratio,
-                        position.liquidity,
-                        false
-                      )[pool.synthIndex ? 1 : 0],
-                      pool.synthPrice,
-                      pool.synthRatio
+                    Math.round(
+                      getSynthAmount(
+                        getAmountsDelta(
+                          getRatioForTick(position.tickLower),
+                          getRatioForTick(position.tickUpper),
+                          pool.ratio,
+                          position.liquidity,
+                          false
+                        )[pool.synthIndex ? 1 : 0],
+                        pool.synthPrice,
+                        pool.synthRatio
+                      )
                     )
                   )
                 ),
@@ -107,6 +111,11 @@
             <div
               class="rounded-full w-4 h-4 ml-auto"
               class:bg-success={isInRange(
+                pool.tick,
+                position.tickLower,
+                position.tickUpper
+              )}
+              class:bg-error={!isInRange(
                 pool.tick,
                 position.tickLower,
                 position.tickUpper

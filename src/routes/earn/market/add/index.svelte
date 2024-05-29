@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
-  import { formatUnits, parseEther } from "ethers/lib/utils";
+  import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
   import { validator } from "src/actions/big-number-input";
   import CoinIcon from "src/components/coin-icon.svelte";
   import { useBalance } from "src/hooks/balance";
@@ -9,30 +10,40 @@
   import { commify } from "src/lib";
   import Modal from "../../_modal.svelte";
 
-  import { useAllowance, type TokenInfoAndBalance } from "src/hooks/erc20";
-  import { maxLiquidityForAmounts } from "src/lib/uniswap/maxLiquidityForAmount";
+  import { signPermit } from "src/actions/sign";
   import {
-    getAmount0Delta,
-    getAmount1Delta,
-  } from "src/lib/uniswap/sqrtPriceMath";
-  import { getClosestTick, rectifyPrice } from "src/lib/uniswap/tick";
+    useAllowance,
+    useBalance as useSynthBalance,
+    type TokenInfoAndBalance,
+  } from "src/hooks/erc20";
+  import { usePoolInfos } from "src/hooks/uniswap/pool";
+  import {
+    getShares,
+    getSynthAmount,
+    translatePriceToPoolRatio,
+    uniRatioToSynthPrice,
+  } from "src/lib/sf/math";
+  import { computeAmount0, computeAmount1 } from "src/lib/uniswap/math";
+  import {
+    getClosestTick,
+    getRatioForTick,
+    rectifyPrice,
+  } from "src/lib/uniswap/tick";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
-  import { signPermit } from "src/actions/sign";
-  import { getShares, translatePrice } from "src/lib/sf/math";
-  import { usePoolInfos } from "src/hooks/uniswap/pool";
+  import { reverseRatio } from "src/lib/sf/reverse";
+  import { navigate } from "src/lib/path";
 
-  let debug = false;
+  let debug = true;
 
-  let lowPrice: number = 0.02;
-  let highPrice: number = 0.06;
-
-  let amount0: string; // amount0 is the amount of synthetic token
-  let amount1: string; // amount1 is the amount of ETC
+  let synthAmount: string; // synthAmount is the amount of synthetic token (amount0)
+  let etcAmount: string; // etcAmount is the amount of ETC (amount1)
 
   let liquidity: number;
 
   let selectedToken: TokenInfoAndBalance;
+
+  $: url = new URL($page.url);
 
   $: si = useSynthInfos;
   $: selectedSynth = $si?.find(
@@ -41,12 +52,40 @@
 
   $: pi = usePoolInfos;
 
-  // this is not meant to be modified
-  $: currentPrice = Number(
+  $: pool = $pi.find(
+    (p) =>
+      p.token0?.info?.address == selectedSynth?.address ||
+      p.token1?.info?.address == selectedSynth?.address
+  );
+
+  // the current ratio for the uni pool
+  // from which we can derive the price once we know the synth price and synth ratio
+  $: currentRatio = reverseRatio(pool?.ratio, isReversed) || synthRatio;
+
+  $: synthPrice = Number(
     formatUnits(selectedSynth?.currentPrice || 0, selectedSynth?.oracleDecimals)
   );
 
+  $: synthRatio = Number(formatEther(selectedSynth?.ratio || 1));
+
+  // this is not meant to be modified
+  // if the pool exist, take the ratio from the pool and get the price for it
+  // if the pool does not exist, take the price from the synth
+  $: currentPrice = (currentRatio * synthPrice) / synthRatio;
+
+  $: lowPrice = currentPrice * 0.95;
+  $: lowDifference = ((lowPrice - currentPrice) / currentPrice) * 100;
+
+  $: highPrice = currentPrice * 1.05;
+  $: highDifference = ((highPrice - currentPrice) / currentPrice) * 100;
+
   $: virtualPrice = currentPrice;
+
+  // the ratio of the pool, if changed (for new pools creation)
+  $: virtualRatio = (virtualPrice * synthRatio) / synthPrice;
+
+  $: lowRatio = (lowPrice * synthRatio) / synthPrice;
+  $: highRatio = (highPrice * synthRatio) / synthPrice;
 
   $: allowance = useAllowance(
     selectedToken?.info.address,
@@ -54,62 +93,51 @@
     $signerAddress
   );
 
-  // translate amount0 to shares
-  $: shares = getShares(
-    Number(amount0),
-    currentPrice,
-    selectedSynth?.poolRatio
-  );
+  // the amount of shares to be minted translated from the synth amount
+  $: shares = (Number(synthAmount) * synthPrice) / synthRatio;
 
-  $: lowTick = getClosestTick(
-    translatePrice(selectedSynth?.poolRatio, currentPrice, lowPrice)
-  );
+  $: isReversed = (selectedSynth?.address || "") > $sdk.WETC9.address;
 
-  $: highTick = getClosestTick(
-    translatePrice(selectedSynth?.poolRatio, currentPrice, highPrice)
-  );
+  $: console.log("debug", currentRatio);
 
-  $: translatedPrice = parseEther(
-    String(translatePrice(selectedSynth?.poolRatio, currentPrice, virtualPrice))
-  );
+  $: tickLower = getClosestTick(lowRatio);
 
-  function recomputeAmount0() {
-    liquidity = maxLiquidityForAmounts(
-      Number(currentPrice),
-      Number(lowPrice),
-      Number(highPrice),
-      0,
-      Number(amount1)
+  $: tickUpper = getClosestTick(highRatio);
+
+  // recompute synth (amount0)
+  function recomputeSynth() {
+    if (!selectedSynth) return;
+    const shares = computeAmount0(
+      currentRatio,
+      getRatioForTick(tickLower),
+      getRatioForTick(tickUpper),
+      Number(etcAmount)
     );
-    if (currentPrice <= lowPrice) {
-      amount0 = String(
-        getAmount0Delta(Number(lowPrice), Number(highPrice), liquidity)
-      );
-    } else if (currentPrice < highPrice) {
-      amount0 = String(
-        getAmount0Delta(Number(currentPrice), Number(highPrice), liquidity)
-      );
-    } else {
-      amount0 = "0";
-    }
+    console.log(shares, synthPrice, etcAmount, currentRatio);
+    synthAmount = String((shares * synthRatio) / synthPrice);
   }
 
-  function recomputeAmount1() {
-    liquidity = maxLiquidityForAmounts(
-      Number(currentPrice),
-      Number(lowPrice),
-      Number(highPrice),
-      Number(amount0),
-      0
+  // recompute ETC (amount1)
+  function recomputeETC() {
+    if (!selectedSynth) return;
+    etcAmount = String(
+      computeAmount1(
+        currentRatio,
+        getRatioForTick(tickLower),
+        getRatioForTick(tickUpper),
+        (Number(synthAmount) * synthPrice) / synthRatio
+      )
     );
-    if (currentPrice <= lowPrice) {
-      amount1 = "0";
-    } else if (currentPrice < highPrice) {
-      amount1 = String(getAmount1Delta(lowPrice, currentPrice, liquidity));
-    } else {
-      amount1 = String(getAmount1Delta(lowPrice, highPrice, liquidity));
-    }
+    console.log(synthAmount, synthPrice, etcAmount);
   }
+
+  $: console.log(
+    tickLower,
+    tickUpper,
+    pool?.tick,
+    pool?.ratio,
+    uniRatioToSynthPrice(currentRatio, pool?.synthPrice, pool?.synthRatio)
+  );
 </script>
 
 <Modal
@@ -124,13 +152,13 @@
   <div
     class="flex justify-between items-center p-4 pb-8 border-b border-base-content"
   >
-    <a class="w-1/3" href="/earn/market">
+    <a class="w-1/3" href={navigate("/earn", url)}>
       <Icon icon="ph-arrow-left-bold" class="text-2xl" />
     </a>
     <h1 class="text-xl w-1/3 text-center font-semibold">New Position</h1>
     <div class="w-1/3" />
   </div>
-  {#if debug}
+  <!-- {#if debug && selectedSynth}
     <table class="w-full">
       <thead class="text-left">
         <tr>
@@ -142,30 +170,28 @@
       <tbody>
         <tr>
           <td
-            >{lowPrice.toFixed(2)}|{translatePrice(
-              selectedSynth.poolRatio,
-              currentPrice,
-              lowPrice
-            ).toFixed(2)}|{lowTick}</td
+            >{lowPrice.toFixed(4)}|{lowRatio.toFixed(
+              2
+            )}|{tickLower}|{getRatioForTick(tickLower)}|{getClosestTick(
+              reverseRatio(lowRatio, isReversed)
+            )}</td
           >
           <td
-            >{highPrice.toFixed(2)}|{translatePrice(
-              selectedSynth.poolRatio,
-              currentPrice,
-              highPrice
-            ).toFixed(2)}|{highTick}</td
+            >{highPrice.toFixed(4)}|{highRatio.toFixed(
+              2
+            )}|{tickUpper}|{getRatioForTick(tickUpper)}|{getClosestTick(
+              reverseRatio(highRatio, isReversed)
+            )}</td
           >
           <td
-            >{virtualPrice.toFixed(2)}|{translatePrice(
-              selectedSynth.poolRatio,
-              currentPrice,
-              virtualPrice
-            ).toFixed(2)}</td
+            >{virtualPrice.toFixed(4)}|{currentRatio.toFixed(
+              2
+            )}|{getClosestTick(currentRatio)}</td
           >
         </tr>
       </tbody>
     </table>
-  {/if}
+  {/if} -->
   <div class="p-4">
     <label class="label">
       <span class="label-text font-semibold text-base">Select pair</span>
@@ -188,7 +214,7 @@
       </div>
     </div>
     {#if selectedSynth}
-      {#if !$pi.some((p) => p.token0?.info?.address == selectedSynth?.address)}
+      {#if !pool}
         <div
           class="border border-info bg-info text-info-content p-4 rounded-xl mt-4"
         >
@@ -238,6 +264,11 @@
             </div>
           </div>
         </div>
+      {:else}
+        <div class="pt-4 font-bold">
+          Current Price: {commify(currentPrice, 4)}
+          <Icon icon="mdi:ethereum" class="inline text-xl text-green-600" />
+        </div>
       {/if}
     {/if}
     <div class="border-b w-full border-base-content hidden lg:block mt-4" />
@@ -251,13 +282,18 @@
         >
           <label class="label">
             <span>Low price</span>
+            <span
+              >{lowDifference > 0
+                ? "+" + commify(lowDifference, 2)
+                : commify(lowDifference, 2)}%</span
+            >
           </label>
           <label class="input-group w-full">
             <input
               bind:value={lowPrice}
               on:change={(e) => {
                 lowPrice = rectifyPrice(Number(e.currentTarget.value));
-                recomputeAmount1();
+                recomputeETC();
               }}
               type="number"
               min="0"
@@ -279,6 +315,11 @@
         >
           <label class="label">
             <span>High price</span>
+            <span
+              >{highDifference > 0
+                ? "+" + commify(highDifference, 2)
+                : commify(highDifference, 2)}%</span
+            >
           </label>
           <label class="input-group w-full">
             <input
@@ -287,7 +328,7 @@
                 if (Number(e.currentTarget.value) < lowPrice)
                   highPrice = rectifyPrice(lowPrice + (lowPrice * 0.6) / 100);
                 else highPrice = rectifyPrice(Number(e.currentTarget.value));
-                recomputeAmount0();
+                recomputeSynth();
               }}
               type="number"
               min="0"
@@ -313,15 +354,17 @@
         <div class="form-control lg:w-1/2 bg-opaque fine-border p-4 rounded-xl">
           <label class="input-group">
             <input
-              bind:value={amount1}
+              bind:value={etcAmount}
               type="text"
               placeholder="0"
               class="input input-ghost input-bordered lg:w-2/3 text-2xl"
-              on:validated={(v) => (amount1 = v.detail)}
-              on:change={recomputeAmount0}
+              class:input-error={Number(etcAmount) >
+                Number($useBalance?.balance)}
+              on:validated={(v) => (etcAmount = v.detail)}
+              on:input={recomputeSynth}
               disabled={lowPrice >= currentPrice}
               use:validator={{
-                value: amount1,
+                value: etcAmount,
                 max: $useBalance?.balance,
               }}
             />
@@ -336,7 +379,10 @@
           </label>
           <div
             class="text-right px-4 cursor-pointer"
-            on:click={(_) => (amount0 = String($useBalance?.balance))}
+            on:click={(_) => {
+              etcAmount = String($useBalance?.balance);
+              recomputeSynth();
+            }}
           >
             <span class="text-xs">Balance: </span>
             <span class="text-xs">{commify($useBalance?.balance)}</span>
@@ -345,12 +391,14 @@
         <div class="form-control lg:w-1/2 bg-opaque fine-border p-4 rounded-xl">
           <label class="input-group">
             <input
-              bind:value={amount0}
+              bind:value={synthAmount}
               type="text"
               placeholder="0"
               class="input input-ghost input-bordered lg:w-2/3 text-2xl"
+              class:input-error={Number(synthAmount) >
+                Number(selectedSynth?.token?.balance)}
               disabled={highPrice <= currentPrice}
-              on:change={recomputeAmount1}
+              on:input={recomputeETC}
             />
             <span class="text-center flex items-center justify-center flex-grow"
               ><CoinIcon
@@ -362,7 +410,10 @@
           </label>
           <div
             class="text-right px-4 cursor-pointer"
-            on:click={(_) => (amount0 = String(selectedSynth?.token?.balance))}
+            on:click={(_) => {
+              synthAmount = String(selectedSynth?.token?.balance);
+              recomputeETC();
+            }}
           >
             <span class="text-xs">Balance: </span>
             <span class="text-xs">{commify(selectedSynth?.token?.balance)}</span
@@ -374,26 +425,19 @@
     <div class="border-b w-full border-base-content hidden lg:block mt-4" />
     <button
       class="btn btn-primary w-full mt-8"
-      disabled={!selectedSynth || !amount0}
+      disabled={!selectedSynth || !synthAmount}
       on:click={async (_) => {
         let signature;
-        if ($allowance < Number(shares)) {
+        if ($allowance < shares) {
           console.log("signature");
           signature = await signPermit(
             selectedSynth?.address || "",
             $sdk.POSITION_MANAGER.address,
-            parseEther(String(shares)),
+            parseEther(shares.toString()),
             Math.round(Date.now() / 1000 + 60 * 60)
           );
         }
-        console.log(
-          selectedSynth?.address,
-          translatedPrice,
-          lowTick,
-          highTick,
-          String(shares),
-          amount1
-        );
+        console.log(tickLower, tickUpper, selectedSynth?.address);
         broadcastTransaction(
           `Depositing liquidities to ${selectedSynth?.token?.info?.symbol}`,
           $sdk.POSITION_MANAGER.connect($signer).multicall(
@@ -403,7 +447,7 @@
                     "selfPermit",
                     [
                       selectedSynth?.address,
-                      parseEther(String(shares)),
+                      parseEther(shares.toString()),
                       signature.deadline,
                       signature?.v,
                       signature.r,
@@ -411,25 +455,44 @@
                     ]
                   )
                 : "",
-              $sdk.POSITION_MANAGER.interface.encodeFunctionData(
-                "createAndInitializePoolIfNecessary",
-                [
-                  selectedSynth?.token?.info?.address || "",
-                  $sdk.WETC9.address,
-                  3000,
-                  translatedPrice.shl(96).div(parseEther("1")),
-                ]
-              ),
-              // ]);
+              !pool
+                ? $sdk.POSITION_MANAGER.interface.encodeFunctionData(
+                    "createAndInitializePoolIfNecessary",
+                    [
+                      isReversed
+                        ? $sdk.WETC9.address
+                        : selectedSynth?.address || "",
+                      isReversed
+                        ? selectedSynth?.address || ""
+                        : $sdk.WETC9.address,
+                      3000,
+                      parseEther(
+                        String(
+                          reverseRatio(Math.sqrt(virtualRatio), isReversed)
+                        )
+                      )
+                        .shl(96)
+                        .div(parseEther("1")),
+                    ]
+                  )
+                : "",
               $sdk.POSITION_MANAGER.interface.encodeFunctionData("mint", [
                 {
-                  token0: selectedSynth.address,
-                  token1: $sdk.WETC9.address,
+                  token0: isReversed
+                    ? $sdk.WETC9.address
+                    : selectedSynth?.address || "",
+                  token1: isReversed
+                    ? selectedSynth?.address || ""
+                    : $sdk.WETC9.address,
                   fee: 3000,
-                  tickLower: lowTick,
-                  tickUpper: highTick,
-                  amount0Desired: parseEther(String(shares)),
-                  amount1Desired: parseEther(amount1),
+                  tickLower: isReversed ? -tickUpper : tickLower,
+                  tickUpper: isReversed ? -tickLower : tickUpper,
+                  amount0Desired: parseEther(
+                    String(isReversed ? etcAmount : shares)
+                  ),
+                  amount1Desired: parseEther(
+                    String(isReversed ? shares : etcAmount)
+                  ),
                   amount0Min: 0,
                   amount1Min: 0,
                   recipient: $signerAddress,
@@ -437,12 +500,20 @@
                 },
               ]),
               $sdk.POSITION_MANAGER.interface.encodeFunctionData("refundETH"),
-            ],
-            { value: parseEther(amount1) }
+            ].filter((t) => !!t),
+            { value: parseEther(etcAmount) }
           )
         );
-      }}>Add Liquidity</button
+      }}
     >
+      {#if selectedToken?.balance < synthAmount}
+        Insufficient {selectedToken.info.symbol} balance
+      {:else if etcAmount > $useBalance?.balance}
+        Insufficient ETC balance
+      {:else}
+        Add Liquidity
+      {/if}
+    </button>
   </div>
 </div>
 

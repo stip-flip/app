@@ -1,16 +1,16 @@
-import type { BigNumber, BigNumberish } from "ethers";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import type { BigNumberish } from "ethers";
+import { formatEther } from "ethers/lib/utils";
 
 export function getShares(
   synthAmount: number,
-  price: number,
+  synthPrice: number,
   synthRatio: BigNumberish
 ): number {
-  if (!price || !synthAmount || !synthRatio) return 0;
+  if (!synthPrice || !synthAmount || !synthRatio) return 0;
   if (typeof synthRatio === "object") {
     synthRatio = formatEther(synthRatio);
   }
-  const shares = (synthAmount * price) / Number(synthRatio);
+  const shares = (synthAmount * synthPrice) / Number(synthRatio);
 
   return shares;
 }
@@ -40,22 +40,31 @@ export function getPRFromVirtualPrice(
   return virtualPR;
 }
 
-// take the price synth/ETC and translate it to the price shares/ETC `shares = ETC / PoolRatio`
-export function translatePrice(
-  poolRatio: BigNumber,
-  price: number,
-  virtualPrice: number
+export function translatePriceToPoolRatio(
+  virtualPrice: number,
+  synthPrice: number
 ): number {
-  if (!price || !virtualPrice || !poolRatio) return 0;
-  const translatedPrice =
-    (Number(formatEther(poolRatio)) * virtualPrice) / price;
+  if (!synthPrice || !virtualPrice) return 0;
+  const translatedPrice = virtualPrice / synthPrice;
   return translatedPrice;
 }
 
+/**
+ * translate a uniswap pool ratio to a synthetic price
+ * @param uniRatio the ratio shares/etc of the uniswap pool
+ * @param synthPrice the current synthetic price in ETC
+ * @param synthRatio the current ratio shares/etc of the synthetic
+ * @param isReversed is the pool reversed
+ * @returns
+ */
 export function uniRatioToSynthPrice(
   uniRatio: number,
   synthPrice: number,
-  synthRatio: number
+  isReversed?: boolean
 ): number {
-  return (synthPrice * uniRatio) / synthRatio;
+  let p = uniRatio * synthPrice;
+  if (isReversed) {
+    p = 1 / p;
+  }
+  return p;
 }

@@ -1,7 +1,12 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { BigNumber, ethers } from "ethers";
-  import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
+  import {
+    formatEther,
+    formatUnits,
+    parseEther,
+    parseUnits,
+  } from "ethers/lib/utils";
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
   import CoinIcon from "src/components/coin-icon.svelte";
@@ -15,11 +20,12 @@
   import Modal from "../components/_modal.svelte";
   import { useSynthInfos } from "src/hooks/sf/synth";
   import { signPermit } from "src/actions/sign";
+  import { buildPath, swapOut } from "src/hooks/sf/swapMath";
 
-  let amountOut: string = "0";
-  let amountIn: string = "0";
+  let amountOut: string;
+  let amountIn: string;
 
-  let price: string = "0";
+  let price: number = 0;
 
   let selectToken: "token0" | "token1";
   let selectedToken0: TokenInfoAndBalance;
@@ -31,18 +37,34 @@
 
   const ZERO_ADDRESS = "0x0";
 
-  $: poolInfos = useSynthInfos;
+  $: synthInfo = useSynthInfos;
 
   $: quoteToken = useBalance;
 
   $: balance0 = useBal(selectedToken0?.info.address, $signerAddress);
 
+  $: synth0 = $synthInfo.find(
+    (si) => si.address == selectedToken0?.info.address
+  );
+
+  $: synth0Price = Number(
+    formatUnits(synth0?.currentPrice || 0, synth0?.oracleDecimals)
+  );
+
+  $: synth0Ratio = Number(formatUnits(synth0?.ratio || 0, 18));
+
+  $: synth1 = $synthInfo.find(
+    (si) => si.address == selectedToken1?.info.address
+  );
+
+  $: synth1Price = Number(
+    formatUnits(synth1?.currentPrice || 0, synth1?.oracleDecimals)
+  );
+
+  $: synth1Ratio = Number(formatUnits(synth1?.ratio || 0, 18));
+
   function zeroToWETC9(tokenAddress: string) {
     return tokenAddress == ZERO_ADDRESS ? $sdk.WETC9.address : tokenAddress;
-  }
-
-  function zeroForOne(tokenIn: string, tokenOut: string) {
-    return tokenIn < tokenOut;
   }
 
   $: allowance = useAllowance(
@@ -52,7 +74,7 @@
   );
 
   $: tokenInfosAndBalances = [
-    ...($poolInfos || []).map((pi) => pi.token),
+    ...($synthInfo || []).map((pi) => pi.token),
     $quoteToken,
   ].filter((t) => !!t);
 
@@ -76,7 +98,7 @@
     }
   }
 
-  $: selectedPool = $poolInfos.find(
+  $: selectedPool = $synthInfo.find(
     (pi) =>
       pi.address == selectedToken0?.info.address ||
       pi.address == selectedToken1?.info.address
@@ -84,50 +106,13 @@
 
   let path: string;
   let reversePath: string;
+  let steps: string[][];
+  let reverseSteps: string[][];
 
-  $: {
-    if (!selectedToken0 || !selectedToken1) path = "";
-    else if (selectedToken0.info.address == ZERO_ADDRESS) {
-      path = ethers.utils.solidityPack(
-        ["address", "uint24", "address"],
-        [$sdk.WETC9.address, 3000, selectedToken1.info.address]
-      );
-      reversePath = ethers.utils.solidityPack(
-        ["address", "uint24", "address"],
-        [selectedToken1.info.address, 3000, $sdk.WETC9.address]
-      );
-    } else if (selectedToken1.info.address == ZERO_ADDRESS) {
-      path = ethers.utils.solidityPack(
-        ["address", "uint24", "address"],
-        [selectedToken0.info.address, 3000, $sdk.WETC9.address]
-      );
-      reversePath = ethers.utils.solidityPack(
-        ["address", "uint24", "address"],
-        [$sdk.WETC9.address, 3000, selectedToken0.info.address]
-      );
-    } else {
-      path = ethers.utils.solidityPack(
-        ["address", "uint24", "address", "uint24", "address"],
-        [
-          selectedToken0.info.address,
-          3000,
-          $sdk.WETC9.address,
-          3000,
-          selectedToken1.info.address,
-        ]
-      );
-      reversePath = ethers.utils.solidityPack(
-        ["address", "uint24", "address", "uint24", "address"],
-        [
-          selectedToken1.info.address,
-          3000,
-          $sdk.WETC9.address,
-          3000,
-          selectedToken0.info.address,
-        ]
-      );
-    }
-  }
+  $: [path, reversePath, steps, reverseSteps] = buildPath(
+    selectedToken0,
+    selectedToken1
+  );
 
   $: {
     if (selectedToken0 && selectedToken1 && selectedPool) {
@@ -135,101 +120,38 @@
     }
   }
 
-  $: errors = {
-    liquidities: `Not enough ${selectedToken1?.info?.name} liquidities in the Uniswap pool`,
-    void: "This uniswap pool does not exist, <a class='font-bold underline' href='https://www.etcswap.org/#/pools'>create it</a> first",
-  };
-
   // debounce outgoing amount
   const debOut = _.debounce(async () => {
-    if (selectedToken0 && selectedToken1) {
-      let amount = parseUnits(
-        amountOut == "0" ? "0.000001" : amountOut,
-        selectedToken0.info.decimals
-      );
-      try {
-        const res = await $sdk.QUOTER.callStatic.quoteExactInput(path, amount);
-        let divisor = ethers.BigNumber.from(2).pow(96);
-        let p = BigNumber.from(1e4);
-        for (let i = 0; i < res.sqrtPriceX96AfterList.length; i++) {
-          p = p
-            .mul(res.sqrtPriceX96AfterList[i])
-            .div(divisor)
-            .mul(res.sqrtPriceX96AfterList[i])
-            .div(divisor);
-        }
-        amountIn =
-          amountOut == "0"
-            ? "0"
-            : formatUnits(res.amountOut, selectedToken1.info.decimals);
-        price = zeroForOne(
-          zeroToWETC9(selectedToken0.info.address),
-          zeroToWETC9(selectedToken1.info.address)
-        )
-          ? commify(p.toNumber() / 1e4)
-          : commify(1e4 / p.toNumber());
-        error = "";
-      } catch (err: any) {
-        console.log(err.message);
-        if (err.message.includes("TF")) {
-          error = errors.liquidities;
-        } else if (err.message.includes("AS")) {
-          // do nothing
-          error = "";
-        } else {
-          error = errors.void;
-        }
-      }
-      // console.log(res.data[1]);
-    }
+    const res = await swapOut(
+      $sdk,
+      amountOut,
+      path,
+      steps,
+      synth0,
+      synth1,
+      selectedToken0,
+      selectedToken1
+    );
+    error = res.error;
+    price = res.price;
+    amountIn = res.amountIn;
   }, 1000);
 
   // debounce incoming amount
   const debIn = _.debounce(async () => {
-    console.log("debIn");
-    if (selectedToken0 && selectedToken1) {
-      let amount = parseUnits(
-        amountIn == "0" ? "0.000001" : amountIn,
-        selectedToken1.info.decimals
-      );
-      try {
-        const res = await $sdk.QUOTER.callStatic.quoteExactOutput(
-          reversePath,
-          amount
-        );
-        let divisor = ethers.BigNumber.from(2).pow(96);
-        let p = BigNumber.from(1e4);
-        for (let i = 0; i < res.sqrtPriceX96AfterList.length; i++) {
-          p = p
-            .mul(res.sqrtPriceX96AfterList[i])
-            .div(divisor)
-            .mul(res.sqrtPriceX96AfterList[i])
-            .div(divisor);
-        }
-
-        amountOut =
-          amountIn == "0"
-            ? "0"
-            : formatUnits(res.amountIn, selectedToken1.info.decimals);
-        price = zeroForOne(
-          zeroToWETC9(selectedToken0.info.address),
-          zeroToWETC9(selectedToken1.info.address)
-        )
-          ? commify(p.toNumber() / 1e4)
-          : commify(1e4 / p.toNumber());
-        error = "";
-      } catch (err: any) {
-        console.log(err.message);
-        if (err.message.includes("TF")) {
-          error = errors.liquidities;
-        } else if (err.message.includes("AS")) {
-          // do nothing
-          error = "";
-        } else {
-          error = errors.void;
-        }
-      }
-    }
+    const res = await swapOut(
+      $sdk,
+      amountIn,
+      reversePath,
+      reverseSteps,
+      synth1,
+      synth0,
+      selectedToken1,
+      selectedToken0
+    );
+    error = res.error;
+    price = res.price;
+    amountOut = res.amountIn;
   }, 1000);
 </script>
 
@@ -254,8 +176,9 @@
     <input
       bind:value={amountOut}
       type="text"
-      placeholder="Amount to swap"
+      placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
+      class:input-error={Number(amountOut) > $balance0}
       on:validated={(v) => (amountOut = v.detail)}
       on:input={debOut}
       use:validator={{
@@ -316,7 +239,7 @@
     <input
       bind:value={amountIn}
       type="text"
-      placeholder="Amount to swap"
+      placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
       on:validated={(v) => (amountIn = v.detail)}
       on:input={debIn}
@@ -384,15 +307,18 @@
       on:click={async (_) => {
         if (!selectedToken0 || !selectedToken1) checkbox.click();
         let signature;
-
-        if ($allowance < Number(amountOut)) {
-          console.log("signature");
-          signature = await signPermit(
-            selectedToken0.info.address,
-            $sdk.ROUTER.address,
-            parseEther(amountOut),
-            Math.round(Date.now() / 1000 + 60 * 60)
-          );
+        let shares = Number(amountOut);
+        if (synth0) {
+          shares = (shares * synth0Price) / synth0Ratio;
+          if ($allowance < Number(amountOut)) {
+            console.log("signature");
+            signature = await signPermit(
+              selectedToken0.info.address,
+              $sdk.ROUTER.address,
+              parseEther(String(shares)),
+              Math.round(Date.now() / 1000 + 60 * 60)
+            );
+          }
         }
         console.log(path, amountOut);
         broadcastTransaction(
@@ -403,10 +329,9 @@
           $sdk.ROUTER.connect($signer).multicall(
             [
               !!signature
-                ? $sdk.POOL.interface.encodeFunctionData("permit", [
-                    $signerAddress,
-                    $sdk.ROUTER.address,
-                    parseEther(amountOut),
+                ? $sdk.ROUTER.interface.encodeFunctionData("selfPermit", [
+                    synth0?.address,
+                    parseEther(String(shares)),
                     signature.deadline,
                     signature?.v,
                     signature.r,
@@ -415,7 +340,7 @@
                 : "",
               $sdk.ROUTER.interface.encodeFunctionData("exactInput", [
                 {
-                  amountIn: parseEther(amountOut),
+                  amountIn: parseEther(String(shares)),
                   amountOutMinimum: parseEther("0"),
                   deadline: Math.floor(Date.now() / 1000) + 60 * 20,
                   path: path,
@@ -429,15 +354,6 @@
                   ? parseEther(amountOut)
                   : 0,
             }
-            // $sdk.ROUTER.functions.encodeFunctionData("exactInput", [
-            //   {
-            //     amountIn: parseEther(amountOut),
-            //     amountOutMinimum: parseEther("0"),
-            //     deadline: Math.floor(Date.now() / 1000) + 60 * 20,
-            //     path: path,
-            //     recipient: $signerAddress,
-            //   },
-            // ])
           )
         );
       }}
@@ -446,6 +362,8 @@
         Swap <CoinIcon symbol={selectedToken0.info.symbol} />for <CoinIcon
           symbol={selectedToken1.info.symbol}
         />
+      {:else if Number(amountOut) > $balance0}
+        Insufficient balance
       {:else}
         Select tokens
       {/if}

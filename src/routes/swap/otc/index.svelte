@@ -20,8 +20,8 @@
   import Modal from "../components/_modal.svelte";
   import CoinIcon from "src/components/coin-icon.svelte";
 
-  let amountOut: string = "0";
-  let amountIn: string = "0";
+  let amountOut: string;
+  let amountIn: string;
 
   let selectToken: "token0" | "token1";
   let selectedToken0: TokenInfoAndBalance;
@@ -86,7 +86,7 @@
   );
 
   let feeAmount: BigNumber = BigNumber.from(0);
-  let frAfter: BigNumber = BigNumber.from(0);
+  $: frAfter = selectedPool?.tick || 0;
   let pnl: BigNumber = BigNumber.from(0);
 
   $: {
@@ -113,7 +113,7 @@
       if (enter) {
         if (amountOut == "0") {
           feeAmount = BigNumber.from(0);
-          frAfter = BigNumber.from(0);
+
           amountIn = "0";
           return;
         }
@@ -123,12 +123,12 @@
           parseUnits(amountOut, selectedToken0?.info.decimals || 0)
         );
         feeAmount = enter.feeAmount;
-        frAfter = enter.frAfter;
+        // frAfter = enter.frAfter;
         amountIn = formatEther(enter.swapOut.mul(-1));
       } else {
         if (amountOut == "0") {
           feeAmount = BigNumber.from(0);
-          frAfter = BigNumber.from(0);
+
           amountIn = "0";
           return;
         }
@@ -138,7 +138,7 @@
             parseUnits(amountOut, selectedToken0?.info.decimals || 0)
           );
         feeAmount = exit.feeAmount;
-        frAfter = exit.frAfter;
+
         amountIn = formatEther(exit.swapOut.mul(-1));
       }
     }
@@ -154,7 +154,7 @@
           parseUnits(amountIn, selectedToken1?.info.decimals || 0).mul(-1)
         );
         feeAmount = enter.feeAmount;
-        frAfter = enter.frAfter;
+
         amountOut = formatEther(enter.swapOut);
       } else {
         const exit = await $sdk?.POOL.attach(selectedPool?.address)
@@ -163,7 +163,7 @@
             parseUnits(amountIn, selectedToken1?.info.decimals || 0).mul(-1)
           );
         feeAmount = exit.feeAmount;
-        frAfter = exit.frAfter;
+
         amountOut = formatEther(exit.swapOut);
       }
     }
@@ -191,8 +191,9 @@
     <input
       bind:value={amountOut}
       type="text"
-      placeholder="Amount to swap"
+      placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
+      class:input-error={Number(amountOut) > $balance0}
       on:validated={(v) => (amountOut = v.detail)}
       on:input={debOut}
       use:validator={{
@@ -253,7 +254,7 @@
     <input
       bind:value={amountIn}
       type="text"
-      placeholder="Amount to swap"
+      placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
       on:validated={(v) => (amountIn = v.detail)}
       on:input={debIn}
@@ -295,11 +296,7 @@
       <div id="funding-rate" class="flex justify-between my-4 text-lg">
         <strong>Funding Rate</strong>
         <strong>
-          {#if Number(amountOut)}
-            {commify(formatUnits(frAfter, 18 + 2))} %
-          {:else}
-            {commify(formatUnits(selectedPool.tick, 2))} %
-          {/if}
+          {commify(formatUnits(selectedPool.tick, 2))} %
         </strong>
       </div>
       <div id="settlement" class="flex justify-between my-4 text-lg">
@@ -337,6 +334,7 @@
     class="btn btn-primary btn-lg w-full mt-8"
     on:click={(_) => {
       if (!selectedToken0 || !selectedToken1) checkbox.click();
+      if (Number(amountOut) > $balance0) return;
       if (enter) {
         broadcastTransaction(
           "Swapping " +
@@ -374,6 +372,8 @@
       Swap <CoinIcon symbol={selectedToken0.info.symbol} />for <CoinIcon
         symbol={selectedToken1.info.symbol}
       />
+    {:else if Number(amountOut) > $balance0}
+      Insufficient balance
     {:else}
       Select tokens
     {/if}

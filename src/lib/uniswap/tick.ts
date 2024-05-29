@@ -7,9 +7,12 @@ const TICK_SPACING = 60;
 const TICK_BASE = Math.sqrt(1.0001);
 
 // Function to calculate the closest tick for a given square root price
-export function getClosestTick(price: number): number {
+export function getClosestTick(price: number, isReversed?: boolean): number {
   // calculate the square root of the price
   let sqrtPrice = Math.sqrt(price);
+
+  if (isReversed) sqrtPrice = 1 / sqrtPrice;
+
   // Calculate the raw tick
   let rawTick = Math.floor(Math.log(sqrtPrice) / Math.log(TICK_BASE));
 
@@ -20,12 +23,14 @@ export function getClosestTick(price: number): number {
 }
 
 // Function to calculate the root price that a tick translates to
-export function getRatioForTick(tick: number): number {
+export function getRatioForTick(tick: number, isReversed?: boolean): number {
   // Calculate the square root price
   let sqrtPrice = Math.pow(TICK_BASE, tick);
 
   // translate the square root price to the actual price
   let price = sqrtPrice * sqrtPrice;
+
+  if (isReversed) price = 1 / price;
   return price;
 }
 

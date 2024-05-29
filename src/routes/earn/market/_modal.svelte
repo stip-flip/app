@@ -176,6 +176,7 @@
                 },
               ]
             ),
+            $sdk.POSITION_MANAGER.interface.encodeFunctionData("refundETH"),
           ],
           { value: parseEther(etcDeposit) }
         )
@@ -184,8 +185,8 @@
   }
 </script>
 
-<input type="checkbox" id={selectedPosition?.id} class="modal-toggle" />
-<label for={selectedPosition?.id} class="modal cursor-pointer">
+<input type="checkbox" id={pool.address} class="modal-toggle" />
+<label for={pool.address} class="modal cursor-pointer">
   <label class="modal-box relative" for="">
     <div class="flex items-center justify-between">
       <h2 class="text-2xl font-bold flex items-center">
@@ -194,20 +195,24 @@
       </h2>
       <div class="flex items-center">
         <Icon icon="mdi:ethereum" class="text-green-600 text-2xl" />{commify(
-          uniRatioToSynthPrice(
-            getRatioForTick(selectedPosition?.tickLower),
-            pool.synthPrice,
+          (getRatioForTick(
+            pool.reversed
+              ? -selectedPosition?.tickUpper
+              : selectedPosition?.tickLower
+          ) *
+            pool.synthPrice) /
             pool.synthRatio
-          )
         )} - <Icon
           icon="mdi:ethereum"
           class="text-green-600 text-2xl"
         />{commify(
-          uniRatioToSynthPrice(
-            getRatioForTick(selectedPosition?.tickUpper),
-            pool.synthPrice,
+          (getRatioForTick(
+            pool.reversed
+              ? -selectedPosition?.tickLower
+              : selectedPosition?.tickUpper
+          ) *
+            pool.synthPrice) /
             pool.synthRatio
-          )
         )}
       </div>
     </div>

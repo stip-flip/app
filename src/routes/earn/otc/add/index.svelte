@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
   import { parseEther } from "ethers/lib/utils";
   import { validator } from "src/actions/big-number-input";
@@ -11,6 +12,7 @@
   import { signer } from "svelte-ethers-store";
   import Modal from "../../_modal.svelte";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
+  import { navigate } from "src/lib/path";
 
   let amount: string;
 
@@ -18,6 +20,8 @@
 
   $: pi = useSynthInfos;
   $: selectedPool = $pi?.find((p) => p.address == selectedToken?.info?.address);
+
+  $: url = new URL($page.url);
 
   let FR = 500;
   // fr is actually a tick here
@@ -38,7 +42,7 @@
   <div
     class="flex justify-between items-center p-4 pb-8 border-b border-base-content"
   >
-    <a class="w-1/3" href="/earn/otc">
+    <a class="w-1/3" href={navigate("/earn", url)}>
       <Icon icon="ph-arrow-left-bold" class="text-2xl" />
     </a>
     <h1 class="text-xl w-1/3 text-center font-semibold">New Position</h1>

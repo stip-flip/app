@@ -21,7 +21,7 @@ export type SynthInfo = {
   ticks?: Record<number, number>;
   token?: TokenInfoAndBalance;
   settlementTimestamp: number;
-  poolRatio: BigNumber;
+  ratio: BigNumber;
 };
 
 export const synthInfoAsync = async (
@@ -44,7 +44,7 @@ export const synthInfoAsync = async (
     frequency,
     initialized,
     roundDuration,
-    poolRatio,
+    ratio,
   ] = await Promise.all([
     p.getPrice(),
     p.slot0(),
@@ -73,7 +73,7 @@ export const synthInfoAsync = async (
       initialized.toNumber() +
       (round.toNumber() + 1) * frequency +
       roundDuration,
-    poolRatio,
+    ratio: ratio.isZero() ? parseEther("1") : ratio,
   };
 };
 

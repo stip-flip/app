@@ -19,6 +19,8 @@
   import { quintOut } from "svelte/easing";
   import { crossfade, fly } from "svelte/transition";
   import { flip } from "svelte/animate";
+  import Mode from "src/components/mode.svelte";
+  import { navigate } from "src/lib/path";
 
   let overlay: HTMLAreaElement;
 
@@ -39,6 +41,8 @@
   $: console.log($resolvedTransactions);
 
   $: homepage = $page.route.id == "/";
+
+  $: url = new URL($page.url);
 
   $: {
     if (!!$resolvedTransactions[lastResolvedIndex]) {
@@ -163,7 +167,7 @@
           <div />
           <!-- <Theme /> -->
         {:else}
-          <div class="flex items-center w-content h-8 mr-8 w-1/5">
+          <div class="flex items-center w-content h-8 mr-8 w-1/3">
             <div class="flex-none lg:hidden">
               <label
                 for="app-drawer"
@@ -184,9 +188,10 @@
                 >
               </label>
             </div>
-            <a href={"/"} class="items-center hidden lg:flex">
+            <a href={"/"} class="items-center hidden lg:flex mr-12">
               <Logo />
             </a>
+            <Mode />
           </div>
           <div class="flex-none hidden lg:block">
             <ul
@@ -195,7 +200,7 @@
               <!-- Navbar menu content here -->
               <li>
                 <a
-                  href="/wallet"
+                  href={navigate("/wallet", url)}
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/wallet")}
                   class:selected={$page.route?.id?.startsWith("/wallet")}
@@ -204,7 +209,7 @@
               </li>
               <li>
                 <a
-                  href={`/swap/otc`}
+                  href={navigate("/swap", url)}
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/swap")}
                   class:selected={$page.route?.id?.startsWith("/swap")}>Swap</a
@@ -212,7 +217,7 @@
               </li>
               <li>
                 <a
-                  href={`/earn/otc`}
+                  href={navigate("/earn", url)}
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/earn")}
                   class:selected={$page.route?.id?.startsWith("/earn")}>Earn</a
@@ -220,7 +225,7 @@
               </li>
               <li>
                 <a
-                  href={`/faucet/`}
+                  href={navigate("/faucet", url)}
                   class="rounded-full"
                   class:hidden={!$connected || $chainId != 63}
                   class:text-primary={$page.route?.id?.startsWith("/faucet")}
@@ -230,7 +235,7 @@
               </li>
             </ul>
           </div>
-          <div class="space-x-4 lg:w-1/5 flex justify-end">
+          <div class="space-x-4 lg:w-1/3 flex justify-end">
             <Wallet />
             <Theme />
           </div>

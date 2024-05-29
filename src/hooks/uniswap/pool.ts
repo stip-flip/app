@@ -1,15 +1,13 @@
+import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { derived, get } from "svelte/store";
-import {
-  extractERC20Info,
-  infosAndBalanceAsync,
-  type TokenInfoAndBalance,
-} from "../erc20";
-import { resolvedTransactions } from "../transactions";
+import { infosAndBalanceAsync, type TokenInfoAndBalance } from "../erc20";
 import type { PoolFragment } from "../subgraph";
-import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
+import { resolvedTransactions } from "../transactions";
 
+// synth token is expected to be token 0 accross the app
+// sometimes it is token1, we note the pool as reversed in that case
 export type PoolInfo = {
   address: string;
   tick: number;
@@ -22,6 +20,7 @@ export type PoolInfo = {
   token1?: TokenInfoAndBalance; // extract more info from token1 address
   synthIndex?: 0 | 1; // the index of the synth token (token 0 or 1)
   synth?: TokenInfoAndBalance; // whichever token is the synth (0 or 1) store its info here
+  reversed?: boolean; // if the synth token is token1
 };
 
 export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
@@ -77,6 +76,7 @@ export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
     synthIndex:
       pool.token0.toLowerCase() == sdk.WETC9.address.toLowerCase() ? 1 : 0,
     synth: synthAddress == pool.token0 ? token0Info : token1Info,
+    reversed: pool.token0.toLowerCase() == sdk.WETC9.address.toLowerCase(),
   };
 };
 
