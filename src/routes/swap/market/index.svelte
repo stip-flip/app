@@ -14,9 +14,14 @@
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useAllowance, useBalance as useBal } from "src/hooks/erc20";
   import { broadcastTransaction } from "src/hooks/transactions";
-  import { commify } from "src/lib";
-  import { sdk } from "src/stores";
-  import { signer, signerAddress } from "svelte-ethers-store";
+  import { commify, switchNetwork } from "src/lib";
+  import { SUPPORTED_NETWORKS, sdk } from "src/stores";
+  import {
+    chainId,
+    defaultEvmStores,
+    signer,
+    signerAddress,
+  } from "svelte-ethers-store";
   import Modal from "../components/_modal.svelte";
   import { useSynthInfos } from "src/hooks/sf/synth";
   import { signPermit } from "src/actions/sign";
@@ -62,6 +67,8 @@
   );
 
   $: synth1Ratio = Number(formatUnits(synth1?.ratio || 0, 18));
+
+  $: supportedNetwork = SUPPORTED_NETWORKS.includes(Number($chainId));
 
   function zeroToWETC9(tokenAddress: string) {
     return tokenAddress == ZERO_ADDRESS ? $sdk.WETC9.address : tokenAddress;
@@ -305,6 +312,8 @@
       id="swap"
       class="btn btn-primary btn-lg w-full mt-8"
       on:click={async (_) => {
+        if (!$signer) return defaultEvmStores.setProvider();
+        if (!supportedNetwork) return switchNetwork(63);
         if (!selectedToken0 || !selectedToken1) checkbox.click();
         let signature;
         let shares = Number(amountOut);
@@ -358,7 +367,11 @@
         );
       }}
     >
-      {#if selectedToken0 && selectedToken1}
+      {#if !$signer}
+        Connect Wallet
+      {:else if !supportedNetwork}
+        Switch Network
+      {:else if selectedToken0 && selectedToken1}
         Swap <CoinIcon symbol={selectedToken0.info.symbol} />for <CoinIcon
           symbol={selectedToken1.info.symbol}
         />

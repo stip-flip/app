@@ -14,9 +14,14 @@
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useBalance as useBal } from "src/hooks/erc20";
   import { useSynthInfos } from "src/hooks/sf/synth";
-  import { commify, getTimeDifference } from "src/lib";
-  import { sdk, timestamp } from "src/stores";
-  import { signer, signerAddress } from "svelte-ethers-store";
+  import { commify, getTimeDifference, switchNetwork } from "src/lib";
+  import { SUPPORTED_NETWORKS, sdk, timestamp } from "src/stores";
+  import {
+    chainId,
+    defaultEvmStores,
+    signer,
+    signerAddress,
+  } from "svelte-ethers-store";
   import Modal from "../components/_modal.svelte";
   import CoinIcon from "src/components/coin-icon.svelte";
 
@@ -99,6 +104,8 @@
     selectedPool?.settlementTimestamp || 0,
     $timestamp
   );
+
+  $: supportedNetwork = SUPPORTED_NETWORKS.includes(Number($chainId));
 
   const reset = () => {
     amountOut = "0";
@@ -333,6 +340,8 @@
     id="swap"
     class="btn btn-primary btn-lg w-full mt-8"
     on:click={(_) => {
+      if (!$signer) return defaultEvmStores.setProvider();
+      if (!supportedNetwork) return switchNetwork(63);
       if (!selectedToken0 || !selectedToken1) checkbox.click();
       if (Number(amountOut) > $balance0) return;
       if (enter) {
@@ -368,7 +377,11 @@
       }
     }}
   >
-    {#if selectedToken0 && selectedToken1}
+    {#if !$signer}
+      Connect Wallet
+    {:else if !supportedNetwork}
+      Switch Network
+    {:else if selectedToken0 && selectedToken1}
       Swap <CoinIcon symbol={selectedToken0.info.symbol} />for <CoinIcon
         symbol={selectedToken1.info.symbol}
       />
