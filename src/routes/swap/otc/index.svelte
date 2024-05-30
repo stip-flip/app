@@ -205,7 +205,6 @@
       on:input={debOut}
       use:validator={{
         value: amountOut,
-        max: $balance0 || 0,
       }}
     />
     <div class="w-1/2">
@@ -267,7 +266,6 @@
       on:input={debIn}
       use:validator={{
         value: amountIn,
-        max: String(1e18),
       }}
     />
     <div class="dropdown w-1/2">

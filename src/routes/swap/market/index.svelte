@@ -190,7 +190,6 @@
       on:input={debOut}
       use:validator={{
         value: amountOut,
-        max: $balance0 || 0,
       }}
     />
     <div class="w-1/2">
@@ -315,6 +314,7 @@
         if (!$signer) return defaultEvmStores.setProvider();
         if (!supportedNetwork) return switchNetwork(63);
         if (!selectedToken0 || !selectedToken1) checkbox.click();
+        if (Number(amountOut) > $balance0) return;
         let signature;
         let shares = Number(amountOut);
         if (synth0) {

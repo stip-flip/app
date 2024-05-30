@@ -51,9 +51,9 @@
     $signerAddress
   );
 
-  let etcDeposit = "0";
+  let etcDeposit: string;
 
-  let synthDeposit = "0";
+  let synthDeposit: string;
 
   // translate synthetics to shares
   $: shares = getShares(Number(synthDeposit), pool.synthPrice, pool.synthRatio);
@@ -350,13 +350,18 @@
           bind:value={etcDeposit}
           type="text"
           placeholder="0"
-          on:change={(_) => recomputeSynth(Number(etcDeposit))}
+          class="input input-bordered w-2/3 flex items-center"
+          class:input-error={Number(etcDeposit) > Number($useBalance.balance)}
+          on:input={(_) => recomputeSynth(Number(etcDeposit))}
+          on:validated={(v) => (etcDeposit = v.detail)}
           disabled={!!pool.synthIndex
             ? getRatioForTick(selectedPosition.tickUpper) <= pool.ratio
             : getRatioForTick(selectedPosition.tickLower) >= pool.ratio}
-          class="input input-bordered w-2/3 flex items-center"
+          use:validator={{
+            value: etcDeposit,
+          }}
         />
-        <span class="w-1/3 text-center flex items-center">
+        <span class="w-1/3 text-center flex items-center bg-opaque">
           <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
           ETC</span
         >
@@ -374,19 +379,20 @@
         <input
           bind:value={synthDeposit}
           type="text"
+          placeholder="0"
           class="input input-bordered w-2/3 flex items-center"
+          class:input-error={Number(synthDeposit) > Number(pool.synth?.balance)}
+          on:input={(_) => recomputeETC(Number(synthDeposit))}
           on:validated={(v) => (synthDeposit = v.detail)}
-          on:change={(_) => recomputeETC(Number(synthDeposit))}
           disabled={!!pool.synthIndex
             ? getRatioForTick(selectedPosition.tickLower) >= pool.ratio
             : getRatioForTick(selectedPosition.tickUpper) <= pool.ratio}
           use:validator={{
             value: synthDeposit,
-            max: pool.synth?.balance,
           }}
         />
 
-        <span class="w-1/3 text-center flex items-center">
+        <span class="w-1/3 text-center flex items-center bg-opaque">
           <CoinIcon symbol={pool.synth?.info?.symbol} className="mr-1" />
           {pool.synth?.info?.symbol}</span
         >

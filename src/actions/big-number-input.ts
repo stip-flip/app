@@ -1,4 +1,4 @@
-import type { BigNumberish } from "ethers";
+import { constants, type BigNumberish } from "ethers";
 import { parseUnits } from "ethers/lib/utils.js";
 
 type ValidatorProps = {
@@ -10,11 +10,11 @@ type ValidatorProps = {
 
 export const validator = (
   node: any,
-  { value: v, min = 0, max = 0, decimals = 18 }: ValidatorProps
+  { value: v, min = 0, max, decimals = 18 }: ValidatorProps
 ) => {
   let previousValue = v;
   return {
-    update({ value: v, min = 0, max = 0, decimals = 18 }: ValidatorProps) {
+    update({ value: v, min = 0, max, decimals = 18 }: ValidatorProps) {
       if (v == "") {
         previousValue = v;
         return;
@@ -25,8 +25,13 @@ export const validator = (
       let minValue: BigNumberish;
       try {
         // console.log(decimals);
+        // make sure v has less decimals places than the decimals prop
+        v = String(Math.round(Number(v) * 10 ** decimals) / 10 ** decimals);
         newValue = parseUnits(v, decimals);
-        maxValue = parseUnits(String(max) || "0", decimals);
+        maxValue = parseUnits(
+          max ? String(max) : String(constants.MaxUint256),
+          decimals
+        );
         minValue = parseUnits(String(min) || "0", decimals);
         // console.log("newValue: ", newValue);
       } catch (e) {

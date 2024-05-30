@@ -158,40 +158,6 @@
     <h1 class="text-xl w-1/3 text-center font-semibold">New Position</h1>
     <div class="w-1/3" />
   </div>
-  <!-- {#if debug && selectedSynth}
-    <table class="w-full">
-      <thead class="text-left">
-        <tr>
-          <th>Lower Price-Ratio-Tick</th>
-          <th>Higher Price-Ratio-Tick</th>
-          <th>Virtual Price-Ratio-Tick</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td
-            >{lowPrice.toFixed(4)}|{lowRatio.toFixed(
-              2
-            )}|{tickLower}|{getRatioForTick(tickLower)}|{getClosestTick(
-              reverseRatio(lowRatio, isReversed)
-            )}</td
-          >
-          <td
-            >{highPrice.toFixed(4)}|{highRatio.toFixed(
-              2
-            )}|{tickUpper}|{getRatioForTick(tickUpper)}|{getClosestTick(
-              reverseRatio(highRatio, isReversed)
-            )}</td
-          >
-          <td
-            >{virtualPrice.toFixed(4)}|{currentRatio.toFixed(
-              2
-            )}|{getClosestTick(currentRatio)}</td
-          >
-        </tr>
-      </tbody>
-    </table>
-  {/if} -->
   <div class="p-4">
     <label class="label">
       <span class="label-text font-semibold text-base">Select pair</span>
