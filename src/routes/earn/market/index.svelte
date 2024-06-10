@@ -29,46 +29,6 @@
 </script>
 
 <div class="flex flex-wrap justify-end lg:w-1/2 m-auto space-x-4">
-  <!-- <div class="join flex-grow">
-    <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
-    >
-      Total Deposit
-    </div>
-    <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
-    >
-      <CoinIcon symbol="ETC" />{commify(
-        formatEther($positionsStats?.totalDeposited || "0")
-      )}
-    </div>
-  </div>
-  <div class="join flex-grow">
-    <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
-    >
-      APY
-    </div>
-    <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
-    >
-      {$positionsStats?.APY / 100}%
-    </div>
-  </div>
-  <div class="join flex-grow">
-    <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
-    >
-      Profit & Loss
-    </div>
-    <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
-    >
-      <CoinIcon symbol="ETC" />{commify(
-        formatEther($positionsStats?.pnl || "0")
-      )}
-    </div>
-  </div> -->
   <a class="btn btn-primary" href={navigate("/earn/add", url)}>+ New Position</a
   >
 </div>
@@ -96,8 +56,15 @@
           <strong class="flex space-x-2"
             ><CoinIcon symbol={pool?.synth?.info?.symbol || ""} /><span
               >{pool?.synth?.info?.name}</span
-            ></strong
-          >
+            ><span class=""> | </span>
+            <span>
+              ETC
+              <Icon
+                class="inline text-2xl text-green-600"
+                icon="mdi:ethereum"
+              />
+            </span>
+          </strong>
           <strong
             >Price: {commify(pool.price)}
             <Icon
@@ -115,8 +82,6 @@
                 (pool.token1?.info?.address || "")
           )}
         />
-      {:else}
-        <div class="divider odd:first:hidden mb-0">Nope</div>
       {/if}
     {/each}
   </div>

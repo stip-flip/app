@@ -31,10 +31,6 @@
   }, false);
 
   $: url = new URL($page.url);
-
-  $: console.log("positionExist", positionExist);
-  $: console.log("positions", $positions);
-  $: console.log("claims", $claims);
 </script>
 
 <div class="flex flex-wrap justify-around lg:w-1/2 m-auto space-x-4">
@@ -119,12 +115,22 @@
       {#if $claims[i]?.length}
         {#if !Object.keys($positions?.[i] || {}).length}
           <div class="divider odd:first:hidden mb-0"></div>
-          <h1 class="p-2 pt-4">
-            <strong>{pi?.token?.info?.name}</strong>
-          </h1>
-          <h2 class="p-2 py-4">Pending claims</h2>
+          <strong class="flex space-x-2"
+            ><CoinIcon symbol={pi?.token?.info.symbol} /><span
+              >{pi?.token?.info?.name}</span
+            ></strong
+          >
+          <h2 class="p-2 py-4 flex space-x-2">
+            <Icon icon="gis:timer" class="text-2xl" /><strong
+              >Pending claims</strong
+            >
+          </h2>
         {:else}
-          <h2 class="p-2 py-4">Pending claims</h2>
+          <h2 class="p-2 py-4 flex space-x-2">
+            <Icon icon="gis:timer" class="text-2xl" /><strong
+              >Pending claims</strong
+            >
+          </h2>
         {/if}
         <Claims claims={$claims?.[i]} poolName={pi?.token?.info?.name} />
       {/if}

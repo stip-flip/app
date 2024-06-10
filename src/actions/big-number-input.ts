@@ -15,9 +15,17 @@ export const validator = (
   let previousValue = v;
   return {
     update({ value: v, min = 0, max, decimals = 18 }: ValidatorProps) {
+      if (!v) return;
       if (v == "") {
         previousValue = v;
         return;
+      }
+      console.log("update", v, max);
+      let lastCharacterDot = v[v.length - 1] === "." || v[v.length - 1] === ",";
+      let zeroAfterDot = Number(v.split(".")[1]) === 0 ? v.split(".")[1] : "";
+
+      if (lastCharacterDot) {
+        v = v.slice(0, -1) + ".0";
       }
 
       let newValue: BigNumberish;
@@ -26,7 +34,10 @@ export const validator = (
       try {
         // console.log(decimals);
         // make sure v has less decimals places than the decimals prop
-        v = String(Math.round(Number(v) * 10 ** decimals) / 10 ** decimals);
+        const split = v.split(".");
+        if (split[1]?.length > decimals) {
+          v = split[0] + "." + split[1].slice(0, decimals);
+        }
         newValue = parseUnits(v, decimals);
         maxValue = parseUnits(
           max ? String(max) : String(constants.MaxUint256),
@@ -38,7 +49,7 @@ export const validator = (
         console.log("error: ", e);
         // input.target. = '';
         v = previousValue;
-        v = "";
+        // v = "";
         node.dispatchEvent(
           new CustomEvent("validated", {
             detail: v,
@@ -65,6 +76,8 @@ export const validator = (
         );
         return;
       }
+
+      v = lastCharacterDot ? v.slice(0, -1) : v;
       previousValue = v;
       node.dispatchEvent(
         new CustomEvent("validated", {

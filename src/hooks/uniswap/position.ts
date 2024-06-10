@@ -28,10 +28,12 @@ export const asyncUniPositions = async (owner: string) => {
     )
   );
 
-  return results.uniPositions.map((p, i) => ({
-    ...p,
-    fees: fees[i],
-  }));
+  return results.uniPositions
+    .map((p, i) => ({
+      ...p,
+      fees: fees[i],
+    }))
+    .filter((up) => up.liquidity > 0);
 };
 
 export const useUniPositions = derived(

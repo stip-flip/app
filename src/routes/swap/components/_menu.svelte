@@ -1,5 +1,5 @@
 <script lang="ts">
-  $: selected = { ["zero-leverage"]: true };
+  $: selected = { ["zero-leverage"]: true, ["stip"]: true };
 
   export let terms = [];
   $: terms = Object.keys(selected).filter((term) => selected[term]);

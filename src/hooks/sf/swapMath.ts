@@ -6,6 +6,7 @@ import type { MordorSdk } from "eth-sdk/build";
 import type { SynthInfo } from "./synth";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { reverse } from "lodash";
+import Decimal from "decimal.js";
 
 const ZERO_ADDRESS = "0x0";
 const WETC9 = "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a";
@@ -35,6 +36,7 @@ export async function swapOut(
   selectedToken0?: TokenInfoAndBalance,
   selectedToken1?: TokenInfoAndBalance
 ): Promise<{ error: string; price: number; amountIn: string }> {
+  console.log(amountOut);
   let error: string = "";
   let price: number = 0;
   let amountIn: string = "";
@@ -48,14 +50,19 @@ export async function swapOut(
   );
   const synth1Ratio = Number(formatUnits(synth1?.ratio || 0, 18));
 
-  let amount = Number(amountOut == "0" ? "0.000001" : amountOut);
+  let amount = Number(
+    !amountOut || amountOut == "0" ? "0.000000000001" : amountOut
+  );
   if (synth0 && amountOut != "0") {
     amount = (amount * synth0Price) / synth0Ratio;
   }
   try {
     const res = await sdk.QUOTER.callStatic.quoteExactInput(
       path,
-      parseUnits(String(amount), selectedToken0.info.decimals)
+      parseUnits(
+        new Decimal(String(amount)).toFixed(),
+        selectedToken0.info.decimals
+      )
     );
     let p = BigNumber.from(1e4);
     for (let i = 0; i < res.sqrtPriceX96AfterList.length; i++) {

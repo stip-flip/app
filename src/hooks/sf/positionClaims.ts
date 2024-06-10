@@ -1,6 +1,6 @@
 import type { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
-import { gqlsdk, timestamp10 } from "src/stores";
+import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
 import { derived, get } from "svelte/store";
@@ -52,7 +52,7 @@ const asyncClaims = async (
             oracle.initialized(),
             oracle.frequency(),
             oracle.roundDuration(),
-            oracle.getLastRound(),
+            oracle.getLastRound(true),
             oracle.nextPrice(c.round, slot).catch((e) => parseEther("0")),
           ]);
         const claimable =
@@ -89,21 +89,9 @@ const asyncClaims = async (
 };
 
 export const usePositionClaims = derived(
-  [
-    chainId,
-    signerAddress,
-    resolvedTransactions,
-    timestamp10,
-    totalTraderTransactions,
-  ],
+  [chainId, signerAddress, resolvedTransactions, totalTraderTransactions],
   (
-    [
-      $chainId,
-      $signerAddress,
-      $resolvedTransactions,
-      $timestamp10,
-      $totalTraderTransactions,
-    ],
+    [$chainId, $signerAddress, $resolvedTransactions, $totalTraderTransactions],
     set
   ) => {
     get(gqlsdk)

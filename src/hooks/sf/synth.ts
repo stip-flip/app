@@ -21,6 +21,7 @@ export type SynthInfo = {
   ticks?: Record<number, number>;
   token?: TokenInfoAndBalance;
   settlementTimestamp: number;
+  settlementTimestampWithDelay: number;
   ratio: BigNumber;
 };
 
@@ -40,7 +41,8 @@ export const synthInfoAsync = async (
     lastPrice,
     fee,
     oracleDecimals,
-    round,
+    lastRound,
+    lastRoundWithDelay,
     frequency,
     initialized,
     roundDuration,
@@ -52,7 +54,8 @@ export const synthInfoAsync = async (
     p.getPrice(),
     p.fee(),
     o.getDecimals(slot),
-    o.getLastRound(),
+    o.getLastRound(false),
+    o.getLastRound(true),
     o.frequency(),
     o.initialized(),
     o.roundDuration(),
@@ -71,7 +74,11 @@ export const synthInfoAsync = async (
     totalLiquidities: slot0.totalLiquidities,
     settlementTimestamp:
       initialized.toNumber() +
-      (round.toNumber() + 1) * frequency +
+      (lastRound.toNumber() + 1) * frequency +
+      roundDuration,
+    settlementTimestampWithDelay:
+      initialized.toNumber() +
+      (lastRoundWithDelay.toNumber() + 1) * frequency +
       roundDuration,
     ratio: ratio.isZero() ? parseEther("1") : ratio,
   };
@@ -81,7 +88,6 @@ export const useSynthInfos = derived(
   [ethsdk, resolvedTransactions, gqlsdk, totalTraderTransactions],
   ([$ethsdk, $pt, $gqlsdk, $totalTraderTransactions], set) => {
     $gqlsdk?.getSynths({}).then(async (res) => {
-      console.log(res.synths);
       const synthInfos = await Promise.all(
         res.synths.map(async (p) => {
           if (!p.id) return Promise.resolve({} as SynthInfo);

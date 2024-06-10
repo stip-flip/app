@@ -91,8 +91,8 @@
         class="input input-bordered w-full"
         on:validated={(v) => (amount = v.detail)}
         use:validator={{
-          value: amount,
-          max: maxAmount,
+          value: String(amount),
+          max: String(maxAmount),
         }}
       />
       <span class="w-24 text-center flex items-center">

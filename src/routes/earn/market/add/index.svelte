@@ -113,7 +113,6 @@
       getRatioForTick(tickUpper),
       Number(etcAmount)
     );
-    console.log(shares, synthPrice, etcAmount, currentRatio);
     synthAmount = String((shares * synthRatio) / synthPrice);
   }
 
@@ -128,16 +127,7 @@
         (Number(synthAmount) * synthPrice) / synthRatio
       )
     );
-    console.log(synthAmount, synthPrice, etcAmount);
   }
-
-  $: console.log(
-    tickLower,
-    tickUpper,
-    pool?.tick,
-    pool?.ratio,
-    uniRatioToSynthPrice(currentRatio, pool?.synthPrice, pool?.synthRatio)
-  );
 </script>
 
 <Modal
@@ -472,9 +462,10 @@
         );
       }}
     >
-      {#if selectedToken?.balance < synthAmount}
+      {#if Number(selectedToken?.balance) < Number(synthAmount)}
         Insufficient {selectedToken.info.symbol} balance
-      {:else if etcAmount > $useBalance?.balance}
+      {:else if Number($useBalance?.balance) < Number(etcAmount)}Error: invalid
+        BigNumber string (argument="value", value="4.2458813331588115e+21
         Insufficient ETC balance
       {:else}
         Add Liquidity

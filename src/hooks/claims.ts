@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
-import { gqlsdk, timestamp10 } from "src/stores";
+import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
 import { derived, get } from "svelte/store";
@@ -43,7 +43,6 @@ const asyncClaims = async (
   // const slot = await pool.oracleSlot();
   // extract the useful values from the Oracle
   const oracle = eth.ORACLE.attach(oracleAddress);
-  console.log("claimQuery", claimQuery);
   return await Promise.all(
     claimQuery.claims.map(async (c) => {
       const [
@@ -60,21 +59,14 @@ const asyncClaims = async (
         oracle.initialized(),
         oracle.frequency(),
         oracle.roundDuration(),
-        oracle.getLastRound(),
+        oracle.getLastRound(false),
         oracle["lastPrice(uint8)"](slot),
         oracle["lastPrice(uint64,uint8)"](c.round, slot),
         oracle.nextPrice(c.round, slot).catch((e) => parseEther("0")),
         pool.sharesValueWithRebalance(c.amount),
         oracle.getDecimals(slot),
       ]);
-      console.log(
-        oracleDecimals,
-        c.amount,
-        lastRound.toNumber(),
-        c.round,
-        currentPrice.toString(),
-        nextPrice.toString()
-      );
+
       return {
         id: c.id,
         amount: c.exit
@@ -106,21 +98,9 @@ const asyncClaims = async (
 };
 
 export const useClaims = derived(
-  [
-    chainId,
-    signerAddress,
-    resolvedTransactions,
-    timestamp10,
-    totalTraderTransactions,
-  ],
+  [chainId, signerAddress, resolvedTransactions, totalTraderTransactions],
   (
-    [
-      $chainId,
-      $signerAddress,
-      $resolvedTransactions,
-      $timestamp10,
-      $totalTraderTransactions,
-    ],
+    [$chainId, $signerAddress, $resolvedTransactions, $totalTraderTransactions],
     set
   ) => {
     get(gqlsdk)

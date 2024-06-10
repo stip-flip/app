@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import Decimal from "decimal.js";
   import { formatEther } from "ethers/lib/utils";
   import CoinIcon from "src/components/coin-icon.svelte";
   import type { UniPositionFragment } from "src/hooks/subgraph";
@@ -68,39 +69,44 @@
             <div class="flex items-center">
               {commify(
                 formatEther(
-                  String(
-                    getAmountsDelta(
-                      getRatioForTick(position.tickLower),
-                      getRatioForTick(position.tickUpper),
-                      pool.ratio,
-                      position.liquidity,
-                      false
-                    )[pool.synthIndex ? 0 : 1]
-                  )
+                  new Decimal(
+                    String(
+                      getAmountsDelta(
+                        getRatioForTick(position.tickLower),
+                        getRatioForTick(position.tickUpper),
+                        pool.ratio,
+                        position.liquidity,
+                        false
+                      )[pool.synthIndex ? 0 : 1]
+                    )
+                  ).toFixed()
                 ),
                 3
-              )}<Icon icon="mdi:ethereum" class="text-green-600 text-2xl" />
+              )}
+              <Icon icon="mdi:ethereum" class="text-green-600 text-2xl" />
             </div>
           </td>
           <td class="table-cell">
             <div class="flex items-center">
               {commify(
                 formatEther(
-                  String(
-                    Math.round(
-                      getSynthAmount(
-                        getAmountsDelta(
-                          getRatioForTick(position.tickLower),
-                          getRatioForTick(position.tickUpper),
-                          pool.ratio,
-                          position.liquidity,
-                          false
-                        )[pool.synthIndex ? 1 : 0],
-                        pool.synthPrice,
-                        pool.synthRatio
+                  new Decimal(
+                    String(
+                      Math.round(
+                        getSynthAmount(
+                          getAmountsDelta(
+                            getRatioForTick(position.tickLower),
+                            getRatioForTick(position.tickUpper),
+                            pool.ratio,
+                            position.liquidity,
+                            false
+                          )[pool.synthIndex ? 1 : 0],
+                          pool.synthPrice,
+                          pool.synthRatio
+                        )
                       )
                     )
-                  )
+                  ).toFixed()
                 ),
                 3
               )}<CoinIcon symbol={pool.synth?.info?.symbol} className="ml-2" />

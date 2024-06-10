@@ -35,6 +35,7 @@
             return t.info.name.toLowerCase().includes("²");
           if (term == "cubed-leverage")
             return t.info.name.toLowerCase().includes("³");
+          if (term == "stip" && t.info.symbol == "ETC") return true;
           return t.info.name.toLowerCase().includes(term.toLowerCase());
         })
     )

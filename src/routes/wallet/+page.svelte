@@ -16,8 +16,6 @@
   $: claims = $claimInfos;
 
   $: claimExists = claims?.some((c) => !!c.length);
-
-  $: console.log("claims", claims);
 </script>
 
 {#if !claimExists && trades?.length == 0}

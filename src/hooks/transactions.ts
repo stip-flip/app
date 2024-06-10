@@ -78,9 +78,11 @@ async function watchAddress(provider: providers.MulticallProvider) {
   if (typeof window === "undefined") return;
   try {
     const transactionCount = await provider?.getTransactionCount(
-      get(sdk).TRADER_PERIPHERY.address,
+      // get(sdk).TRADER_PERIPHERY.address,
+      "0xe22BEF2B1bde5997fAe4b171cC175AE8E812e21E",
       "latest"
     );
+    console.log("Transaction Count:", transactionCount);
     totalTraderTransactions.set(transactionCount);
     // Update the total transactions in your store or do any other necessary logic
   } catch (error) {

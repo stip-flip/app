@@ -29,6 +29,7 @@
             return t.info.name.toLowerCase().includes("²");
           if (term == "cubed-leverage")
             return t.info.name.toLowerCase().includes("³");
+          if (term == "stip" && t.info.symbol == "ETC") return true;
           return t.info.name.toLowerCase().includes(term.toLowerCase());
         })
     )
@@ -36,8 +37,7 @@
       search.length
         ? t.info.name.toLowerCase().includes(search.toLowerCase())
         : true
-    )
-    .filter((t) => t.info.address != selectedToken?.info.address);
+    );
 
   let checkbox: HTMLInputElement;
 </script>
@@ -65,43 +65,45 @@
           class="p-4 rounded-box shadow-lg border w-full bg-base-300 overflow-scroll"
           style="height: 40vh;"
         >
-          {#if selectedToken}
-            <li
-              class="rounded-t-2xl px-6 pb-2 pt-2 cursor-pointer bg-base-100 -mt-4 -mx-4 border-b"
-              transition:slide|local
-              on:click={(_) => {
-                selectedToken = undefined;
-              }}
-            >
-              <div class="flex space-x-2">
-                <CoinIcon symbol={selectedToken.info.symbol} />
-                <strong class="capitalize">
-                  <a>{selectedToken.info.symbol}</a> :
-                </strong>
-                <p>
-                  {selectedToken?.info?.description ||
-                    "Ether Coin, The Ether's native currency."}
-                </p>
-              </div>
-            </li>
-          {/if}
           {#each sortedTokens || [] as token}
-            <li
-              class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200 space-x-2"
-              transition:slide|local
-              on:click={(_) => {
-                selectedToken = token;
-                // checkbox.click();
-              }}
-            >
-              <CoinIcon symbol={token?.info?.symbol} />
-              <strong class="capitalize">
-                <a>{token?.info?.symbol}</a>
-              </strong>
-              <span>
-                ({commify(token?.balance, 4)})
-              </span>
-            </li>
+            {#if token.info.address == selectedToken?.info.address}
+              <li
+                class="px-6 pb-2 pt-2 cursor-pointer bg-base-100 border-b"
+                on:click={(_) => {
+                  selectedToken = undefined;
+                }}
+              >
+                <div class="flex space-x-2">
+                  <CoinIcon symbol={selectedToken.info.symbol} />
+                  <strong class="capitalize">
+                    <a>{selectedToken.info.symbol}</a> :
+                  </strong>
+                  <span>
+                    ({commify(token?.balance, 4)})
+                  </span>
+                  <p>
+                    {selectedToken?.info?.description ||
+                      "Ether Coin, The Ether's native currency."}
+                  </p>
+                </div>
+              </li>
+            {:else}
+              <li
+                class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200 space-x-2"
+                on:click={(_) => {
+                  selectedToken = token;
+                  // checkbox.click();
+                }}
+              >
+                <CoinIcon symbol={token?.info?.symbol} />
+                <strong class="capitalize">
+                  <a>{token?.info?.symbol}</a>
+                </strong>
+                <span>
+                  ({commify(token?.balance, 4)})
+                </span>
+              </li>
+            {/if}
           {/each}
         </ul>
       </div>
