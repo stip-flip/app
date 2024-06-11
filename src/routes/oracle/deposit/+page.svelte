@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { parseEther } from "ethers/lib/utils";
+  import { validator } from "src/actions/big-number-input";
 
   import { useBalance } from "src/hooks/balance";
   import { broadcastTransaction } from "src/hooks/transactions";
@@ -20,6 +21,10 @@
     placeholder="0"
     class="input input-bordered w-2/3 flex items-center"
     class:input-error={Number(deposit) > Number($useBalance?.balance)}
+    on:validated={(v) => (deposit = v.detail)}
+    use:validator={{
+      value: deposit,
+    }}
   />
   <span class="w-1/3 text-center flex items-center bg-opaque">
     <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />

@@ -71,8 +71,12 @@
           </h2>
           <div class="flex justify-between space-x-2 mt-8 lg:h-4">
             <div class="flex space-x-4 flex-grow w-1/4">
-              <Icon class="text-4xl" icon="mdi:github" />
-              <Icon class="text-4xl" icon="mdi:twitter" />
+              <a href="https://github.com/stip-flip"
+                ><Icon class="text-4xl" icon="mdi:github" /></a
+              >
+              <a href="https://twitter.com/stipflip"></a>
+                <Icon class="text-4xl" icon="mdi:twitter" /></a
+              >
             </div>
             <div class="flex-grow w-1/4" />
           </div>

@@ -19,7 +19,12 @@ const networks = {
 
 const providerMap = {
   61: new providers.MulticallProvider(
-    new ethers.providers.StaticJsonRpcProvider("https:" + "//" + networks[61])
+    new ethers.providers.StaticJsonRpcProvider("https:" + "//" + networks[61]),
+    {
+      batchSize: 50,
+      timeWindow: 50,
+      contract: "0xA0be3B62e582938e7c8dA84AA56f35755180Ae61",
+    }
   ),
   63: new providers.MulticallProvider(
     new ethers.providers.StaticJsonRpcProvider("https:" + "//" + networks[63]),

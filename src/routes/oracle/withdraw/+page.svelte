@@ -1,13 +1,17 @@
 <script>
   import Icon from "@iconify/svelte";
   import { formatEther, parseEther } from "ethers/lib/utils";
+  import { validator } from "src/actions/big-number-input";
   import { useOracleInfo } from "src/hooks/sf/oracle";
   import { broadcastTransaction } from "src/hooks/transactions";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
+  import { onMount } from "svelte";
   import { signer, signerAddress } from "svelte-ethers-store";
 
   let withdraw = "";
+
+  let message = "";
 
   $: oracleInfo = useOracleInfo($signerAddress, $sdk.ORACLE.address);
 
@@ -20,6 +24,17 @@
       (Number(formatEther($oracleInfo?.mana || "0")) * Number(withdraw)) /
         Number(formatEther($oracleInfo?.stakes || "0"))
     : 0;
+
+  onMount(() =>
+    $sdk.ORACLE.connect($signer)
+      .callStatic.withdraw(parseEther("0.0000000001"), $signerAddress)
+      .then(console.log)
+      .catch((err) => {
+        if (err.message.includes('"L"'))
+          message =
+            "You need to wait 2 round without submitting a price in order to withdraw.";
+      })
+  );
 </script>
 
 <label class="input-group w-full mt-2">
@@ -58,7 +73,8 @@
 <div class="flex mt-4 space-x-8 items-center">
   <button
     class="btn btn-primary w-1/3"
-    disabled={withdraw == ""}
+    class:w-full={!!message}
+    disabled={withdraw == "" || !!message}
     on:click={(_) => {
       if (Number(withdraw) > Number(formatEther($oracleInfo?.stakes || "0")))
         return;
@@ -70,8 +86,14 @@
         )
       );
     }}
+    on:validated={(v) => (withdraw = v.detail)}
+    use:validator={{
+      value: withdraw,
+    }}
   >
-    {#if Number(withdraw) > Number(formatEther($oracleInfo?.stakes || "0"))}
+    {#if message != ""}
+      {message}
+    {:else if Number(withdraw) > Number(formatEther($oracleInfo?.stakes || "0"))}
       Balance too low
     {:else}
       Withdraw
