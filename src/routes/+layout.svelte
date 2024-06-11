@@ -152,7 +152,7 @@
             </a>
             <div class="flex space-x-4">
               <a
-                href="https://sf-doc.vercel.app"
+                href="https://docs.sf.exchange"
                 class="p-1 rounded-md text-base-content hover:text-primary"
                 >Documentation</a
               >
