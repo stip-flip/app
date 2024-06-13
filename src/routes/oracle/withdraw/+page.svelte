@@ -30,9 +30,12 @@
       .callStatic.withdraw(parseEther("0.0000000001"), $signerAddress)
       .then(console.log)
       .catch((err) => {
-        if (err.message.includes('"L"'))
+        if (err.message.includes('"L"')) {
           message =
             "You need to wait 2 round without submitting a price in order to withdraw.";
+        } else {
+          message = "Withdrawal are locked until the 20th of June 2024";
+        }
       })
   );
 </script>

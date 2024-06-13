@@ -75,6 +75,19 @@
 
 <div
   class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
+>
+  Staking on the S&F oracle is officially open 🛎️ <br />
+  MANA distribution will start from the <strong>18th of June 2024</strong> with
+  each price submission.
+  <br />To learn more on how to become a price provider
+  <a
+    class="text-info font-bold"
+    href="https://docs.sf.exchange/docs/developer/provide-data"
+    >visit this page</a
+  >
+</div>
+<div
+  class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
   style="max-height: 60vh"
 >
   <div class="tabs tabs-boxed">

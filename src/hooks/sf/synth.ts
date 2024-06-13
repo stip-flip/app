@@ -32,6 +32,9 @@ export const synthInfoAsync = async (
   const sdk = get(ethsdk);
   const p = sdk.POOL.attach(address || ethers.constants.AddressZero);
   const [oracle, slot] = await Promise.all([p.oracle(), p.oracleSlot()]);
+
+  console.log(oracle);
+
   const o = sdk.ORACLE.attach(oracle);
 
   const [
@@ -52,7 +55,7 @@ export const synthInfoAsync = async (
     p.slot0(),
     p.slot1(),
     p.getPrice(),
-    p.fee(),
+    p.FEE(),
     o.getDecimals(slot),
     o.getLastRound(false),
     o.getLastRound(true),
@@ -88,6 +91,7 @@ export const useSynthInfos = derived(
   [ethsdk, resolvedTransactions, gqlsdk, totalTraderTransactions],
   ([$ethsdk, $pt, $gqlsdk, $totalTraderTransactions], set) => {
     $gqlsdk?.getSynths({}).then(async (res) => {
+      console.log("res.synths", res.synths);
       const synthInfos = await Promise.all(
         res.synths.map(async (p) => {
           if (!p.id) return Promise.resolve({} as SynthInfo);

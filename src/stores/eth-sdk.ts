@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { providers } from "@0xsequence/multicall";
-import { getMordorSdk, type MordorSdk } from "eth-sdk/build";
+import { getEtherSdk, getMordorSdk, type MordorSdk } from "eth-sdk/build";
 import { chainId, signer } from "svelte-ethers-store";
 import { derived, type Readable } from "svelte/store";
 
@@ -63,6 +63,9 @@ export const provider: Readable<MulticallProvider> = derived(
       case 63:
         set(provider_($chainId));
         break;
+      case 61:
+        set(provider_($chainId));
+        break;
       default:
         set(provider_(63));
         break;
@@ -77,8 +80,11 @@ export const sdk: Readable<MordorSdk> = derived(
       case 63:
         set(getMordorSdk(provider_($chainId)));
         break;
+      case 61:
+        set(getEtherSdk(provider_($chainId)));
+        break;
       default:
-        set(getMordorSdk(provider_(63)));
+        set(getEtherSdk(provider_(61)));
         break;
     }
   },

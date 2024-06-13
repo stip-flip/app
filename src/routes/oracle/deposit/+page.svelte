@@ -12,6 +12,8 @@
   let deposit = "";
 
   $: depositTooHigh = Number(deposit) > Number($useBalance?.balance);
+
+  $: depositTooLow = Number(deposit) != 0 && Number(deposit) < 1;
 </script>
 
 <label class="input-group w-full mt-8">
@@ -44,9 +46,11 @@
 <div class="flex mt-4 space-x-8 items-center">
   <button
     class="btn btn-primary w-1/3"
+    class:w-full={depositTooLow}
     disabled={deposit == ""}
     on:click={(_) => {
       if (depositTooHigh) return;
+      if (depositTooLow) return;
       broadcastTransaction(
         "Increasing oracle stakes",
         $sdk.ORACLE.connect($signer).deposit({ value: parseEther(deposit) })
@@ -55,6 +59,8 @@
   >
     {#if depositTooHigh}
       Balance too low
+    {:else if depositTooLow}
+      You need to stake at least 1 ETC to become a price provider
     {:else}
       Deposit
     {/if}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import CoinIcon from "src/components/coin-icon.svelte";
+  import Countdown from "src/components/countdown.svelte";
   import LiquidityChart from "src/components/liquidity-chart.svelte";
   import { onMount } from "svelte";
   import { Parallax, ParallaxLayer, StickyLayer } from "svelte-parallax";
@@ -60,7 +61,11 @@
         class="absolute w-1/4 lg:m-0"
         style="transform: translate(150%, 15%);"
       />
-      <div class="h-1/2 w-full flex justify-center"></div>
+      <div class="h-1/2 w-full flex justify-center items-end">
+        <a href="/oracle/deposit" class="cursor-pointer! p-4 z-10">
+          <Countdown /></a
+        >
+      </div>
       <div class="w-1/2 m-auto">
         <div class="">
           <h1 class="text-7xl font-bold">Stip&Flip</h1>
@@ -71,10 +76,10 @@
           </h2>
           <div class="flex justify-between space-x-2 mt-8 lg:h-4">
             <div class="flex space-x-4 flex-grow w-1/4">
-              <a href="https://github.com/stip-flip"
+              <a href="https://github.com/stip-flip" target="_blank"
                 ><Icon class="text-4xl" icon="mdi:github" /></a
               >
-              <a href="https://twitter.com/stipflip"></a>
+              <a href="https://twitter.com/stipflip" target="_blank">
                 <Icon class="text-4xl" icon="mdi:twitter" /></a
               >
             </div>

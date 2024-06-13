@@ -109,3 +109,26 @@ export function getTimeDifference(settlement: number, givenTime: number) {
 
   return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
 }
+
+export function getHoursMinutesSeconds(settlement: number, givenTime: number) {
+  let differenceInSeconds = Math.abs(settlement - givenTime);
+  // console.log(now, givenTime, differenceInSeconds);
+  const days = Math.floor(differenceInSeconds / 86400);
+  differenceInSeconds %= 86400;
+  const hours = Math.floor(differenceInSeconds / 3600);
+  differenceInSeconds %= 3600;
+  const minutes = Math.floor(differenceInSeconds / 60);
+  const seconds = Math.floor(differenceInSeconds % 60);
+
+  const paddedDays = String(days).padStart(2, "0");
+  const paddedHours = String(hours).padStart(2, "0");
+  const paddedMinutes = String(minutes).padStart(2, "0");
+  const paddedSeconds = String(seconds).padStart(2, "0");
+
+  return {
+    days: paddedDays,
+    hours: paddedHours,
+    minutes: paddedMinutes,
+    seconds: paddedSeconds,
+  };
+}
