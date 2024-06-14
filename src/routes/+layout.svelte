@@ -242,7 +242,11 @@
         {/if}
       </div>
     </div>
-    <div class="root h-screen" class:bg={homepage}>
+    <div
+      class={!homepage
+        ? "fixed root h-screen w-full overflow-scroll pb-8"
+        : "root h-screen bg"}
+    >
       <slot />
     </div>
   </div>

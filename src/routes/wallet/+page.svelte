@@ -114,7 +114,8 @@
     <h1 class="text-3xl">Wallet</h1>
   </div>
   <div
-    class="lg:w-1/2 m-auto mt-4 lg:mt-4 lg:border-2 lg:border-primary rounded-lg p-4 bg-gradient"
+    class="lg:w-1/2 m-auto mt-4 lg:mt-4 lg:border-2 lg:border-primary rounded-lg p-4 bg-gradient overflow-scroll"
+    style="max-height: 60vh"
   >
     <!-- <strong>Your wallet is empty at the moment</strong> -->
     <table class="table w-full bg-gradient">

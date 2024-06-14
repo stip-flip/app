@@ -11,18 +11,10 @@
   import Modal from "../../_modal.svelte";
 
   import { signPermit } from "src/actions/sign";
-  import {
-    useAllowance,
-    useBalance as useSynthBalance,
-    type TokenInfoAndBalance,
-  } from "src/hooks/erc20";
+  import { useAllowance, type TokenInfoAndBalance } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/uniswap/pool";
-  import {
-    getShares,
-    getSynthAmount,
-    translatePriceToPoolRatio,
-    uniRatioToSynthPrice,
-  } from "src/lib/sf/math";
+  import { navigate } from "src/lib/path";
+  import { reverseRatio } from "src/lib/sf/reverse";
   import { computeAmount0, computeAmount1 } from "src/lib/uniswap/math";
   import {
     getClosestTick,
@@ -31,8 +23,6 @@
   } from "src/lib/uniswap/tick";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
-  import { reverseRatio } from "src/lib/sf/reverse";
-  import { navigate } from "src/lib/path";
 
   let debug = true;
 
@@ -113,7 +103,17 @@
       getRatioForTick(tickUpper),
       Number(etcAmount)
     );
+
     synthAmount = String((shares * synthRatio) / synthPrice);
+
+    console.log("recomputeSynth", shares, synthAmount);
+  }
+
+  $: {
+    if (selectedToken && selectedSynth && !!etcAmount) {
+      recomputeSynth();
+      console.log(selectedSynth, etcAmount, synthPrice, synthRatio);
+    }
   }
 
   // recompute ETC (amount1)
@@ -383,13 +383,15 @@
       class="btn btn-primary w-full mt-8"
       disabled={!selectedSynth || !synthAmount}
       on:click={async (_) => {
+        console.log("click", $allowance, shares, synthAmount);
+        const shares_ = (Number(synthAmount) * synthPrice) / synthRatio;
         let signature;
-        if ($allowance < shares) {
+        if ($allowance < shares_) {
           console.log("signature");
           signature = await signPermit(
             selectedSynth?.address || "",
             $sdk.POSITION_MANAGER.address,
-            parseEther(shares.toString()),
+            parseEther(shares_.toString()),
             Math.round(Date.now() / 1000 + 60 * 60)
           );
         }
@@ -403,7 +405,7 @@
                     "selfPermit",
                     [
                       selectedSynth?.address,
-                      parseEther(shares.toString()),
+                      parseEther(shares_.toString()),
                       signature.deadline,
                       signature?.v,
                       signature.r,
@@ -444,10 +446,10 @@
                   tickLower: isReversed ? -tickUpper : tickLower,
                   tickUpper: isReversed ? -tickLower : tickUpper,
                   amount0Desired: parseEther(
-                    String(isReversed ? etcAmount : shares)
+                    String(isReversed ? etcAmount : shares_)
                   ),
                   amount1Desired: parseEther(
-                    String(isReversed ? shares : etcAmount)
+                    String(isReversed ? shares_ : etcAmount)
                   ),
                   amount0Min: 0,
                   amount1Min: 0,
@@ -464,8 +466,7 @@
     >
       {#if Number(selectedToken?.balance) < Number(synthAmount)}
         Insufficient {selectedToken.info.symbol} balance
-      {:else if Number($useBalance?.balance) < Number(etcAmount)}Error: invalid
-        BigNumber string (argument="value", value="4.2458813331588115e+21
+      {:else if Number($useBalance?.balance) < Number(etcAmount)}
         Insufficient ETC balance
       {:else}
         Add Liquidity
