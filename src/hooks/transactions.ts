@@ -79,7 +79,9 @@ async function watchAddress(provider: providers.MulticallProvider) {
   try {
     const transactionCount = await provider?.getTransactionCount(
       // get(sdk).TRADER_PERIPHERY.address,
-      "0xe22BEF2B1bde5997fAe4b171cC175AE8E812e21E",
+      provider?.network?.chainId == 63
+        ? "0xe22BEF2B1bde5997fAe4b171cC175AE8E812e21E"
+        : "0x017dB5e8Cd19d272e3AC16cC4df60619ADb8098A",
       "latest"
     );
     console.log("Transaction Count:", transactionCount);
