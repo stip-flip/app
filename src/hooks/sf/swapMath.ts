@@ -13,7 +13,7 @@ const WETC9 = "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a";
 
 const ERRORS = {
   liquidities: `Not enough liquidities in the Uniswap pool`,
-  void: "This uniswap pool does not exist, <a class='font-bold underline' href='https://www.etcswap.org/#/pools'>create it</a> first",
+  void: "This uniswap pool does not exist, <a class='font-bold underline' href='/earn/add?mode=market'>create it</a> first",
 };
 // as synth token0 is expected to be the synth token, token1 is the base token (ETC)
 // we fist check if the ratio asked is reversed
@@ -50,12 +50,20 @@ export async function swapOut(
   );
   const synth1Ratio = Number(formatUnits(synth1?.ratio || 0, 18));
 
-  let amount = Number(
-    !amountOut || amountOut == "0" ? "0.000000000001" : amountOut
-  );
+  let amount = Number(!amountOut || amountOut == "0" ? "0.000001" : amountOut);
   if (synth0 && amountOut != "0") {
     amount = (amount * synth0Price) / synth0Ratio;
   }
+
+  console.log(
+    "amount",
+    amount,
+    amountOut,
+    synth0Price,
+    new Decimal(String(amount)),
+    new Decimal(String(amount)).toFixed(18)
+  );
+
   try {
     const res = await sdk.QUOTER.callStatic.quoteExactInput(
       path,
@@ -64,6 +72,7 @@ export async function swapOut(
         selectedToken0.info.decimals
       )
     );
+    console.log("ok");
     let p = BigNumber.from(1e4);
     for (let i = 0; i < res.sqrtPriceX96AfterList.length; i++) {
       p = p.mul(res.sqrtPriceX96AfterList[i].mul(1e6).shr(96).pow(2)).div(1e12);
