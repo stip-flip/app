@@ -1,18 +1,15 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { BigNumber, ethers } from "ethers";
-  import {
-    formatEther,
-    formatUnits,
-    parseEther,
-    parseUnits,
-  } from "ethers/lib/utils";
+  import { formatUnits, parseEther } from "ethers/lib/utils";
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
+  import { signPermit } from "src/actions/sign";
   import CoinIcon from "src/components/coin-icon.svelte";
   import { useBalance } from "src/hooks/balance";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useAllowance, useBalance as useBal } from "src/hooks/erc20";
+  import { buildPath, swapOut } from "src/hooks/sf/swapMath";
+  import { useSynthInfos } from "src/hooks/sf/synth";
   import { broadcastTransaction } from "src/hooks/transactions";
   import { commify, switchNetwork } from "src/lib";
   import { SUPPORTED_NETWORKS, sdk } from "src/stores";
@@ -23,9 +20,6 @@
     signerAddress,
   } from "svelte-ethers-store";
   import Modal from "../components/_modal.svelte";
-  import { useSynthInfos } from "src/hooks/sf/synth";
-  import { signPermit } from "src/actions/sign";
-  import { buildPath, swapOut } from "src/hooks/sf/swapMath";
 
   let amountOut: string;
   let amountIn: string;
@@ -141,7 +135,7 @@
     );
     error = res.error;
     price = res.price;
-    amountIn = res.amountIn;
+    amountIn = Number(amountOut) ? res.amountIn : "";
   }, 1000);
 
   // debounce incoming amount
@@ -158,7 +152,7 @@
     );
     error = res.error;
     price = res.price;
-    amountOut = res.amountIn;
+    amountOut = Number(amountIn) ? res.amountIn : "";
   }, 1000);
 </script>
 
