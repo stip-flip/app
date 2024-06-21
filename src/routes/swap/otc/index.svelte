@@ -107,12 +107,11 @@
 
   $: supportedNetwork = SUPPORTED_NETWORKS.includes(Number($chainId));
 
-  const reset = () => {
-    amountOut = "0";
-    amountIn = "0";
-    selectedToken0 = undefined;
-    selectedToken1 = undefined;
-  };
+  $: console.log(
+    selectedPool,
+    selectedPool?.oracleAddress,
+    selectedPool?.oracleDecimals
+  );
 
   // debounce outgoing amount
   const debOut = _.debounce(async () => {

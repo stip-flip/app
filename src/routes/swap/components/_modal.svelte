@@ -5,6 +5,8 @@
   import { commify } from "src/lib";
   import { scale, slide } from "svelte/transition";
   import Menu from "./_menu.svelte";
+  import { chainId } from "svelte-ethers-store";
+  import { EtherWhitelist } from "src/stores/whitelist";
 
   export let id: string;
   export let otherTokenSelected: TokenInfoAndBalance;
@@ -42,6 +44,13 @@
     .filter((t) =>
       search.length
         ? t.info.name.toLowerCase().includes(search.toLowerCase())
+        : true
+    )
+    .filter((t) =>
+      $chainId == 61
+        ? t.info.symbol == "ETC"
+          ? true
+          : EtherWhitelist[t.info.symbol]
         : true
     );
   // .filter((t) => t.info.address != selectedToken?.info.address);
