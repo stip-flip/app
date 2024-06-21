@@ -10,7 +10,7 @@ export const gqlsdk: Readable<Sdk> = derived(
       case 61:
         console.log("61");
         const etc = new GraphQLClient(
-          "https://ether-graphiql.sf.exchange/subgraphs/name/sotachi/sf"
+          "https://ether-graphiql.sf.exchange/subgraphs/name/sotachi/sf-staging"
         );
         set(getSdk(etc));
         break;
