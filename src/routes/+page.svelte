@@ -59,12 +59,10 @@
       <img
         src="/icon.svg"
         class="absolute w-1/4 lg:m-0"
-        style="transform: translate(150%, 15%);"
+        style="transform: translate(150%, 10%);"
       />
       <div class="h-1/2 w-full flex justify-center items-end">
-        <a href="/oracle/deposit" class="cursor-pointer! p-4 z-10">
-          <Countdown /></a
-        >
+        <Countdown />
       </div>
       <div class="w-1/2 m-auto">
         <div class="">
