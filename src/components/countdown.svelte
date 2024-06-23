@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { navigating } from "$app/stores";
-  import { getHoursMinutesSeconds, getTimeDifference } from "src/lib";
+  import { getHoursMinutesSeconds } from "src/lib";
   import { timestamp } from "src/stores";
 
   export let settlement = 1718755200;
