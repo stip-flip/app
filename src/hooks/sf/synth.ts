@@ -33,7 +33,7 @@ export const synthInfoAsync = async (
   const p = sdk.POOL.attach(address || ethers.constants.AddressZero);
   const [oracle, slot] = await Promise.all([p.oracle(), p.oracleSlot()]);
 
-  console.log(oracle);
+  console.log("oracle address", oracle);
 
   const o = sdk.ORACLE.attach(oracle);
 

@@ -56,8 +56,7 @@ const asyncClaims = async (
             oracle.nextPrice(c.round, slot).catch((e) => parseEther("0")),
           ]);
         const claimable =
-          !nextPrice.isZero() ||
-          (lastRound.toNumber() < Number(c.round) + 1 && c.burn == true);
+          !nextPrice.isZero() || lastRound.toNumber() > Number(c.round) + 1;
 
         console.log(
           initialized.toNumber(),

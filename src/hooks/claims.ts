@@ -79,7 +79,8 @@ const asyncClaims = async (
           : BigNumber.from(c.amount)
               .mul(Math.pow(10, oracleDecimals))
               .div(nextPrice.isZero() ? lastPrice : nextPrice),
-        claimable: !nextPrice.isZero(),
+        claimable:
+          !nextPrice.isZero() || lastRound.toNumber() > Number(c.round) + 1,
         automated: c.claimer.toLowerCase() != account.toLowerCase(),
         canceled: lastRound.toNumber() > Number(c.round) + 1,
         owner: c.owner,
