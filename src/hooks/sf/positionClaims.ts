@@ -55,20 +55,12 @@ const asyncClaims = async (
             oracle.getLastRound(true),
             oracle.nextPrice(c.round, slot).catch((e) => parseEther("0")),
           ]);
-        const claimable =
-          !nextPrice.isZero() ||
-          (lastRound.toNumber() < Number(c.round) + 1 && c.burn == true);
-
-        console.log(
-          initialized.toNumber(),
-          (Number(c.round) + 1) * frequency,
-          roundDuration
-        );
         return {
           id: c.id,
           amount: c.amount,
           estimatedAmount: c.amount,
-          claimable,
+          claimable:
+            !nextPrice.isZero() || lastRound.toNumber() > Number(c.round) + 1,
           automated: c.claimer?.toLowerCase() != account.toLowerCase(),
           canceled: lastRound.toNumber() > Number(c.round) + 1,
           owner: c.owner,
