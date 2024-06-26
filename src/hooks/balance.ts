@@ -3,10 +3,11 @@ import { provider } from "src/stores/eth-sdk";
 import { chainId, signerAddress } from "svelte-ethers-store";
 import { derived, type Readable } from "svelte/store";
 import type { TokenInfoAndBalance } from "./erc20";
+import { resolvedTransactions } from "./transactions";
 
 export const useBalance: Readable<TokenInfoAndBalance> = derived(
-  [chainId, signerAddress, provider],
-  ([$chainId, $signerAddress, $provider], set) => {
+  [chainId, signerAddress, provider, resolvedTransactions],
+  ([$chainId, $signerAddress, $provider, $rt], set) => {
     if (!$signerAddress || !$provider) return;
     $provider?.getBalance($signerAddress).then((res) => {
       set({

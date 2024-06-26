@@ -27,7 +27,6 @@ export type PoolInfo = {
 export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
   // return await get(gqlsdk).getPools();
   const sdk = get(ethsdk);
-
   const p = sdk.UNIV3_POOL.attach(pool.id);
 
   const synthAddress =
