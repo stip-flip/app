@@ -30,7 +30,7 @@ module.exports = sdk.defineConfig({
       QUOTER: "0x6924592AAe9183d2CF1D200a6e211Aa165F63210",
       POSITION_MANAGER: "0x5d1535B5e4e69D72b0BFDed45038100d639BD2d1",
       WETC9: "0x82A618305706B14e7bcf2592D4B9324A366b6dAd",
-      // UNIV3_POOL: "0x1Bf6fA5f3D8aB1e8f4cFf7F0f6f9f1A9f3d5f3c4", // incorrect address
+      UNIV3_POOL: "0x1Bf6fA5f3D8aB1e8f4cFf7F0f6f9f1A9f3d5f3c4", // incorrect address
     },
   },
   outputPath: "eth-sdk/build/",

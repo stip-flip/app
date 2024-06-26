@@ -86,7 +86,7 @@
                 .filter((c) => c.exit && c.claimable)
                 .map((c) => c.round);
 
-              console.log("claim all", poolAddress);
+              console.log("claim all", poolAddress, enters, exits);
               broadcastTransaction(
                 "Claiming all OTC trades",
                 $sdk.POOL.attach(poolAddress)
