@@ -57,6 +57,7 @@
           >
         </label>
         <label
+          id="position-opener"
           for="position-modal"
           class="btn btn-outline w-full border border-current"
           class:btn-outline={selectedPool != undefined}
@@ -108,7 +109,7 @@
           <div class="p-2 text-xl cursor-pointer" on:click={(_) => (FR -= 10)}>
             <Icon icon="ic:baseline-minus" />
           </div>
-          <div class="flex flex-col justify-between">
+          <div class="flex flex-col justify-between" id="activation-rate">
             <div class="flex-grow h-8 text-center">Activation Rate</div>
             <input
               class="text-lg font-semibold flex-grow text-center h-8 bg-transparent appearance-none"

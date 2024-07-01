@@ -132,6 +132,7 @@
             {:else}
               <li
                 class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200 space-x-2"
+                id="list-token"
                 on:click={(_) => {
                   selectToken == "token0"
                     ? (selectedToken0 = token)
@@ -168,6 +169,7 @@
           <div
             transition:scale|local
             class="btn btn-primary no-animation w-2/5"
+            id="modal-next"
             on:click={(_) => (selectToken = "token1")}
           >
             Token 2
@@ -186,6 +188,7 @@
           {:else}
             <button
               class="btn btn-primary no-animation w-2/5"
+              id="done"
               on:click={(_) => {
                 checkbox.click();
                 // if ($appState.help) {

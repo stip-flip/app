@@ -8,8 +8,7 @@ import { resolvedTransactions } from "./transactions";
 export const useBalance: Readable<TokenInfoAndBalance> = derived(
   [chainId, signerAddress, provider, resolvedTransactions],
   ([$chainId, $signerAddress, $provider, $rt], set) => {
-    if (!$signerAddress || !$provider) return;
-    $provider?.getBalance($signerAddress).then((res) => {
+    if (!$signerAddress || !$provider) {
       set({
         info: {
           name: "Ether Classic",
@@ -18,8 +17,21 @@ export const useBalance: Readable<TokenInfoAndBalance> = derived(
           symbol: "ETC",
           decimals: 18,
         },
-        balance: Number(formatEther(res)),
+        balance: 0,
       });
-    });
+    } else {
+      $provider?.getBalance($signerAddress).then((res) => {
+        set({
+          info: {
+            name: "Ether Classic",
+            icon: "mdi:ethereum",
+            address: "0x0",
+            symbol: "ETC",
+            decimals: 18,
+          },
+          balance: Number(formatEther(res)),
+        });
+      });
+    }
   }
 );

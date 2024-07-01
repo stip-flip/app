@@ -49,8 +49,8 @@
   $: balance0 = useBal(selectedToken0?.info.address, $signerAddress);
 
   $: tokenInfosAndBalances = [
-    ...($poolInfos || []).map((pi) => pi.token),
     $quoteToken,
+    ...($poolInfos || []).map((pi) => pi.token),
   ].filter((t) => !!t);
 
   $: filteredSelectedToken1 = tokenInfosAndBalances.filter(

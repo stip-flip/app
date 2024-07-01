@@ -90,6 +90,7 @@
             {:else}
               <li
                 class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200 space-x-2"
+                id="select-token"
                 on:click={(_) => {
                   selectedToken = token;
                   // checkbox.click();

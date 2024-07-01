@@ -50,7 +50,7 @@ export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
     infosAndBalanceAsync(pool.token0),
     infosAndBalanceAsync(pool.token1),
     s.getPrice(),
-    s.sharesValueWithRebalance(parseEther("1")),
+    s.sharesValueWithRebalance(parseEther("1")).catch((err) => parseEther("1")),
     o.getDecimals(slot),
   ]);
 

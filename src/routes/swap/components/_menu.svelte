@@ -17,7 +17,7 @@
   }
 </script>
 
-<ul class="menu w-50 hidden lg:block">
+<ul class="menu w-50 hidden lg:block" id="menu">
   <li>
     <a
       class:text-primary={!!selected["stip"]}

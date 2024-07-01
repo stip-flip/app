@@ -68,7 +68,7 @@
   };
 </script>
 
-<div class={className + " h-full w-full relative"}>
+<div class={className + " h-full w-full relative"} id="liquidity-chart">
   <div class="background p-8">
     <Pancake.Chart {x1} {x2} y1={0} y2={maxLiquidity} clip>
       <!-- <Pancake.Columns data={$m} width={5}>

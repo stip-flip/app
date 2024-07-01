@@ -25,7 +25,7 @@
   $: supportedNetwork = SUPPORTED_NETWORKS.includes(Number($chainId));
 </script>
 
-<div class="relative">
+<div class="relative" id="wallet-connect">
   {#if !$connected || !$signerAddress}
     <div
       class="border border-primary flex cursor-pointer items-center h-8 rounded-full"

@@ -33,7 +33,7 @@ export const synthInfoAsync = async (
   const p = sdk.POOL.attach(address || ethers.constants.AddressZero);
   const [oracle, slot] = await Promise.all([p.oracle(), p.oracleSlot()]);
 
-  console.log(oracle);
+  console.log("oracle", oracle);
 
   const o = sdk.ORACLE.attach(oracle);
 
@@ -62,7 +62,7 @@ export const synthInfoAsync = async (
     o.frequency(),
     o.initialized(),
     o.roundDuration(),
-    p.sharesValueWithRebalance(parseEther("1")),
+    p.sharesValueWithRebalance(parseEther("1")).catch((err) => parseEther("1")),
   ]);
 
   return {

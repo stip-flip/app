@@ -34,7 +34,7 @@
 </script>
 
 <div class="flex flex-wrap justify-around lg:w-1/2 m-auto space-x-4">
-  <div class="join flex-grow">
+  <div class="join flex-grow" id="deposits">
     <div
       class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
     >
@@ -48,7 +48,7 @@
       )}
     </div>
   </div>
-  <div class="join flex-grow">
+  <div class="join flex-grow" id="apy">
     <div
       class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
     >
@@ -60,7 +60,7 @@
       {$positionsStats?.APY / 100}%
     </div>
   </div>
-  <div class="join flex-grow">
+  <div class="join flex-grow" id="pnl">
     <div
       class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
     >
@@ -74,8 +74,10 @@
       )}
     </div>
   </div>
-  <a class="btn btn-primary flex-grow" href={navigate("/earn/add", url)}
-    >+ New Position</a
+  <a
+    class="btn btn-primary flex-grow"
+    id="new-position"
+    href={navigate("/earn/add", url)}>+ New Position</a
   >
 </div>
 <div

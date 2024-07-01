@@ -12,17 +12,6 @@
 
   $: positionInfos = useUniPositions;
 
-  $: console.log("positionInfos", $positionInfos);
-  $: console.log("poolInfos", $poolInfos);
-  $: console.log(
-    "yes?",
-    $positionInfos.some(
-      (p) =>
-        p.token0 + p.token1 ==
-        $poolInfos[0]?.token0?.info?.address +
-          $poolInfos[0]?.token1?.info?.address
-    )
-  );
   $: positionExist = !!$positionInfos.length;
 
   $: url = new URL($page.url);

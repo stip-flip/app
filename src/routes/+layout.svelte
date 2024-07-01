@@ -21,6 +21,9 @@
   import { flip } from "svelte/animate";
   import Mode from "src/components/mode.svelte";
   import { navigate } from "src/lib/path";
+  import Help from "src/components/help.svelte";
+  import { appTour } from "src/lib/driver";
+  import TakeATour from "src/components/take-a-tour.svelte";
 
   let overlay: HTMLAreaElement;
 
@@ -33,6 +36,7 @@
       // defaultEvmStores.setProvider().catch((e) => console.warn(e));
     } catch (e) {
       console.warn(e);
+      document.getElementById("take-a-tour")?.click();
     }
   });
 
@@ -78,7 +82,10 @@
   });
 </script>
 
+<TakeATour />
+
 <ul class="fixed bottom-0 right-0 z-10 m-4">
+  <Help />
   {#each $pendingTransactions as pt (pt.hash)}
     <li
       class="mt-4"
@@ -198,7 +205,7 @@
               class="menu menu-md menu-horizontal bg-gradient rounded-full shadow-sm shadow-base-content bg-opacity-50 lg:bg-gradient p-0"
             >
               <!-- Navbar menu content here -->
-              <li>
+              <li id="wallet">
                 <a
                   href={navigate("/wallet", url)}
                   class="rounded-full"
@@ -207,7 +214,7 @@
                   >Wallet</a
                 >
               </li>
-              <li>
+              <li id="swap">
                 <a
                   href={navigate("/swap", url)}
                   class="rounded-full"
@@ -215,7 +222,7 @@
                   class:selected={$page.route?.id?.startsWith("/swap")}>Swap</a
                 >
               </li>
-              <li>
+              <li id="earn">
                 <a
                   href={navigate("/earn", url)}
                   class="rounded-full"
