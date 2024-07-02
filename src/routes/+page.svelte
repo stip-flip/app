@@ -68,9 +68,9 @@
         <div class="">
           <h1 class="text-7xl font-bold">Stip&Flip</h1>
           <h2 class="mt-8 text-4xl text-base-content">
-            Decentralised & Permissionless <strong class="text-primary"
-              >Real World Assets</strong
-            >
+            Trade <strong class="text-primary">everything</strong>
+            <strong class="text-secondary">anywhere</strong>
+            <strong class="">as you want</strong>
           </h2>
           <div class="flex justify-between space-x-2 mt-8 lg:h-4">
             <div class="flex space-x-4 flex-grow w-1/4">
