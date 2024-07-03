@@ -17,6 +17,8 @@
   export let tokenInfosAndBalances: TokenInfoAndBalance[];
   export let checkbox: HTMLInputElement;
 
+  const ZERO_ADDRESS = "0x0";
+
   $: selectedToken = selectToken == "token0" ? selectedToken0 : selectedToken1;
 
   let terms: string[] = [];
@@ -53,8 +55,15 @@
           : EtherWhitelist[t.info.symbol]
         : true
     );
-  // .filter((t) => t.info.address != selectedToken?.info.address);
-  // .slice(0, 10);
+
+  $: {
+    if (!sortedTokens.length && selectedToken0?.info.address != ZERO_ADDRESS) {
+      sortedTokens = tokenInfosAndBalances.filter(
+        (t) => t.info.address == ZERO_ADDRESS
+      );
+    }
+  }
+
   $: console.log(terms);
 </script>
 
