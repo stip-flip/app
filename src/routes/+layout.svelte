@@ -5,7 +5,10 @@
   import "../app.css";
 
   import Icon from "@iconify/svelte";
+  import Help from "src/components/help.svelte";
   import Logo from "src/components/logo.svelte";
+  import Mode from "src/components/mode.svelte";
+  import TakeATour from "src/components/take-a-tour.svelte";
   import Theme from "src/components/theme.svelte";
   import WalletDrawer from "src/components/wallet-drawer.svelte";
   import Wallet from "src/components/wallet.svelte";
@@ -15,15 +18,11 @@
     transactions,
   } from "src/hooks/transactions";
   import { connectMetamask } from "src/lib";
-  import { chainId, connected } from "svelte-ethers-store";
-  import { quintOut } from "svelte/easing";
-  import { crossfade, fly } from "svelte/transition";
-  import { flip } from "svelte/animate";
-  import Mode from "src/components/mode.svelte";
   import { navigate } from "src/lib/path";
-  import Help from "src/components/help.svelte";
-  import { appTour } from "src/lib/driver";
-  import TakeATour from "src/components/take-a-tour.svelte";
+  import { chainId, connected } from "svelte-ethers-store";
+  import { flip } from "svelte/animate";
+  import { quintOut } from "svelte/easing";
+  import { crossfade } from "svelte/transition";
 
   let overlay: HTMLAreaElement;
 
@@ -36,7 +35,9 @@
       // defaultEvmStores.setProvider().catch((e) => console.warn(e));
     } catch (e) {
       console.warn(e);
-      document.getElementById("take-a-tour")?.click();
+      if ($page.route.id != "/") {
+        document.getElementById("take-a-tour")?.click();
+      }
     }
   });
 
@@ -85,7 +86,6 @@
 <TakeATour />
 
 <ul class="fixed bottom-0 right-0 z-10 m-4">
-  <Help />
   {#each $pendingTransactions as pt (pt.hash)}
     <li
       class="mt-4"
@@ -132,6 +132,7 @@
       </div>
     </li>
   {/each}
+  <Help />
 </ul>
 
 <!-- {#if $resolvedTransactions[lastResolvedIndex] && !!$resolvedTransactions[lastResolvedIndex].resolved && $resolvedTransactions[lastResolvedIndex].status == 1}
@@ -150,9 +151,9 @@
     <div class="fixed w-full p-4 z-10">
       <div class="justify-between navbar">
         {#if homepage}
-          <div class="flex items-center w-content mr-8"></div>
+          <div class="flex items-center w-content lg:mr-8"></div>
           <div
-            class="lg:w-2/3 flex justify-between items-center rounded-full shadow-sm shadow-base-content bg-opacity-50 lg:bg-gradient min-h-0 px-4"
+            class="lg:w-2/3 w-full flex justify-between items-center rounded-full shadow-sm shadow-base-content bg-opacity-50 bg-gradient min-h-0 px-4"
           >
             <a href={"/"} class="flex w-1/2 items-center">
               <Logo />
@@ -174,7 +175,7 @@
           <div />
           <!-- <Theme /> -->
         {:else}
-          <div class="flex items-center w-content h-8 mr-8 w-1/3">
+          <div class="flex items-center w-content h-8 lg:mr-8 lg:w-1/3">
             <div class="flex-none lg:hidden">
               <label
                 for="app-drawer"
@@ -242,22 +243,22 @@
               </li>
             </ul>
           </div>
-          <div class="space-x-4 lg:w-1/3 flex justify-end">
+          <div class="lg:space-x-4 lg:w-1/3 flex justify-end">
             <Wallet />
-            <Theme />
+            <span class="lg:block hidden"><Theme /></span>
           </div>
         {/if}
       </div>
     </div>
     <div
       class={!homepage
-        ? "fixed root h-screen w-full overflow-scroll pb-8"
+        ? "lg:root h-screen w-full overflow-scroll pb-8"
         : "root h-screen bg"}
     >
       <slot />
     </div>
   </div>
-  <div class="drawer-side">
+  <div class="drawer-side z-20">
     <label
       for="app-drawer"
       aria-label="close sidebar"
@@ -268,12 +269,13 @@
       <div
         class="bg-base-100 grid-row-2 sticky top-0 z-10 grid w-full gap-y-2 bg-opacity-90 px-2 py-3 backdrop-blur"
       />
+      <div class="px-8"><Theme /></div>
       <div class="h-4" />
-      <ul class="menu px-4 py-0">
+      <ul class="menu px-4 py-0 text-xl">
         <li>
           <details id="disclosure-docs" open="true">
-            <summary class="group"
-              ><span><Logo width="2rem" height="2rem" /></span> App</summary
+            <summary class="group font-bold"
+              ><span><Logo width="1.5rem" height="1.5rem" /></span> App</summary
             >
             <ul on:click={(_) => overlay.click()}>
               <li>
@@ -299,7 +301,7 @@
         </li>
         <li>
           <details id="disclosure-docs" open="">
-            <summary class="group"
+            <summary class="group font-bold"
               ><span
                 ><svg
                   width="18"

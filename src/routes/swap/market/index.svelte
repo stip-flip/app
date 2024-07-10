@@ -176,7 +176,7 @@
   >
     <input
       bind:value={amountOut}
-      type="text"
+      type="tel"
       placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
       class:input-error={Number(amountOut) > $balance0}
@@ -238,7 +238,7 @@
   >
     <input
       bind:value={amountIn}
-      type="text"
+      type="tel"
       placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
       on:validated={(v) => (amountIn = v.detail)}

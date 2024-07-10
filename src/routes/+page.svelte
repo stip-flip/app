@@ -54,38 +54,42 @@
 <Parallax sections={7}>
   <ParallaxLayer rate={1} offset={0}>
     <div
-      class="text-center lg:text-start lg:mt-0 lg:bottom-48 lg:left-28 h-full flex justify-between flex-col"
+      class="text-center lg:text-start lg:mt-0 lg:left-28 h-full flex justify-between flex-col"
     >
       <img
         src="/icon.svg"
-        class="absolute w-1/4 lg:m-0"
+        class="absolute w-1/4 lg:m-0 mt-24"
         style="transform: translate(150%, 10%);"
       />
-      <div class="h-1/2 w-full flex justify-center items-end">
-        <Countdown />
-      </div>
-      <div class="w-1/2 m-auto">
+      <div class="lg:w-1/2 h-1/2 m-auto flex items-end">
         <div class="">
-          <h1 class="text-7xl font-bold">Stip&Flip</h1>
-          <h2 class="mt-8 text-4xl text-base-content">
+          <h1 class="lg:text-7xl text-3xl font-bold">Stip&Flip</h1>
+          <h2
+            class="lg:mt-8 mt-2 lg:text-4xl text-xl lg:px-0 px-4 text-base-content"
+          >
             Trade <strong class="text-primary">everything</strong>
             <strong class="text-secondary">anywhere</strong>
             <strong class="">as you want</strong>
           </h2>
-          <div class="flex justify-between space-x-2 mt-8 lg:h-4">
-            <div class="flex space-x-4 flex-grow w-1/4">
+          <div
+            class="flex lg:justify-between space-x-2 lg:mt-8 lg:h-4 lg:px-0 px-8"
+          >
+            <div class="flex space-x-4 flex-grow w-1/4 lg">
               <a href="https://github.com/stip-flip" target="_blank"
-                ><Icon class="text-4xl" icon="mdi:github" /></a
+                ><Icon class="lg:text-4xl text-2xl" icon="mdi:github" /></a
               >
               <a href="https://twitter.com/stipflip" target="_blank">
-                <Icon class="text-4xl" icon="mdi:twitter" /></a
+                <Icon class="lg:text-4xl text-2xl" icon="mdi:twitter" /></a
               >
             </div>
-            <div class="flex-grow w-1/4" />
+            <!-- <div class="flex-grow w-1/4" /> -->
           </div>
         </div>
       </div>
-      <div class="h-1/4" />
+      <div class="lg:h-1/2 w-full flex justify-center items-end">
+        <Countdown />
+      </div>
+      <div class="lg:h-1/4 h-1/6" />
       <!-- {#if !import.meta.env.SSR}
         <LottiePlayer
           class="absolute"
@@ -98,7 +102,7 @@
       {/if} -->
       <div class="flex w-full absolute bottom-4">
         {#each Array.from({ length: 10 }) as _, i}
-          <div class="min-w-32 min-h-32">
+          <div class="lg:min-w-32 lg:min-h-32">
             <img src="/golden-gate-bridge.svg" />
           </div>
         {/each}
@@ -111,10 +115,12 @@
   </StickyLayer>
 
   <StickyLayer rate={1} offset={{ top: 1, bottom: 2 }} let:progress>
-    <div class="flex p-8 px-32 z-10" style="opacity: {2 - 2 * progress};">
+    <div class="flex p-8 lg:px-32 z-10" style="opacity: {2 - 2 * progress};">
       <div>
-        <h3 class="text-primary text-5xl mt-24">Trade any synthetic asset</h3>
-        <div class="py-4 text-2xl">
+        <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+          Trade any synthetic asset
+        </h3>
+        <div class="py-4 lg:text-2xl">
           <p class="py-4">DeFi now has access to any real world asset</p>
           <p class="py-4">If you have the data - we can mint it</p>
         </div>
@@ -129,7 +135,7 @@
       let:progress
     >
       <div
-        class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 h-32 w-32 p-4"
+        class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 lg:h-32 h-16 lg:w-32 w-16 lg:p-4 p-2"
         style="margin-top: 80vh; margin-left: {25 +
           i * 10}%; transform: translateY(-{progress *
           (10 - iconsTranslate[i]) *
@@ -144,14 +150,18 @@
 
   <StickyLayer rate={2} offset={{ top: 2, bottom: 4 }} let:progress>
     <div
-      class="h-1/3 flex justify-end p-8 px-32 z-10"
+      class="lg:h-1/3 h-2/3 flex justify-end lg:items-start items-end lg:p-8 lg:px-32 z-10"
       style="margin-top: {30 - (progress < 0.2 ? 0 : (progress - 0.2) * 40)}vh;"
     >
       <div>
-        <h3 class="text-primary text-5xl mt-24 text-right">Anti-Fragile</h3>
-        <div class="py-4 text-2xl text-right">
+        <h3
+          class="text-primary lg:text-5xl text-3xl lg:mt-24 lg:px-0 px-4 text-right"
+        >
+          Anti-Fragile
+        </h3>
+        <div class="lg:py-4 lg:text-2xl text-xl text-right">
           <p
-            class="py-4"
+            class="lg:py-4 lg:px-0 px-4"
             style="opacity: {progress > 0.5 ? 0 : 1}; transition: all 1s ease;"
           >
             Put your hard money to work on your <strong class="text-primary"
@@ -169,7 +179,7 @@
       </div>
     </div>
     <div
-      class="flex space-x-32 ml-24 mt-8"
+      class="flex lg:space-x-32 lg:ml-24 mt-8"
       style="transform: translateX({50 - progress * 100}%); opacity: {progress <
       0.5
         ? 0
@@ -177,23 +187,22 @@
     >
       {#each leveraged as icon, i}
         <div
-          class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 h-32 w-32 p-4"
-          style="min-width: 8rem;"
+          class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 p-4"
         >
-          <img src={icon} />
+          <img src={icon} class="lg:min-h-32 lg:min-w-32 min-w-16" />
         </div>
       {/each}
     </div>
     <div
-      class="flex space-x-8 items-center justify-around ml-24 mt-20 z-10"
+      class="flex lg:space-x-8 items-center justify-around lg:ml-24 mt-20 z-10 lg:px-0 px-4"
       style="opacity: {progress < 0.5 ? 0 : 1}; transition: all 1s ease;"
     >
-      <p class="text-2xl text-right">
+      <p class="lg:text-2xl lg:text-right text-xl">
         Trade your synthetic squared or cubed <br /><br />
         long or short <br /><br />
         stip or flip <br /><br />
       </p>
-      <a class="btn btn-outline w-1/3" href="https://docs.sf.exchange"
+      <a class="btn btn-outline lg:w-1/3" href="https://docs.sf.exchange"
         >Learn More</a
       >
     </div>
@@ -208,37 +217,39 @@
       style="margin-top: 30vh; height: 100vh; transform: scale({0.8 +
         0.2 * progress});"
     >
-      <div class="flex space-x-4 ml-24 mb-8 -mt-24">
-        <div class="btn btn-primary btn-outline btn-wide btn-lg">
+      <div class="flex lg:space-x-4 space-x-2 lg:ml-24 mb-8 -mt-24">
+        <div class="btn btn-primary btn-outline lg:btn-wide lg:btn-lg">
           <CoinIcon symbol="F-BTC" />Flip-Bitcoin
         </div>
         <div class="join">
-          <div class="btn btn-outline btn-wide btn-lg join-item">
+          <div class="btn btn-outline lg:btn-wide lg:btn-lg join-item">
             Pool Funding Rate
           </div>
-          <div class="btn btn-outline btn-lg join-item">0.3%</div>
+          <div class="btn btn-outline lg:btn-lg join-item">0.3%</div>
         </div>
       </div>
       <div
-        class="ml-24 p-4 border border-primary rounded-2xl bg-gradient h-1/4 lg:w-1/2 margin-auto shadow-md shadow-primary"
+        class="lg:ml-24 lg:p-4 border border-primary rounded-2xl bg-gradient h-1/4 lg:w-1/2 w-full lg:margin-auto shadow-md shadow-primary"
       >
         <LiquidityChart initializedTicks={ticks} FR={$FR} />
       </div>
-      <div class="join ml-24 mt-8">
-        <div class="btn btn-primary btn-wide btn-lg join-item">
+      <div class="join lg:ml-24 mt-8">
+        <div class="btn btn-primary lg:btn-wide lg:btn-lg join-item">
           Deposit Liquidity at
         </div>
-        <div class="btn btn-primary btn-outline btn-lg join-item">
+        <div class="btn btn-primary btn-outline lg:btn-lg join-item">
           {($FR / 100).toFixed(2)}%
         </div>
       </div>
     </div>
   </StickyLayer>
   <StickyLayer rate={1} offset={{ top: 5, bottom: 6 }}>
-    <div class="h-1/2 flex justify-around" style="margin-top: -30vh;">
+    <div
+      class="lg:h-2/3 flex justify-around lg:items-start items-end lg:px-0 px-4"
+    >
       <div>
-        <h3 class="text-primary text-5xl mt-64">Secure</h3>
-        <div class="py-4 text-2xl">
+        <h3 class="text-primary lg:text-5xl text-2xl mt-64">Secure</h3>
+        <div class="py-4 lg:text-2xl">
           <p class="py-4">Built on the most secure smart contract blockchain</p>
           <p class="py-4">100% Decentralized - no single point of failure</p>
         </div>
@@ -246,15 +257,12 @@
     </div>
   </StickyLayer>
   <StickyLayer rate={1} offset={{ top: 5, bottom: 6 }}>
-    <div
-      class="flex justify-around items-center h-1/2"
-      style="margin-top: 15vh;"
-    >
-      <a class="btn-primary text-white btn btn-lg w-1/3" href="swap"
+    <div class="flex justify-around items-end lg:h-2/3 h-5/6">
+      <a class="btn-primary text-white btn btn-lg lg:w-1/3" href="swap"
         >Start Trading</a
       >
       <a
-        class="btn-info text-white btn btn-lg w-1/3"
+        class="btn-info text-white btn btn-lg lg:w-1/3"
         href="https://docs.sf.exchange/">Learn more</a
       >
     </div>

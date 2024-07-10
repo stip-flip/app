@@ -68,7 +68,7 @@
 </script>
 
 <input type="checkbox" {id} class="modal-toggle" bind:this={checkbox} />
-<label for={id} class="modal cursor-pointer">
+<label for={id} class="modal cursor-pointer z-20">
   <label class="w-full lg:w-1/2">
     <div class="bg-opaque lg:rounded-xl lg:border block p-8" for="">
       <div class="flex justify-around pb-4">
@@ -118,7 +118,8 @@
             {#if selectedToken && token.info.address == selectedToken.info.address}
               <li
                 class=" px-6 pb-2 pt-2 cursor-pointer bg-base-100 border-b"
-                on:click={(_) => {
+                on:click={(e) => {
+                  e.preventDefault();
                   selectToken == "token0"
                     ? (selectedToken0 = undefined)
                     : (selectedToken1 = undefined);
@@ -142,7 +143,8 @@
               <li
                 class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200 space-x-2"
                 id="list-token"
-                on:click={(_) => {
+                on:click={(e) => {
+                  e.preventDefault();
                   selectToken == "token0"
                     ? (selectedToken0 = token)
                     : (selectedToken1 = token);
@@ -179,7 +181,10 @@
             transition:scale|local
             class="btn btn-primary no-animation w-2/5"
             id="modal-next"
-            on:click={(_) => (selectToken = "token1")}
+            on:click={(e) => {
+              e.preventDefault();
+              selectToken = "token1";
+            }}
           >
             Token 2
           </div>
@@ -188,7 +193,8 @@
             <label
               transition:scale|local
               class="btn btn-primary no-animation w-2/5"
-              on:click={(_) => {
+              on:click={(e) => {
+                e.preventDefault();
                 !otherTokenSelected
                   ? (selectToken = "token0")
                   : checkbox.click();
@@ -198,7 +204,8 @@
             <button
               class="btn btn-primary no-animation w-2/5"
               id="done"
-              on:click={(_) => {
+              on:click={(e) => {
+                e.preventDefault();
                 checkbox.click();
                 // if ($appState.help) {
                 //   driveOTC(

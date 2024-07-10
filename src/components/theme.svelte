@@ -41,8 +41,8 @@
   class="h-8 w-8 p-1 flex items-center justify-center cursor-pointer"
 >
   {#if theme === "dark"}
-    <Icon icon="ph:moon-bold" class="text-3xl text-primary" />
+    <Icon icon="ph:moon-bold" class="lg:text-3xl text-5xl text-primary" />
   {:else if theme === "light"}
-    <Icon icon="ph:sun-bold" class="text-3xl text-primary" />
+    <Icon icon="ph:sun-bold" class="lg:text-3xl text-5xl text-primary" />
   {/if}
 </button>

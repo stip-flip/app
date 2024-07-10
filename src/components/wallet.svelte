@@ -33,7 +33,7 @@
       <button
         on:click={connectWallet}
         class="px-4 text-primary tracking-wider flex cursor-pointer"
-        >Connect Wallet</button
+        >Connect <span class="lg:visible hidden">Wallet</span></button
       >
     </div>
   {:else}
