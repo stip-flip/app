@@ -1,12 +1,11 @@
-import { BigNumber, ethers } from "ethers";
-import type { TokenInfoAndBalance } from "../erc20";
-import { get } from "svelte/store";
-import { sdk as ethsdk } from "src/stores";
-import type { MordorSdk } from "eth-sdk/build";
-import type { SynthInfo } from "./synth";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { reverse } from "lodash";
 import Decimal from "decimal.js";
+import type { MordorSdk } from "eth-sdk/build";
+import { BigNumber, ethers } from "ethers";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { sdk as ethsdk } from "src/stores";
+import { get } from "svelte/store";
+import type { TokenInfoAndBalance } from "../erc20";
+import type { SynthInfo } from "./synth";
 
 const ZERO_ADDRESS = "0x0";
 const WETC9 = "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a";
@@ -68,7 +67,7 @@ export async function swapOut(
     const res = await sdk.QUOTER.callStatic.quoteExactInput(
       path,
       parseUnits(
-        new Decimal(String(amount)).toFixed(),
+        new Decimal(String(amount)).toFixed(18),
         selectedToken0.info.decimals
       )
     );

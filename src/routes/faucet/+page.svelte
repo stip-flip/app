@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { modal } from "src/lib/web3";
   import { onMount } from "svelte";
   import {
     connected,
@@ -64,7 +65,7 @@
     {:else}
       <button
         class="btn btn-primary m-auto mt-4"
-        on:click={(_) => connectWallet()}
+        on:click={(_) => modal.open()}
       >
         Connect Wallet
       </button>

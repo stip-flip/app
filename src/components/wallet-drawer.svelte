@@ -4,6 +4,8 @@
   import { renderSVGIcon } from "@codingwithmanny/blockies";
   import Icon from "@iconify/svelte";
   import { disconnectMetamask, switchNetwork } from "src/lib";
+  import { modal } from "src/lib/web3";
+  import Theme from "./theme.svelte";
 
   let overlay: HTMLInputElement;
 </script>
@@ -24,10 +26,15 @@
       aria-label="close sidebar"
       class="drawer-overlay"
     />
-    <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content z-20">
+    <ul
+      class="menu p-4 lg:w-80 w-2/3 min-h-full bg-base-200 text-base-content z-20 bg-opaque"
+    >
       <!-- Sidebar content here -->
+      <div class="lg:hidden flex justify-end">
+        <Theme />
+      </div>
       {#if $signerAddress}
-        <div class="flex justify-between mt-8">
+        <div class="lg:flex lg:justify-between lg:mt-8">
           <div class="flex items-center space-x-2">
             <div class="rounded-full overflow-hidden">
               {#await renderSVGIcon({ seed: $signerAddress || "" }) then icon}
@@ -39,10 +46,10 @@
             </span>
           </div>
           <button
-            class="btn btn-outline"
+            class="btn btn-outline lg:w-auto w-full lg:mt-0 mt-4"
             on:click={(_) => {
               overlay.click();
-              disconnectMetamask();
+              modal.disconnect();
             }}>Disconnect</button
           >
         </div>

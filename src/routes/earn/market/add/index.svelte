@@ -2,15 +2,11 @@
   import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
   import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
-  import { validator } from "src/actions/big-number-input";
   import CoinIcon from "src/components/coin-icon.svelte";
-  import { useBalance } from "src/hooks/balance";
   import { useSynthInfos } from "src/hooks/sf/synth";
-  import { broadcastTransaction } from "src/hooks/transactions";
-  import { commify } from "src/lib";
+  import { commify, updateVc } from "src/lib";
   import Modal from "../../_modal.svelte";
 
-  import { signPermit } from "src/actions/sign";
   import { useAllowance, type TokenInfoAndBalance } from "src/hooks/erc20";
   import { usePoolInfos } from "src/hooks/uniswap/pool";
   import { navigate } from "src/lib/path";
@@ -23,13 +19,16 @@
   } from "src/lib/uniswap/tick";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
+  import { useBalance } from "src/hooks/balance";
+  import { onMount } from "svelte";
+  import { validator } from "src/actions/big-number-input";
+  import { signPermit } from "src/actions/sign";
+  import { broadcastTransaction } from "src/hooks/transactions";
 
-  let debug = true;
+  let open: boolean = false;
 
   let synthAmount: string; // synthAmount is the amount of synthetic token (amount0)
   let etcAmount: string; // etcAmount is the amount of ETC (amount1)
-
-  let liquidity: number;
 
   let selectedToken: TokenInfoAndBalance;
 
@@ -128,44 +127,61 @@
       )
     );
   }
+  onMount(() => {
+    updateVc();
+  });
 </script>
 
 <Modal
   id="position-modal"
   bind:selectedToken
+  bind:open
   tokenInfosAndBalances={$si.map((p) => p.token) || []}
 />
 
 <div
-  class="lg:border-2 rounded-lg p-4 bg-transparent lg:w-1/2 m-auto bg-gradient"
+  class="lg:border-2 rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:bg-gradient"
 >
   <div
-    class="flex justify-between items-center p-4 pb-8 border-b border-base-content"
+    class="flex justify-between items-center lg:p-4 lg:pb-8 pb-4 px-4 lg:border-b border-base-content"
   >
-    <a class="w-1/3" href={navigate("/earn", url)}>
+    <a class="lg:w-1/3" href={navigate("/earn", url)}>
       <Icon icon="ph-arrow-left-bold" class="text-2xl" />
     </a>
-    <h1 class="text-xl w-1/3 text-center font-semibold">New Position</h1>
-    <div class="w-1/3" />
+    <h1 class="lg:text-xl text-lg lg:w-1/3 text-center lg:font-semibold">
+      New Position
+    </h1>
+    <div class="lg:w-1/3" />
   </div>
-  <div class="p-4">
+  <div class="p-4 container-height" id="container">
     <label class="label">
       <span class="label-text font-semibold text-base">Select pair</span>
     </label>
-    <div class="lg:flex lg:space-x-4">
-      <div class="lg:w-1/2">
-        <label class="btn w-full border bg-opaque fine-border cursor-default"
-          ><Icon class="inline text-xl text-green-600" icon="mdi:ethereum" /> ETC</label
+    <div class="flex space-x-4">
+      <div class="w-1/2">
+        <label
+          class="btn w-full lg:btn-md btn-sm border bg-opaque fine-border cursor-default"
+          ><Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
+          ETC</label
         >
       </div>
-      <div class="lg:w-1/2">
+      <div class="w-1/2">
         <label
           for="position-modal"
-          class="btn w-full fine-border"
+          class="lg:btn hidden w-full fine-border"
           class:bg-opaque={selectedSynth != undefined}
         >
           <CoinIcon symbol={selectedSynth?.token?.info?.symbol} />{selectedSynth
             ?.token?.info?.name || "--"}</label
+        >
+        <button
+          class="btn btn-sm w-full fine-border lg:hidden"
+          class:bg-opaque={selectedSynth != undefined}
+          on:click={(_) => (open = true)}
+          ><CoinIcon
+            className="!w-4 !h-4"
+            symbol={selectedSynth?.token?.info?.symbol}
+          />{selectedSynth?.token?.info?.name || "--"}</button
         >
       </div>
     </div>
@@ -221,9 +237,9 @@
           </div>
         </div>
       {:else}
-        <div class="pt-4 font-bold">
+        <div class="pt-4 lg:font-bold">
           Current Price: {commify(currentPrice, 4)}
-          <Icon icon="mdi:ethereum" class="inline text-xl text-green-600" />
+          <Icon icon="mdi:ethereum" class="inline lg:text-xl text-green-600" />
         </div>
       {/if}
     {/if}
@@ -232,9 +248,9 @@
       <!-- <div class="border-b w-full my-4 border-base-content" /> -->
       <div class="my-4 font-semibold">Set price range</div>
 
-      <div class="flex justify-between items-center space-x-4">
+      <div class="lg:flex lg:justify-between lg:items-center lg:space-x-4">
         <div
-          class="form-control lg:w-1/2 bg-opaque fine-border px-4 pb-4 rounded-xl"
+          class="lg:form-control lg:w-1/2 bg-opaque fine-border px-4 pb-4 rounded-xl"
         >
           <label class="label">
             <span>Low price</span>
@@ -255,9 +271,10 @@
               min="0"
               step="0.1"
               placeholder="0"
-              class="input input-ghost input-bordered lg:w-2/3 text-2xl"
+              class="input input-ghost input-bordered lg:input-md input-sm w-2/3 lg:text-2xl"
             />
-            <span class="justify-center flex items-center flex-grow"
+            <span
+              class="justify-center flex items-center flex-grow lg:text-base text-xs"
               ><Icon
                 class="inline text-xl text-green-600"
                 icon="mdi:ethereum"
@@ -267,7 +284,7 @@
           </label>
         </div>
         <div
-          class="form-control lg:w-1/2 bg-opaque fine-border fine-border px-4 pb-4 rounded-xl"
+          class="form-control lg:w-1/2 bg-opaque fine-border fine-border px-4 pb-4 rounded-xl lg:mt-0 mt-4"
         >
           <label class="label">
             <span>High price</span>
@@ -290,9 +307,10 @@
               min="0"
               step="0.1"
               placeholder="0"
-              class="input input-ghost input-bordered lg:w-2/3 text-2xl"
+              class="input input-ghost input-bordered w-2/3 lg:input-md input-sm lg:text-2xl"
             />
-            <span class="justify-center flex items-center flex-grow"
+            <span
+              class="justify-center flex items-center flex-grow lg:text-base text-xs"
               ><Icon
                 class="inline text-xl text-green-600"
                 icon="mdi:ethereum"
@@ -303,17 +321,17 @@
         </div>
       </div>
     </div>
-    <div class="border-b w-full my-4 border-base-content" />
+    <div class="border-b w-full my-4 border-base-content lg:block hidden" />
     <div class:opacity-30={!selectedSynth}>
       <div class="font-semibold text-base my-4">Deposit amount</div>
-      <div class="flex justify-between items-center space-x-4">
+      <div class="lg:flex lg:justify-between items-center lg:space-x-4">
         <div class="form-control lg:w-1/2 bg-opaque fine-border p-4 rounded-xl">
           <label class="input-group">
             <input
               bind:value={etcAmount}
               type="text"
               placeholder="0"
-              class="input input-ghost input-bordered lg:w-2/3 text-2xl"
+              class="input input-ghost input-bordered w-2/3 lg:input-md input-sm lg:text-2xl"
               class:input-error={Number(etcAmount) >
                 Number($useBalance?.balance)}
               on:validated={(v) => (etcAmount = v.detail)}
@@ -325,7 +343,7 @@
               }}
             />
             <span
-              class="w-24 text-center flex items-center justify-center flex-grow"
+              class="w-24 text-center flex items-center justify-center flex-grow lg:text-base text-xs"
               ><Icon
                 class="inline text-xl text-green-600"
                 icon="mdi:ethereum"
@@ -344,19 +362,22 @@
             <span class="text-xs">{commify($useBalance?.balance)}</span>
           </div>
         </div>
-        <div class="form-control lg:w-1/2 bg-opaque fine-border p-4 rounded-xl">
+        <div
+          class="form-control lg:w-1/2 bg-opaque fine-border p-4 rounded-xl lg:mt-0 mt-4"
+        >
           <label class="input-group">
             <input
               bind:value={synthAmount}
               type="text"
               placeholder="0"
-              class="input input-ghost input-bordered lg:w-2/3 text-2xl"
+              class="input input-ghost input-bordered w-2/3 lg:input-md input-sm lg:text-2xl"
               class:input-error={Number(synthAmount) >
                 Number(selectedSynth?.token?.balance)}
               disabled={highPrice <= currentPrice}
               on:input={recomputeETC}
             />
-            <span class="text-center flex items-center justify-center flex-grow"
+            <span
+              class="text-center flex items-center justify-center flex-grow lg:text-base text-xs"
               ><CoinIcon
                 className="mr-2"
                 symbol={selectedSynth?.token?.info?.symbol}

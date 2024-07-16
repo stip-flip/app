@@ -26,7 +26,7 @@
   <td class="text-left">
     {commify(formatEther(claim?.estimatedAmount || 0), 4)}
   </td>
-  <td class="text-left">
+  <td class="text-left lg:table-cell hidden">
     {claim?.automated ? "Yes" : "No"}
   </td>
   <td class="text-right px-8">

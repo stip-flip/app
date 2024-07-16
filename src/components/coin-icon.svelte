@@ -7,7 +7,7 @@
 </script>
 
 {#if symbol == "ETC"}
-  <Icon icon="mdi:ethereum" class="text-green-600 text-2xl" />
+  <Icon icon="mdi:ethereum" class="text-green-600 text-2xl {className}" />
 {:else}
   <img
     src="/{symbol}.svg"

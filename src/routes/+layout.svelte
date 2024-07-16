@@ -30,8 +30,12 @@
 
   onMount(() => {
     try {
-      console.log(window.ethereum.selectedAddress);
-      connectMetamask();
+      // Initial update
+      updateVh();
+
+      // Update on resize
+      window.addEventListener("resize", updateVh);
+      // connectMetamask();
       // defaultEvmStores.setProvider().catch((e) => console.warn(e));
     } catch (e) {
       console.warn(e);
@@ -57,7 +61,7 @@
     }
   }
 
-  let docurl = "https://sf-doc.vercel.app/docs";
+  let docurl = "https://docs.sf.exchange/docs";
 
   const idToChain: any = {
     61: "etc",
@@ -81,6 +85,14 @@
       };
     },
   });
+
+  // JavaScript to update the custom property
+  function updateVh() {
+    document.documentElement.style.setProperty(
+      "--vh",
+      `${window.innerHeight * 0.01}px`
+    );
+  }
 </script>
 
 <TakeATour />
@@ -148,7 +160,7 @@
   <input id="app-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col">
     <!-- Navbar -->
-    <div class="fixed w-full p-4 z-10">
+    <div class="fixed w-full lg:p-4 z-10">
       <div class="justify-between navbar">
         {#if homepage}
           <div class="flex items-center w-content lg:mr-8"></div>
@@ -177,7 +189,7 @@
         {:else}
           <div class="flex items-center w-content h-8 lg:mr-8 lg:w-1/3">
             <div class="flex-none lg:hidden">
-              <label
+              <!-- <label
                 for="app-drawer"
                 aria-label="open sidebar"
                 class="btn btn-square btn-ghost"
@@ -194,7 +206,7 @@
                     d="M4 6h16M4 12h16M4 18h16"
                   /></svg
                 >
-              </label>
+              </label> -->
             </div>
             <a href={"/"} class="items-center hidden lg:flex mr-12">
               <Logo />
@@ -252,10 +264,39 @@
     </div>
     <div
       class={!homepage
-        ? "lg:root h-screen w-full overflow-scroll pb-8"
+        ? "bg-2 lg:h-screen lg:root w-full overflow-scroll lg:pb-8 lg:overflow-auto mobile-height overflow-x-hidden"
         : "root h-screen bg"}
     >
       <slot />
+    </div>
+    <div class="btm-nav lg:hidden bg-transparent h-24" id="footer">
+      <a
+        class:text-primary={$page.route?.id?.startsWith("/wallet")}
+        href={navigate("/wallet", url)}
+      >
+        <Icon icon="mdi:wallet" class="text-3xl" />
+        <span class="btm-nav-label text-xs">Wallet</span>
+      </a>
+      <a
+        class:text-primary={$page.route?.id?.startsWith("/swap")}
+        href={navigate("/swap", url)}
+      >
+        <Icon
+          icon="mdi:swap-horizontal"
+          class={"text-3xl border border-inherit rounded-md " +
+            ($page.route?.id?.startsWith("/swap")
+              ? " bg-primary border-primary !text-primary-content"
+              : "")}
+        />
+        <span class="btm-nav-label text-xs">Swap</span>
+      </a>
+      <a
+        class:text-primary={$page.route?.id?.startsWith("/earn")}
+        href={navigate("/earn", url)}
+      >
+        <Icon icon="mdi:chart-line" class="text-3xl" />
+        <span class="btm-nav-label text-xs">Earn</span>
+      </a>
     </div>
   </div>
   <div class="drawer-side z-20">
@@ -265,9 +306,9 @@
       class="drawer-overlay"
       bind:this={overlay}
     />
-    <aside class="bg-base-100 min-h-screen w-80">
+    <aside class="bg-opaque min-h-screen w-3/5 bg-opaque">
       <div
-        class="bg-base-100 grid-row-2 sticky top-0 z-10 grid w-full gap-y-2 bg-opacity-90 px-2 py-3 backdrop-blur"
+        class="bg-opaque grid-row-2 sticky top-0 z-10 grid w-full gap-y-2 bg-opacity-90 px-2 py-3 backdrop-blur"
       />
       <div class="px-8"><Theme /></div>
       <div class="h-4" />
@@ -335,7 +376,7 @@
               <ul>
                 <li>
                   <a
-                    href={docurl + "/general-overview/what-is-stup&flip"}
+                    href={docurl + "/general-overview/what-is-s&f"}
                     class="group"
                   >
                     <span>What is Stip & Flip</span>

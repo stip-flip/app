@@ -8,18 +8,21 @@
   import { chainId } from "svelte-ethers-store";
   import { EtherWhitelist } from "src/stores/whitelist";
 
+  import TokenList from "src/components/token-list.svelte";
+  import { Drawer } from "vaul-svelte";
+
   export let id: string;
   export let otherTokenSelected: TokenInfoAndBalance;
   export let selectToken: "token0" | "token1";
   export let selectedToken0: TokenInfoAndBalance;
   export let selectedToken1: TokenInfoAndBalance;
+  export let selectedToken: TokenInfoAndBalance;
 
   export let tokenInfosAndBalances: TokenInfoAndBalance[];
   export let checkbox: HTMLInputElement;
+  export let open: boolean = false;
 
   const ZERO_ADDRESS = "0x0";
-
-  $: selectedToken = selectToken == "token0" ? selectedToken0 : selectedToken1;
 
   let terms: string[] = [];
   let search: string = "";
@@ -67,8 +70,14 @@
   $: console.log(terms);
 </script>
 
-<input type="checkbox" {id} class="modal-toggle" bind:this={checkbox} />
-<label for={id} class="modal cursor-pointer z-20">
+<input
+  type="checkbox"
+  {id}
+  class="modal-toggle lg:block hidden"
+  bind:this={checkbox}
+/>
+
+<label for={id} class="lg:modal cursor-pointer z-20 hidden">
   <label class="w-full lg:w-1/2">
     <div class="bg-opaque lg:rounded-xl lg:border block p-8" for="">
       <div class="flex justify-around pb-4">
@@ -110,58 +119,7 @@
       </div>
       <div class="flex pt-4 lg:space-x-4">
         <Menu bind:terms />
-        <ul
-          class="p-4 rounded-box shadow-lg border w-full bg-base-300 overflow-scroll"
-          style="height: 50vh;"
-        >
-          {#each sortedTokens || [] as token}
-            {#if selectedToken && token.info.address == selectedToken.info.address}
-              <li
-                class=" px-6 pb-2 pt-2 cursor-pointer bg-base-100 border-b"
-                on:click={(e) => {
-                  e.preventDefault();
-                  selectToken == "token0"
-                    ? (selectedToken0 = undefined)
-                    : (selectedToken1 = undefined);
-                }}
-              >
-                <div class="flex space-x-2">
-                  <CoinIcon symbol={selectedToken.info.symbol} />
-                  <strong class="capitalize">
-                    <a>{selectedToken.info.symbol}</a> :
-                  </strong>
-                  <span>
-                    ({commify(token?.balance, 4)})
-                  </span>
-                  <p>
-                    {selectedToken?.info?.description ||
-                      "Ether Coin, The Ether's native currency."}
-                  </p>
-                </div>
-              </li>
-            {:else}
-              <li
-                class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200 space-x-2"
-                id="list-token"
-                on:click={(e) => {
-                  e.preventDefault();
-                  selectToken == "token0"
-                    ? (selectedToken0 = token)
-                    : (selectedToken1 = token);
-                  // checkbox.click();
-                }}
-              >
-                <CoinIcon symbol={token?.info?.symbol} />
-                <strong class="capitalize">
-                  <a>{token?.info?.symbol}</a>
-                </strong>
-                <span>
-                  ({commify(token?.balance, 4)})
-                </span>
-              </li>
-            {/if}
-          {/each}
-        </ul>
+        <TokenList bind:selectedToken {sortedTokens} />
       </div>
     </div>
     <div class="flex py-4 justify-between lg:w-full">
@@ -224,3 +182,17 @@
     </div>
   </label>
 </label>
+
+<Drawer.Root bind:open>
+  <Drawer.Trigger />
+  <Drawer.Portal>
+    <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden" />
+    <Drawer.Content
+      class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border lg:hidden z-10"
+    >
+      <div class="w-1/6 mb-8 h-1 bg-base-content border- m-auto" />
+      <TokenList bind:selectedToken {sortedTokens} />
+      <Menu bind:terms />
+    </Drawer.Content>
+  </Drawer.Portal>
+</Drawer.Root>

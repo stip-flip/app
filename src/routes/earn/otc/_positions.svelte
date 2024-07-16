@@ -17,7 +17,7 @@
 
 <Modal {poolAddress} {poolName} {selectedPosition} />
 <label for={poolAddress} bind:this={label}></label>
-<div class="overflow-x-auto bg-gradient">
+<div class="overflow-x-auto lg:bg-gradient">
   <table class="table w-full">
     <!-- head -->
     <thead>

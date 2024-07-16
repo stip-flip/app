@@ -10,17 +10,21 @@
 
   import { renderSVGIcon } from "@codingwithmanny/blockies";
   import { switchNetwork } from "src/lib";
+  import { modal } from "src/lib/web3";
 
   export let trades: any[] = [];
 
-  async function connectWallet() {
-    try {
-      await defaultEvmStores.setProvider();
-      // .then((res) => sessionStorage.setItem('acct', $signerAddress));
-    } catch (error) {
-      console.log(error, "Something went wrong while connecting wallet");
+  modal.subscribeProvider((state) => {
+    console.log("hey");
+    if (state) {
+      console.log(state);
+      if (state.provider) {
+        defaultEvmStores.setProvider(state.provider);
+      } else {
+        defaultEvmStores.disconnect();
+      }
     }
-  }
+  });
 
   $: supportedNetwork = SUPPORTED_NETWORKS.includes(Number($chainId));
 </script>
@@ -31,7 +35,7 @@
       class="border border-primary flex cursor-pointer items-center h-8 rounded-full"
     >
       <button
-        on:click={connectWallet}
+        on:click={(_) => modal.open()}
         class="px-4 text-primary tracking-wider flex cursor-pointer"
         >Connect <span class="lg:visible hidden">Wallet</span></button
       >
@@ -64,7 +68,7 @@
           {$signerAddress.slice(0, 6) + "..." + $signerAddress.slice(-4)}
         </div>
         <div
-          class="text-primary tracking-wider lg:hidden"
+          class="text-primary tracking-wider lg:hidden overflow-hidden rounded-full"
           class:text-warning={!supportedNetwork}
         >
           {#await renderSVGIcon({ seed: $signerAddress || "" }) then icon}

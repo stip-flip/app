@@ -101,3 +101,32 @@
     </ul>
   </li>
 </ul>
+
+<div class="join w-full lg:hidden px-4">
+  <button
+    class="btn btn-primary btn-outline join-item w-1/3"
+    class:btn-active={selected["squared-leverage"]}
+    on:click={(_) => {
+      selected["cubed-leverage"] = false;
+      selected["squared-leverage"] = !selected["squared-leverage"];
+      selected["zero-leverage"] = !selected["squared-leverage"];
+    }}>Squared</button
+  >
+  <button
+    class="btn btn-primary btn-outline join-item w-1/3"
+    class:btn-active={selected["cubed-leverage"]}
+    on:click={(_) => {
+      selected["squared-leverage"] = false;
+      selected["cubed-leverage"] = !selected["cubed-leverage"];
+      selected["zero-leverage"] = !selected["cubed-leverage"];
+    }}>Cubed</button
+  >
+  <button
+    class="btn btn-primary btn-outline join-item w-1/3"
+    class:btn-active={selected["flip"]}
+    on:click={(_) => {
+      selected["flip"] = !selected["flip"];
+      selected["stip"] = !selected["flip"];
+    }}>Flip</button
+  >
+</div>

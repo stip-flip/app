@@ -9,21 +9,18 @@
   } from "ethers/lib/utils";
   import _ from "lodash";
   import { validator } from "src/actions/big-number-input";
+  import CoinIcon from "src/components/coin-icon.svelte";
   import { useBalance } from "src/hooks/balance";
-  import { broadcastTransaction } from "src/hooks/transactions";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useBalance as useBal } from "src/hooks/erc20";
   import { useSynthInfos } from "src/hooks/sf/synth";
-  import { commify, getTimeDifference, switchNetwork } from "src/lib";
+  import { broadcastTransaction } from "src/hooks/transactions";
+  import { commify, getTimeDifference, switchNetwork, updateVc } from "src/lib";
+  import { modal } from "src/lib/web3";
   import { SUPPORTED_NETWORKS, sdk, timestamp } from "src/stores";
-  import {
-    chainId,
-    defaultEvmStores,
-    signer,
-    signerAddress,
-  } from "svelte-ethers-store";
+  import { chainId, signer, signerAddress } from "svelte-ethers-store";
   import Modal from "../components/_modal.svelte";
-  import CoinIcon from "src/components/coin-icon.svelte";
+  import { onMount } from "svelte";
 
   let amountOut: string;
   let amountIn: string;
@@ -32,13 +29,27 @@
   let selectedToken0: TokenInfoAndBalance;
   let selectedToken1: TokenInfoAndBalance;
 
+  let selectedToken: TokenInfoAndBalance;
+
+  $: {
+    if (selectedToken && selectToken == "token0") {
+      if (selectedToken == selectedToken1) {
+        selectedToken = undefined;
+        selectedToken1 = undefined;
+      } else {
+        selectedToken0 = selectedToken;
+      }
+    } else {
+      selectedToken1 = selectedToken;
+    }
+  }
+
   let enter: boolean = true;
 
   let automate: boolean = true;
 
   let checkbox: HTMLInputElement;
-
-  let mode: "OTC" | "MARKET" = "OTC";
+  let open: boolean = false;
 
   const ZERO_ADDRESS = "0x0";
 
@@ -46,7 +57,7 @@
 
   $: quoteToken = useBalance;
 
-  $: balance0 = useBal(selectedToken0?.info.address, $signerAddress);
+  $: balance0 = selectedToken0?.balance || 0;
 
   $: tokenInfosAndBalances = [
     $quoteToken,
@@ -126,7 +137,7 @@
         const enter = await $sdk?.POOL.attach(
           selectedPool?.address
         ).previewEnter(
-          parseUnits(amountOut, selectedToken0?.info.decimals || 0)
+          parseUnits(amountOut || "0", selectedToken0?.info.decimals || 0)
         );
         feeAmount = enter.feeAmount;
         // frAfter = enter.frAfter;
@@ -174,6 +185,8 @@
       }
     }
   }, 1000);
+
+  onMount(updateVc);
 </script>
 
 <Modal
@@ -183,23 +196,27 @@
     ? tokenInfosAndBalances
     : filteredSelectedToken1}
   bind:selectToken
-  bind:selectedToken0
-  bind:selectedToken1
+  bind:selectedToken
   bind:checkbox
+  bind:open
+  {selectedToken0}
+  {selectedToken1}
 />
 
 <div
-  class="lg:w-1/3 m-auto mt-4 mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient"
+  class="lg:w-1/3 m-auto lg:mt-4 lg:mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient lg:h-auto container-height"
+  id="container"
 >
   <div
-    class="w-full flex space-x-4 mt-8 p-8 bg-slate-200 rounded-3xl shadow-lg"
+    class="w-full flex space-x-4 lg:mt-8 p-8 bg-slate-200 rounded-3xl shadow-lg"
   >
     <input
       bind:value={amountOut}
-      type="tel"
+      type="text"
+      inputmode="decimal"
       placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
-      class:input-error={Number(amountOut) > $balance0}
+      class:input-error={Number(amountOut) > balance0}
       on:validated={(v) => (amountOut = v.detail)}
       on:input={debOut}
       use:validator={{
@@ -211,9 +228,10 @@
         for="selectToken"
         tabindex="0"
         id="token0"
-        class="w-full btn rounded-full shadow-lg"
+        class="w-full btn rounded-lg shadow-lg"
         on:click={(_) => {
           selectToken = "token0";
+          open = true;
         }}
       >
         {#if selectedToken0 != undefined}
@@ -227,13 +245,13 @@
       </label>
       {#if selectedToken0 != undefined}
         <div
-          class="absolute ml-4 text-sm text-neutral cursor-pointer"
+          class="ml-4 text-sm text-neutral cursor-pointer"
           on:click={(_) => {
-            amountOut = String($balance0 || 0);
+            amountOut = String(balance0 || 0);
             debOut();
           }}
         >
-          Balance: {commify($balance0, 4)}
+          Balance: {commify(balance0, 4)}
         </div>
       {/if}
     </div>
@@ -258,7 +276,8 @@
   >
     <input
       bind:value={amountIn}
-      type="tel"
+      type="text"
+      inputmode="decimal"
       placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
       on:validated={(v) => (amountIn = v.detail)}
@@ -271,8 +290,9 @@
       <label
         for="selectToken"
         tabindex="0"
-        class="w-full btn rounded-full shadow-lg"
+        class="w-full btn rounded-lg shadow-lg"
         on:click={(_) => {
+          open = true;
           selectToken = "token1";
         }}
         >{#if selectedToken1 != undefined}
@@ -328,6 +348,7 @@
       <input
         type="checkbox"
         class="toggle toggle-primary"
+        inputmode="decimal"
         bind:checked={automate}
       />
     </div>
@@ -337,10 +358,10 @@
     id="swap"
     class="btn btn-primary btn-lg w-full mt-8"
     on:click={(_) => {
-      if (!$signer) return defaultEvmStores.setProvider();
+      if (!$signer) return modal.open();
       if (!supportedNetwork) return switchNetwork(63);
       if (!selectedToken0 || !selectedToken1) checkbox.click();
-      if (Number(amountOut) > $balance0) return;
+      if (Number(amountOut) > balance0) return;
       if (enter) {
         broadcastTransaction(
           "Swapping " +
@@ -364,7 +385,7 @@
             .connect($signer)
             .exit(
               parseUnits(
-                amountOut == String($balance0) ? "0" : amountOut, // if amountOut is max, set to 0
+                amountOut == String(balance0) ? "0" : amountOut, // if amountOut is max, set to 0
                 selectedToken0.info.decimals
               ),
               automate ? $sdk.TRADER_PERIPHERY.address : $signerAddress
@@ -382,7 +403,7 @@
       Swap <CoinIcon symbol={selectedToken0.info.symbol} />for <CoinIcon
         symbol={selectedToken1.info.symbol}
       />
-    {:else if Number(amountOut) > $balance0}
+    {:else if Number(amountOut) > balance0}
       Insufficient balance
     {:else}
       Select tokens

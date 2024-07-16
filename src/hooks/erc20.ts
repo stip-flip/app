@@ -70,6 +70,7 @@ export const useAllowance = (
 };
 
 export const asyncBalance = async (tokenAddress: string, account?: string) => {
+  console.log("asyncBalance", tokenAddress, account);
   try {
     if (!tokenAddress || !(account && get(signerAddress))) return 0;
     if (tokenAddress == "0x0")

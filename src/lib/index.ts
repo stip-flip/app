@@ -3,6 +3,7 @@ import { BigNumber, type BigNumberish } from "ethers";
 import { commify as com } from "ethers/lib/utils.js";
 import { networkInfos } from "src/stores";
 import { defaultEvmStores } from "svelte-ethers-store";
+import { modal } from "./web3";
 
 // format an ERC20 amount as a number with 2 decimals
 export const formatAmount = (amount: BigNumberish, ERC20decimals: number) => {
@@ -22,13 +23,17 @@ export const commify = (value: any, decimals?: number) => {
 };
 
 export async function switchNetwork(chainId: number): boolean {
+  console.log("hey");
   try {
-    await window?.ethereum?.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0x" + chainId.toString(16) }],
-    });
+    console.log("switching network");
+    // await window?.ethereum?.request({
+    //   method: "wallet_switchEthereumChain",
+    //   params: [{ chainId: "0x" + chainId.toString(16) }],
+    // });
+    await modal.switchNetwork(chainId);
     return true;
   } catch {
+    console.log("switching network 2");
     await window?.ethereum?.request({
       method: "wallet_addEthereumChain",
       params: [
@@ -131,4 +136,24 @@ export function getHoursMinutesSeconds(settlement: number, givenTime: number) {
     minutes: paddedMinutes,
     seconds: paddedSeconds,
   };
+}
+
+export function updateVc() {
+  setTimeout(() => {
+    console.log("updatevc");
+    // find a div with id container
+    const container = document.getElementById("container");
+    // find a div with id footer
+    const footer = document.getElementById("footer");
+    // check the height of the footer
+    if (!container || !footer) return;
+    // see how many pixel it is from the top
+    const top = container.getBoundingClientRect().top;
+    const footerHeight = footer?.getBoundingClientRect().height;
+    console.log(top, footerHeight, window.innerHeight - top - footerHeight);
+    document.documentElement.style.setProperty(
+      "--vc",
+      `${(window.innerHeight - top - footerHeight) * 0.01}px`
+    );
+  }, 0);
 }

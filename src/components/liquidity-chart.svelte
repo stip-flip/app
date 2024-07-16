@@ -68,7 +68,10 @@
   };
 </script>
 
-<div class={className + " h-full w-full relative"} id="liquidity-chart">
+<div
+  class={className + " h-full w-full relative lg:bg-transparent  mt-4"}
+  id="liquidity-chart"
+>
   <div class="background p-8">
     <Pancake.Chart {x1} {x2} y1={0} y2={maxLiquidity} clip>
       <!-- <Pancake.Columns data={$m} width={5}>
@@ -102,7 +105,7 @@
       <Pancake.Grid vertical count={5} let:value>
         <span class="x label">
           <div class="grid-line vertical" />
-          <span class="x label">{value / 100} %</span>
+          <span class="x label !text-primary">{value / 100} %</span>
         </span>
       </Pancake.Grid>
       <!-- <Pancake.Box
@@ -141,7 +144,7 @@
         />
       </Pancake.Box> -->
     </Pancake.Chart>
-    <div class="flex space-x-2 absolute top-0 right-0">
+    <div class="flex space-x-2 absolute top-4 right-4">
       <div
         on:click={(_) => (zoom -= zoom > 0 ? 100 : 0)}
         class="cursor-pointer"

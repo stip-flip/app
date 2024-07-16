@@ -5,11 +5,15 @@
   import { commify } from "src/lib";
   import { slide } from "svelte/transition";
   import Menu from "src/routes/swap/components/_menu.svelte";
+  import { Drawer } from "vaul-svelte";
+  import TokenList from "src/components/token-list.svelte";
 
   export let id: string;
   export let selectedToken: TokenInfoAndBalance | undefined;
 
   export let tokenInfosAndBalances: TokenInfoAndBalance[];
+
+  export let open: boolean = false;
 
   let terms: string[] = [];
   let search: string = "";
@@ -40,15 +44,20 @@
     );
 
   let checkbox: HTMLInputElement;
+  $: console.log("terms", terms);
 </script>
 
-<input type="checkbox" {id} class="modal-toggle" bind:this={checkbox} />
-<label for={id} class="modal cursor-pointer">
+<input
+  type="checkbox"
+  {id}
+  class="modal-toggle lg:block hidden"
+  bind:this={checkbox}
+/>
+
+<label for={id} class="lg:modal cursor-pointer hidden">
   <label class="w-full lg:w-2/5">
-    <div class="bg-opaque lg:rounded-xl lg:border block p-8" for="">
-      <div
-        class="join shadow-lg rounded-full border border-gray-200 w-full mt-2 bg-base-300"
-      >
+    <div class="bg-opaque lg:rounded-xl lg:border block lg:p-8">
+      <div class="lg:join shadow-lg lg:rounded-full w-full mt-2 hidden">
         <div class="border-b m-4">
           <Icon icon="akar-icons:search" class=" text-lg text-slate-300" />
         </div>
@@ -61,62 +70,17 @@
       </div>
       <div class="flex pt-4 lg:space-x-4">
         <Menu bind:terms />
-        <ul
-          class="p-4 rounded-box shadow-lg border w-full bg-base-300 overflow-scroll"
-          style="height: 40vh;"
-        >
-          {#each sortedTokens || [] as token}
-            {#if token.info.address == selectedToken?.info.address}
-              <li
-                class="px-6 pb-2 pt-2 cursor-pointer bg-base-100 border-b"
-                on:click={(_) => {
-                  selectedToken = undefined;
-                }}
-              >
-                <div class="flex space-x-2">
-                  <CoinIcon symbol={selectedToken.info.symbol} />
-                  <strong class="capitalize">
-                    <a>{selectedToken.info.symbol}</a> :
-                  </strong>
-                  <span>
-                    ({commify(token?.balance, 4)})
-                  </span>
-                  <p>
-                    {selectedToken?.info?.description ||
-                      "Ether Coin, The Ether's native currency."}
-                  </p>
-                </div>
-              </li>
-            {:else}
-              <li
-                class="flex p-2 px-6 -mx-4 cursor-pointer hover:bg-base-200 space-x-2"
-                id="select-token"
-                on:click={(_) => {
-                  selectedToken = token;
-                  // checkbox.click();
-                }}
-              >
-                <CoinIcon symbol={token?.info?.symbol} />
-                <strong class="capitalize">
-                  <a>{token?.info?.symbol}</a>
-                </strong>
-                <span>
-                  ({commify(token?.balance, 4)})
-                </span>
-              </li>
-            {/if}
-          {/each}
-        </ul>
+        <TokenList bind:selectedToken {sortedTokens} />
       </div>
     </div>
-    <div class="flex py-4 justify-end lg:w-full">
+    <div class="lg:flex py-4 justify-end lg:w-full hidden">
       {#if selectedToken}
         <!-- <button
           transition:scale|local
           class="btn btn-primary no-animation w-2/5">Token 2</button
         > -->
         <button
-          class="btn btn-primary no-animation w-2/5"
+          class="absolute btn btn-primary no-animation w-1/5"
           on:click={(_) => {
             checkbox.click();
             // if ($appState.help) {
@@ -133,3 +97,17 @@
     </div>
   </label>
 </label>
+
+<Drawer.Root bind:open>
+  <Drawer.Trigger />
+  <Drawer.Portal>
+    <Drawer.Overlay class="fixed inset-0 bg-black/40" />
+    <Drawer.Content
+      class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border"
+    >
+      <div class="w-1/6 mb-8 h-1 bg-base-content rounded-full border- m-auto" />
+      <TokenList bind:selectedToken {sortedTokens} />
+      <Menu bind:terms />
+    </Drawer.Content>
+  </Drawer.Portal>
+</Drawer.Root>

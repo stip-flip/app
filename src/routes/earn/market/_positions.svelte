@@ -14,6 +14,8 @@
   export let positions: UniPositionFragment[];
   export let pool: PoolInfo;
 
+  let open: boolean = false;
+
   let selectedPosition: UniPositionFragment | undefined;
 
   let label: HTMLLabelElement;
@@ -21,9 +23,9 @@
   console.log("debug", pool, pool.reversed);
 </script>
 
-<Modal {pool} {selectedPosition} />
+<Modal {pool} {selectedPosition} bind:open />
 <label for={pool.address} bind:this={label}></label>
-<div class="overflow-x-auto bg-gradient">
+<div class="overflow-x-auto lg:bg-gradient lg:mt-0 -mt-6 lg:mb-0 mb-4">
   <table class="table w-full">
     <!-- head -->
     <thead>
@@ -43,9 +45,10 @@
           on:click={(_) => {
             selectedPosition = position;
             label.click();
+            open = true;
           }}
         >
-          <td class="table-cell"
+          <td class="lg:table-cell hidden"
             >{commify(
               (getRatioForTick(
                 pool.reversed ? -position.tickUpper : position.tickLower
@@ -55,7 +58,7 @@
               4
             )}</td
           >
-          <td class="table-cell">
+          <td class="lg:table-cell hidden">
             {commify(
               (getRatioForTick(
                 pool.reversed ? -position.tickLower : position.tickUpper

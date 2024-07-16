@@ -20,6 +20,7 @@
     signerAddress,
   } from "svelte-ethers-store";
   import Modal from "../components/_modal.svelte";
+  import { modal } from "src/lib/web3";
 
   let amountOut: string;
   let amountIn: string;
@@ -30,9 +31,27 @@
   let selectedToken0: TokenInfoAndBalance;
   let selectedToken1: TokenInfoAndBalance;
 
+  let selectedToken: TokenInfoAndBalance;
+
+  $: {
+    if (selectedToken && selectToken == "token0") {
+      if (selectedToken == selectedToken1) {
+        selectedToken = undefined;
+        selectedToken1 = undefined;
+      } else {
+        selectedToken0 = selectedToken;
+      }
+      // selectedToken = undefined;
+    } else {
+      selectedToken1 = selectedToken;
+      // selectedToken = undefined;
+    }
+  }
+
   let error: string;
 
   let checkbox: HTMLInputElement;
+  let open: boolean = false;
 
   const ZERO_ADDRESS = "0x0";
 
@@ -163,20 +182,24 @@
     ? tokenInfosAndBalances
     : filteredSelectedToken1}
   bind:selectToken
-  bind:selectedToken0
-  bind:selectedToken1
+  bind:selectedToken
   bind:checkbox
+  bind:open
+  {selectedToken0}
+  {selectedToken1}
 />
 
 <div
-  class="lg:w-1/3 m-auto mt-4 mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient"
+  class="lg:w-1/3 m-auto lg:mt-4 lg:mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient lg:h-auto container-height"
+  id="container"
 >
   <div
-    class="w-full flex space-x-4 mt-8 p-8 bg-slate-200 rounded-3xl shadow-lg"
+    class="w-full flex space-x-4 lg:mt-8 p-8 bg-slate-200 rounded-3xl shadow-lg"
   >
     <input
       bind:value={amountOut}
-      type="tel"
+      type="text"
+      inputmode="decimal"
       placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
       class:input-error={Number(amountOut) > $balance0}
@@ -191,9 +214,10 @@
         for="selectToken"
         tabindex="0"
         id="token0"
-        class="w-full btn rounded-full shadow-lg"
+        class="w-full btn rounded-lg shadow-lg"
         on:click={(_) => {
           selectToken = "token0";
+          open = true;
         }}
       >
         {#if selectedToken0 != undefined}
@@ -207,7 +231,7 @@
       </label>
       {#if selectedToken0 != undefined}
         <div
-          class="absolute ml-4 text-sm text-neutral cursor-pointer"
+          class="ml-4 text-sm text-neutral cursor-pointer"
           on:click={(_) => {
             amountOut = String($balance0 || 0);
             debOut();
@@ -238,7 +262,8 @@
   >
     <input
       bind:value={amountIn}
-      type="tel"
+      type="text"
+      inputmode="decimal"
       placeholder="0"
       class="input input-ghost w-1/2 text-white text-2xl"
       on:validated={(v) => (amountIn = v.detail)}
@@ -252,8 +277,9 @@
       <label
         for="selectToken"
         tabindex="0"
-        class="w-full btn rounded-full shadow-lg"
+        class="w-full btn rounded-lg shadow-lg"
         on:click={(_) => {
+          open = true;
           selectToken = "token1";
         }}
         >{#if selectedToken1 != undefined}
@@ -305,7 +331,7 @@
       id="swap"
       class="btn btn-primary btn-lg w-full mt-8"
       on:click={async (_) => {
-        if (!$signer) return defaultEvmStores.setProvider();
+        if (!$signer) return modal.open();
         if (!supportedNetwork) return switchNetwork(63);
         if (!selectedToken0 || !selectedToken1) checkbox.click();
         if (Number(amountOut) > $balance0) return;

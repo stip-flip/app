@@ -6,11 +6,11 @@
   import { usePositions, usePositionsStats } from "src/hooks/sf/position";
   import { usePositionClaims } from "src/hooks/sf/positionClaims";
   import { useSynthInfos } from "src/hooks/sf/synth";
-  import { commify } from "src/lib";
+  import { commify, updateVc } from "src/lib";
   import Claims from "./_claims.svelte";
   import Positions from "./_positions.svelte";
   import { navigate } from "src/lib/path";
-  // import {  } from "svelte/transition";
+  import { onMount } from "svelte";
 
   $: synthInfos = useSynthInfos;
 
@@ -31,61 +31,73 @@
   }, false);
 
   $: url = new URL($page.url);
+
+  onMount(updateVc);
 </script>
 
-<div class="flex flex-wrap justify-around lg:w-1/2 m-auto space-x-4">
-  <div class="join flex-grow" id="deposits">
+<div
+  class="flex flex-wrap justify-between lg:w-1/2 m-auto lg:space-x-4 lg:px-0 px-2 relative"
+>
+  <a
+    class="absolute btn btn-primary flex-grow btn-sm lg:hidden top-0 -mt-12 right-2"
+    id="new-position"
+    href={navigate("/earn/add", url)}
+    >+ New<span class="hidden lg:inline-block"> Position</span></a
+  >
+  <div class="join lg:flex-grow lg:text-base" id="deposits">
     <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
+      class="btn btn-outline lg:lg:btn-sm btn-xs btn-xs no-animation cursor-default hover:text-inherit join-item bg-gradient lg:flex-grow"
     >
-      Total Deposit
+      <span class="hidden lg:inline-block">Total </span>Deposit
     </div>
     <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
+      class="btn btn-outline lg:btn-sm btn-xs no-animation cursor-default hover:text-inherit join-item bg-gradient"
     >
-      <CoinIcon symbol="ETC" />{commify(
+      <CoinIcon symbol="ETC" className="lg:text-2xl text-base" />{commify(
         formatEther($positionsStats?.totalDeposited || "0")
       )}
     </div>
   </div>
-  <div class="join flex-grow" id="apy">
+  <div class="join lg:flex-grow" id="apy">
     <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
+      class="btn btn-outline lg:btn-sm btn-xs no-animation cursor-default hover:text-inherit join-item bg-gradient lg:flex-grow"
     >
       APY
     </div>
     <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
+      class="btn btn-outline lg:btn-sm btn-xs no-animation cursor-default hover:text-inherit join-item bg-gradient"
     >
       {$positionsStats?.APY / 100}%
     </div>
   </div>
-  <div class="join flex-grow" id="pnl">
+  <div class="join lg:flex-grow" id="pnl">
     <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
+      class="btn btn-outline lg:btn-sm btn-xs no-animation cursor-default hover:text-inherit join-item bg-gradient flex-grow"
     >
-      Profit & Loss
+      PnL
     </div>
     <div
-      class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
+      class="btn btn-outline lg:btn-sm btn-xs no-animation cursor-default hover:text-inherit join-item bg-gradient"
     >
-      <CoinIcon symbol="ETC" />{commify(
+      <CoinIcon className="lg:text-2xl text-base" symbol="ETC" />{commify(
         formatEther($positionsStats?.pnl || "0")
       )}
     </div>
   </div>
   <a
-    class="btn btn-primary flex-grow"
+    class="lg:btn lg:btn-primary flex-grow hidden"
     id="new-position"
-    href={navigate("/earn/add", url)}>+ New Position</a
+    href={navigate("/earn/add", url)}
+    >+ New<span class="hidden lg:inline-block"> Position</span></a
   >
 </div>
 <div
-  class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
+  class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
+  id="container"
   style="max-height: 60vh"
 >
   {#if !positionExist && !claimsExist}
-    <div class="text-center">
+    <div class="text-center lg:mt-0 mt-24 px-4">
       <Icon icon="octicon:inbox-24" class="text-5xl m-auto" />
       <p class="text-lg mt-4">
         Your active liquidity positions will appear here

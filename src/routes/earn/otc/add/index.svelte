@@ -7,14 +7,20 @@
   import { useBalance } from "src/hooks/balance";
   import { useSynthInfos } from "src/hooks/sf/synth";
   import { broadcastTransaction } from "src/hooks/transactions";
-  import { commify } from "src/lib";
+  import { commify, updateVc } from "src/lib";
   import { sdk } from "src/stores";
   import { signer } from "svelte-ethers-store";
   import Modal from "../../_modal.svelte";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { navigate } from "src/lib/path";
+  import { Drawer } from "vaul-svelte";
+  import { onMount } from "svelte";
+
+  let trigger: HTMLLabelElement;
 
   let amount: string;
+
+  let open: boolean = false;
 
   let selectedToken: TokenInfoAndBalance;
 
@@ -28,45 +34,61 @@
   function formatFR(fr: number) {
     return Number(fr.toFixed(1)) / 100;
   }
+
+  onMount(updateVc);
 </script>
 
 <Modal
   id="position-modal"
   bind:selectedToken
+  bind:open
   tokenInfosAndBalances={$pi.map((p) => p.token) || []}
 />
 
 <div
-  class="lg:border-2 rounded-lg p-4 bg-transparent lg:w-1/2 m-auto bg-gradient"
+  class="lg:border-2 rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:bg-gradient"
 >
-  <div
-    class="flex justify-between items-center p-4 pb-8 border-b border-base-content"
-  >
-    <a class="w-1/3" href={navigate("/earn", url)}>
-      <Icon icon="ph-arrow-left-bold" class="text-2xl" />
-    </a>
-    <h1 class="text-xl w-1/3 text-center font-semibold">New Position</h1>
-    <div class="w-1/3" />
+  <div class="lg:relative w-full">
+    <div
+      class="flex justify-between items-center lg:p-4 px-2 lg:pb-8 lg:border-b border-base-content"
+    >
+      <a class="lg:w-1/3" href={navigate("/earn", url)}>
+        <Icon icon="ph-arrow-left-bold" class="text-2xl" />
+      </a>
+      <h1 class="lg:text-xl text-lg lg:w-1/3 text-center lg:font-semibold">
+        New Position
+      </h1>
+      <div class="lg:w-1/3" />
+    </div>
   </div>
-  <div class="p-4">
+  <div
+    class="p-4 lg:pt-4 pt-2 overflow-y-scroll overflow-x-hidden container-height"
+    id="container"
+  >
     <div class="lg:flex lg:space-x-4">
       <div class="lg:w-1/2">
         <label class="label">
-          <span class="label-text font-semibold mx-2 text-base"
+          <span class="label-text lg:font-semibold mx-2 text-base"
             >Lend liquidity to</span
           >
         </label>
+        <button
+          class="btn btn-outline w-full border border-current lg:hidden"
+          on:click={(_) => (open = true)}
+        >
+          {selectedPool?.token?.info?.name || "--"}
+        </button>
         <label
           id="position-opener"
           for="position-modal"
-          class="btn btn-outline w-full border border-current"
+          class="lg:btn lg:btn-outline w-full border border-current hidden"
           class:btn-outline={selectedPool != undefined}
           >{selectedPool?.token?.info?.name || "--"}</label
         >
       </div>
       <div class="form-control lg:w-1/2">
         <label class="label">
-          <span class="label-text font-semibold mx-2 text-base"
+          <span class="label-text lg:font-semibold mx-2 text-base"
             >Deposit amount</span
           >
         </label>
@@ -74,8 +96,9 @@
           <input
             bind:value={amount}
             type="text"
+            inputmode="decimal"
             placeholder="Your amount here"
-            class="input input-bordered w-full max-w-xs"
+            class="input input-bordered w-full max-w-xs bg-gradient"
             on:validated={(v) => (amount = v.detail)}
             use:validator={{
               value: amount,
@@ -99,7 +122,7 @@
     <div class="border-b w-full border-base-content hidden lg:block mt-4" />
     <div class="">
       <!-- <div class="border-b w-full my-4 border-base-content" /> -->
-      <div class="text-center text-lg mt-4 font-semibold">
+      <div class="text-center text-lg mt-4 font-semibold lg:block hidden">
         Your liquidity will be active from
       </div>
       <div class="">
@@ -128,9 +151,11 @@
           </div>
         </div>
       </div>
-      <div class="text-center text-lg mt-4 font-semibold">And Upward</div>
+      <div class="text-center text-lg mt-4 font-semibold lg:block hidden">
+        And Upward
+      </div>
     </div>
-    <div class="border-b w-full my-4 border-base-content" />
+    <div class="border-b w-full my-4 border-base-content lg:block hidden" />
     {#if selectedPool}
       <LiquidityChart
         initializedTicks={selectedPool.ticks}

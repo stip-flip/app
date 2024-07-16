@@ -14,7 +14,7 @@ export const networkInfos: { [key: string]: any } = {
   61: {
     name: "The Ether",
     icon: "mdi:ethereum",
-    rpc: "https://etc.etcdesktop.com",
+    rpc: "https://ether.sf.exchange",
     explorer: "https://etc.blockscout.com/",
     tokenName: "Ether Coin",
     symbol: "ETC",
