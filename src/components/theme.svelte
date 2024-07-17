@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
 
   import Icon from "@iconify/svelte";
-  let theme = "light";
+  let theme = "dark";
 
   onMount(() => {
     if (localStorage.getItem("theme")) {
@@ -20,6 +20,9 @@
       document
         .getElementsByTagName("html")[0]
         .setAttribute("data-theme", theme);
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", theme === "dark" ? "#1b006ae6" : "#fbc7b4");
     }
   }
 

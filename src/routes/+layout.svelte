@@ -17,12 +17,13 @@
     resolvedTransactions,
     transactions,
   } from "src/hooks/transactions";
-  import { connectMetamask } from "src/lib";
+
   import { navigate } from "src/lib/path";
   import { chainId, connected } from "svelte-ethers-store";
   import { flip } from "svelte/animate";
   import { quintOut } from "svelte/easing";
   import { crossfade } from "svelte/transition";
+  import { goto } from "$app/navigation";
 
   let overlay: HTMLAreaElement;
 
@@ -179,6 +180,7 @@
               <a
                 href="/swap"
                 class="p-1 rounded-md flex lg:space-x-1 hover:text-primary"
+                on:click|preventDefault={() => goto(navigate("/swap", url))}
               >
                 <span>App</span></a
               >
@@ -277,6 +279,7 @@
       <a
         class:text-primary={$page.route?.id?.startsWith("/wallet")}
         href={navigate("/wallet", url)}
+        on:click|preventDefault={() => goto(navigate("/wallet", url))}
       >
         <Icon icon="mdi:wallet" class="text-3xl" />
         <span class="btm-nav-label text-xs">Wallet</span>
@@ -284,6 +287,7 @@
       <a
         class:text-primary={$page.route?.id?.startsWith("/swap")}
         href={navigate("/swap", url)}
+        on:click|preventDefault={() => goto(navigate("/swap", url))}
       >
         <Icon
           icon="mdi:swap-horizontal"
@@ -297,6 +301,7 @@
       <a
         class:text-primary={$page.route?.id?.startsWith("/earn")}
         href={navigate("/earn", url)}
+        on:click|preventDefault={() => goto(navigate("/earn", url))}
       >
         <Icon icon="mdi:chart-line" class="text-3xl" />
         <span class="btm-nav-label text-xs">Earn</span>
