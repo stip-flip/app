@@ -18,6 +18,7 @@
       class:border-b={token.info.address == selectedToken?.info.address}
       class:bg-base-100={token.info.address == selectedToken?.info.address}
       class:px-6={token.info.address == selectedToken?.info.address}
+      id="list-token"
       on:click={(_) => {
         selectedToken = token;
       }}

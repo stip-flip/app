@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { SUPPORTED_NETWORKS, mainDefaultChainId } from "src/stores";
+  import { SUPPORTED_NETWORKS } from "src/stores";
   import {
     chainId,
     connected,
@@ -9,7 +9,6 @@
   } from "svelte-ethers-store";
 
   import { renderSVGIcon } from "@codingwithmanny/blockies";
-  import { switchNetwork } from "src/lib";
   import { modal } from "src/lib/web3";
 
   export let trades: any[] = [];

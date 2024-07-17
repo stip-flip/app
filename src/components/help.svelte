@@ -11,7 +11,7 @@
 </script>
 
 {#if pageName}
-  <div class="dropdown dropdown-top dropdown-end lg:visible hidden">
+  <div class="dropdown dropdown-top dropdown-end lg:block hidden">
     <div
       tabindex="0"
       role="button"

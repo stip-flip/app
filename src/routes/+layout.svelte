@@ -269,7 +269,11 @@
     >
       <slot />
     </div>
-    <div class="btm-nav lg:hidden bg-transparent h-24" id="footer">
+    <div
+      class="btm-nav lg:hidden bg-transparent h-24 backdrop-blur-md"
+      class:hidden={!!homepage}
+      id="footer"
+    >
       <a
         class:text-primary={$page.route?.id?.startsWith("/wallet")}
         href={navigate("/wallet", url)}

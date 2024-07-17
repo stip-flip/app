@@ -153,7 +153,11 @@ export function updateVc() {
     console.log(top, footerHeight, window.innerHeight - top - footerHeight);
     document.documentElement.style.setProperty(
       "--vc",
-      `${(window.innerHeight - top - footerHeight) * 0.01}px`
+      `${(window.innerHeight - footerHeight - top) * 0.01}px`
     );
+    // document.documentElement.style.setProperty(
+    //   "--footer-height",
+    //   `${footerHeight}px`
+    // );
   }, 0);
 }

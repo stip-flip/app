@@ -15,7 +15,8 @@
 
   --bg-stars: url('/stars.svg');
   --vh: 100vh;
-  --vc: 100vh;
+  --vc: 1vh;
+  --footer-height: 4rem;
   /* --b2: transparent; */
   /* --tw-border-opacity: 0.1; */
 }
@@ -28,6 +29,7 @@
   height: calc(var(--vc, 1vh) * 100);
   overflow-x: hidden;
   overflow-y: scroll;
+  /* padding-bottom: var(--footer-height); */
 }
 
 .popover {

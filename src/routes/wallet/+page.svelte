@@ -29,7 +29,7 @@
 <div class="lg:h-auto container-height" id="container">
   {#if !claimExists && trades?.length == 0}
     <div
-      class="lg:w-1/2 m-auto mt-4 lg:mt-4 lg:border-2 lg:border-primary rounded-lg p-4 bg-gradient"
+      class="lg:w-1/2 m-auto mt-24 lg:mt-4 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient"
     >
       <div class="text-center">
         <Icon icon="octicon:inbox-24" class="text-5xl m-auto" />
