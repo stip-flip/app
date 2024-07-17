@@ -125,10 +125,10 @@
 .bg-2 {
   background: radial-gradient(
     100% 100% at 100% 100%,
-    #ec770a 0%,
-    rgba(243, 244, 246, 0.8) 100%
+    rgba(243, 244, 246, 0.8) 0%,
+    #fbc7b4 100%
   );
-  background-color: rgba(243, 244, 246, 0.8);
+  background-color: #fbc7b4;
 }
 
 .table :where(thead, tbody) :where(tr:not(:last-child)), .table :where(thead, tbody) :where(tr:first-child:last-child) {

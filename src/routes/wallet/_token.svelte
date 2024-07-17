@@ -26,7 +26,7 @@
   class="modal-toggle"
 />
 <label for={token?.address} class="modal cursor-pointer">
-  <label class="modal-box relative" for="">
+  <label class="modal-box relative bg-gradient" for="">
     <h3 class="text-2xl text-center pb-4">{token?.name}</h3>
     <p class="text-center text-sm">{details}</p>
     <div class="border-b m-4" />

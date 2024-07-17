@@ -9,14 +9,15 @@
   export let poolName: string;
   export let poolAddress: string;
   export let positions: Record<string, Position>;
+  let open: boolean = false;
 
   let selectedPosition: any;
   let label: HTMLLabelElement;
   $: console.log(positions);
 </script>
 
-<Modal {poolAddress} {poolName} {selectedPosition} />
-<label for={poolAddress} bind:this={label}></label>
+<Modal {poolAddress} {poolName} {selectedPosition} bind:open />
+<label for={poolAddress} bind:this={label} class="lg:block hidden"></label>
 <div class="overflow-x-auto lg:bg-gradient">
   <table class="table w-full">
     <!-- head -->
@@ -36,6 +37,7 @@
           on:click={(_) => {
             selectedPosition = positions[b];
             label.click();
+            open = true;
           }}
         >
           <td class="w-1/3 lg:w-auto">{positions[b].tick / 100}%</td>

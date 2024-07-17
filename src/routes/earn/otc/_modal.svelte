@@ -9,10 +9,12 @@
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
+  import { Drawer } from "vaul-svelte";
 
   export let poolAddress: string;
   export let poolName: string;
   export let selectedPosition: Position;
+  export let open: boolean;
 
   let mode: "withdraw" | "deposit" = "withdraw";
   let amount: string = "0";
@@ -67,8 +69,9 @@
   }
 </script>
 
-<input type="checkbox" id={poolAddress} class="modal-toggle" />
-<label for={poolAddress} class="modal cursor-pointer">
+<input type="checkbox" id={poolAddress} class="modal-toggle lg:block hidden" />
+<!-- Desktop Modal -->
+<label for={poolAddress} class="lg:modal cursor-pointer hidden">
   <label class="modal-box relative" for="">
     <div class="tabs tabs-boxed">
       <a
@@ -106,21 +109,6 @@
     >
       Max: {commify(maxAmount)}
     </div>
-    <!-- <div class="m-4 mx-12 p-2 font-light bg-blend-lighten rounded-lg">
-      Fees accumulated:
-      {#await $sdk.POOL.attach(poolAddress).positionPnL(selectedPosition?.tickLower, selectedPosition?.tickUpper, $signerAddress) then pnl}
-        {commify(formatUnits(pnl, $usdcInfo?.decimals || 18))}
-        <br />
-        Liquidities after: {commify(
-          formatAmount(selectedPosition?.liquidity, $usdcInfo?.decimals || 18) +
-            (mode == "deposit" ? Number(amount) : -Number(amount)) +
-            Number(formatUnits(pnl, $usdcInfo?.decimals || 18))
-        )}
-      {:catch err}
-        0
-      {/await}
-    </div> -->
-    <!-- <div class="border-b" /> -->
     <div id="automate" class="flex justify-between my-4 text-lg mx-4">
       <strong>Automate Claim</strong>
       <input
@@ -140,3 +128,73 @@
     </div>
   </label>
 </label>
+
+<!-- Mobile Modal -->
+<Drawer.Root bind:open>
+  <Drawer.Trigger />
+  <Drawer.Portal>
+    <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden" />
+    <Drawer.Content
+      class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border lg:hidden"
+    >
+      <div class="w-1/6 mb-8 h-1 bg-base-content rounded-full border- m-auto" />
+      <div class="p-2">
+        <div class="tabs tabs-boxed">
+          <a
+            class="tab tab-lg w-1/2"
+            on:click={switchMode}
+            class:tab-active={mode == "withdraw"}>Withdraw</a
+          >
+          <a
+            class="tab tab-lg w-1/2"
+            on:click={switchMode}
+            class:tab-active={mode == "deposit"}>Deposit</a
+          >
+        </div>
+        <!-- <div class="border-b my-4 mt-8" /> -->
+        <div class="input-group w-full p-4 mt-8">
+          <input
+            value={amount}
+            type="text"
+            inputmode="decimal"
+            placeholder="Liquidity to withdraw"
+            class="input input-bordered w-full"
+            on:validated={(v) => (amount = v.detail)}
+            use:validator={{
+              value: String(amount),
+              max: String(maxAmount),
+            }}
+          />
+          <span class="w-24 text-center flex items-center">
+            <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
+            ETC</span
+          >
+        </div>
+        <div
+          class="cursor-pointer ml-6 -mt-4"
+          on:click={(_) => (amount = String(maxAmount))}
+        >
+          Max: {commify(maxAmount)}
+        </div>
+        <div id="automate" class="flex justify-between my-4 text-lg mx-4">
+          <strong>Automate Claim</strong>
+          <input
+            type="checkbox"
+            class="toggle toggle-primary"
+            bind:checked={automate}
+            autofocus
+          />
+        </div>
+        <div class="text-right pt-4">
+          <button class="btn btn-primary w-full" on:click={(_) => action()}>
+            {#if mode == "withdraw"}
+              Collect
+            {:else}
+              Mint
+            {/if}
+          </button>
+        </div>
+      </div>
+    </Drawer.Content>
+  </Drawer.Portal>
+</Drawer.Root>
