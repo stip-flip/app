@@ -22,11 +22,12 @@
 </script>
 
 <div
-  class="px-8 lg:pb-0 pb-4 lg:px-0 lg:w-1/2 m-auto mt-20 lg:mt-40 flex justify-between items-center"
+  class="px-8 lg:px-0 lg:w-1/2 w-full m-auto lg:pt-0 pt-20 lg:mt-40 flex justify-between items-center lg:relative fixed lg:backdrop-filter-none backdrop-blur-xl"
+  id="top"
 >
   <h1 class="text-3xl">Wallet</h1>
 </div>
-<div class="lg:h-auto container-height" id="container">
+<div class="lg:h-auto lg:pt-0 container-height" id="container">
   {#if !claimExists && trades?.length == 0}
     <div
       class="lg:w-1/2 m-auto mt-24 lg:mt-4 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient"

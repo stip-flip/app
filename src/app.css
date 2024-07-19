@@ -16,7 +16,7 @@
   --bg-stars: url('/stars.svg');
   --vh: 100vh;
   --vc: 1vh;
-  --footer-height: 4rem;
+  --container-top: 4rem;
   /* --b2: transparent; */
   /* --tw-border-opacity: 0.1; */
 }
@@ -25,11 +25,44 @@
   height: calc(var(--vh, 1vh) * 100);
 }
 
+#top {
+  opacity: 1;
+  animation: all 0.5s;
+}
+
+.toggle-up {
+  /* height: var(--navbar-height) !important; */
+  /* overflow: hidden; */
+  opacity: 0 !important;
+  transition: all 0.5s;
+  /* padding-top: --navbar !important; */
+}
+
+.blur-in {
+  /* filter: blur(24px); */
+  backdrop-filter: blur(24px);
+  transition: all 0.5s;
+}
+
+.blur-out {
+  filter: blur(0);
+  transition: all 0.5s;
+}
+
+.toggle-down {
+  height: auto;
+  overflow: hidden;
+  opacity: 1;
+  transition: all 0.5s;
+}
+
 .container-height {
   height: calc(var(--vc, 1vh) * 100);
   overflow-x: hidden;
   overflow-y: scroll;
-  /* padding-bottom: var(--footer-height); */
+  padding-bottom: var(--footer-height);
+  padding-top: calc(var(--container-top));
+  /* margin-top: var(--navbar-height); */
 }
 
 .popover {

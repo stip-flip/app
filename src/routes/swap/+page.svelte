@@ -9,7 +9,8 @@
 </script>
 
 <div
-  class="px-8 lg:px-0 lg:w-1/3 m-auto mt-20 lg:mt-40 flex justify-between items-center"
+  class="px-8 lg:px-0 lg:w-1/3 w-full lg:pt-0 pt-20 m-auto lg:mt-40 flex justify-between items-center lg:relative fixed lg:backdrop-filter-none backdrop-blur-xl"
+  id="top"
 >
   <h1 class="text-3xl">Swap</h1>
 </div>

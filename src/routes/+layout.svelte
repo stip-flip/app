@@ -24,6 +24,11 @@
   import { quintOut } from "svelte/easing";
   import { crossfade } from "svelte/transition";
   import { goto } from "$app/navigation";
+  import { pwaInfo } from "virtual:pwa-info";
+
+  $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : "";
+
+  export const ssr = false;
 
   let overlay: HTMLAreaElement;
 
@@ -96,6 +101,10 @@
   }
 </script>
 
+<svelte:head>
+  {@html webManifestLink}
+</svelte:head>
+
 <TakeATour />
 
 <ul class="fixed bottom-0 right-0 z-10 m-4">
@@ -161,7 +170,7 @@
   <input id="app-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col">
     <!-- Navbar -->
-    <div class="fixed w-full lg:p-4 z-10">
+    <div class="fixed w-full lg:p-4 z-10" id="navbar">
       <div class="justify-between navbar">
         {#if homepage}
           <div class="flex items-center w-content lg:mr-8"></div>
@@ -272,7 +281,7 @@
       <slot />
     </div>
     <div
-      class="btm-nav lg:hidden bg-transparent h-24 backdrop-blur-md"
+      class="btm-nav lg:hidden bg-transparent h-24 pb-8 backdrop-blur-xl"
       class:hidden={!!homepage}
       id="footer"
     >

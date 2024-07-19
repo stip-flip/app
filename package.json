@@ -23,6 +23,7 @@
 		"@sveltejs/kit": "^2.5.18",
 		"@types/lodash": "^4.14.191",
 		"@vite-pwa/assets-generator": "^0.2.4",
+		"@vite-pwa/sveltekit": "^0.6.0",
 		"@walletconnect/core": "^2.13.3",
 		"@walletconnect/web3wallet": "^1.12.3",
 		"autoprefixer": "^10.4.13",

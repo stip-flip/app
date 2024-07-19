@@ -121,7 +121,8 @@
   $: console.log(
     selectedPool,
     selectedPool?.oracleAddress,
-    selectedPool?.oracleDecimals
+    selectedPool?.oracleDecimals,
+    amountOut
   );
 
   // debounce outgoing amount
@@ -245,7 +246,7 @@
       </label>
       {#if selectedToken0 != undefined}
         <div
-          class="ml-4 text-sm text-neutral cursor-pointer"
+          class="ml-4 text-sm text-neutral cursor-pointer h-0"
           on:click={(_) => {
             amountOut = String(balance0 || 0);
             debOut();
@@ -258,7 +259,7 @@
   </div>
   <div class="w-full flex justify-center h-0">
     <span
-      class="z-10"
+      style="z-index: 1;"
       on:click={(_) => {
         [selectedToken0, selectedToken1] = [selectedToken1, selectedToken0];
         [amountIn, amountOut] = [amountOut, amountIn];
@@ -357,11 +358,21 @@
   <button
     id="swap"
     class="btn btn-primary btn-lg w-full mt-8"
+    disabled={Number(amountOut) > Number(balance0) ||
+      (Number(amountOut || 0) == 0 &&
+        !!signer &&
+        !!supportedNetwork &&
+        selectedToken0 &&
+        selectedToken1)}
     on:click={(_) => {
       if (!$signer) return modal.open();
       if (!supportedNetwork) return switchNetwork(63);
-      if (!selectedToken0 || !selectedToken1) checkbox.click();
-      if (Number(amountOut) > balance0) return;
+      if (!selectedToken0 || !selectedToken1) {
+        checkbox.click();
+        selectToken = "token0";
+        open = true;
+      }
+      if (Number(amountOut) > Number(balance0)) return;
       if (enter) {
         broadcastTransaction(
           "Swapping " +

@@ -90,6 +90,7 @@
       <input
         bind:value={amount}
         type="text"
+        inputmode="decimal"
         placeholder="Liquidity to withdraw"
         class="input input-bordered w-full"
         on:validated={(v) => (amount = v.detail)}
@@ -131,7 +132,7 @@
 
 <!-- Mobile Modal -->
 <Drawer.Root bind:open>
-  <Drawer.Trigger />
+  <!-- <Drawer.Trigger /> -->
   <Drawer.Portal>
     <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden" />
     <Drawer.Content

@@ -353,6 +353,7 @@
         <input
           bind:value={etcDeposit}
           type="text"
+          inputmode="decimal"
           placeholder="0"
           class="input input-bordered w-2/3 flex items-center"
           class:input-error={Number(etcDeposit) > Number($useBalance.balance)}
@@ -383,6 +384,7 @@
         <input
           bind:value={synthDeposit}
           type="text"
+          inputmode="decimal"
           placeholder="0"
           class="input input-bordered w-2/3 flex items-center"
           class:input-error={Number(synthDeposit) > Number(pool.synth?.balance)}
@@ -597,6 +599,7 @@
             <input
               bind:value={etcDeposit}
               type="text"
+              inputmode="decimal"
               placeholder="0"
               class="input input-bordered w-2/3 flex items-center"
               class:input-error={Number(etcDeposit) >
@@ -627,7 +630,7 @@
           <label class="input-group w-full mt-2">
             <input
               bind:value={synthDeposit}
-              type="text"
+              inputmode="decimal"
               placeholder="0"
               class="input input-bordered w-2/3 flex items-center"
               class:input-error={Number(synthDeposit) >

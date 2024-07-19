@@ -20,6 +20,7 @@
   <input
     bind:value={deposit}
     type="text"
+    inputmode="decimal"
     placeholder="0"
     class="input input-bordered w-2/3 flex items-center"
     class:input-error={Number(deposit) > Number($useBalance?.balance)}

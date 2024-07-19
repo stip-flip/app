@@ -11,7 +11,7 @@
   import { buildPath, swapOut } from "src/hooks/sf/swapMath";
   import { useSynthInfos } from "src/hooks/sf/synth";
   import { broadcastTransaction } from "src/hooks/transactions";
-  import { commify, switchNetwork } from "src/lib";
+  import { commify, switchNetwork, updateVc } from "src/lib";
   import { SUPPORTED_NETWORKS, sdk } from "src/stores";
   import {
     chainId,
@@ -21,6 +21,7 @@
   } from "svelte-ethers-store";
   import Modal from "../components/_modal.svelte";
   import { modal } from "src/lib/web3";
+  import { onMount } from "svelte";
 
   let amountOut: string;
   let amountIn: string;
@@ -173,6 +174,8 @@
     price = res.price;
     amountOut = Number(amountIn) ? res.amountIn : "";
   }, 1000);
+
+  onMount(updateVc);
 </script>
 
 <Modal
