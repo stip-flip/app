@@ -164,7 +164,7 @@ export function updateVc() {
     );
     document.documentElement.style.setProperty(
       "--footer-height",
-      `${footerHeight + 15}px`
+      `${footerHeight + 100}px`
     );
     document.documentElement.style.setProperty(
       "--navbar-height",
@@ -172,7 +172,7 @@ export function updateVc() {
     );
     document.documentElement.style.setProperty(
       "--container-top",
-      `${topperBottom + 30}px`
+      `${topperBottom - 25}px`
     );
 
     let prevScrollPos = container.scrollTop;

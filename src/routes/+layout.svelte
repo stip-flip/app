@@ -18,13 +18,20 @@
     transactions,
   } from "src/hooks/transactions";
 
+  import { goto } from "$app/navigation";
+  import { StatusBar } from "@capacitor/status-bar";
   import { navigate } from "src/lib/path";
   import { chainId, connected } from "svelte-ethers-store";
   import { flip } from "svelte/animate";
   import { quintOut } from "svelte/easing";
   import { crossfade } from "svelte/transition";
-  import { goto } from "$app/navigation";
   import { pwaInfo } from "virtual:pwa-info";
+
+  // document.addEventListener("deviceready", async function () {
+  //   await StatusBar.setOverlaysWebView({ overlay: false });
+  //   await StatusBar.hide();
+  //   await StatusBar.setBackgroundColor({ color: "#000000" }); // Or any color that matches your app's theme
+  // });
 
   $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : "";
 
@@ -92,13 +99,13 @@
     },
   });
 
-  // JavaScript to update the custom property
-  function updateVh() {
-    document.documentElement.style.setProperty(
-      "--vh",
-      `${window.innerHeight * 0.01}px`
-    );
-  }
+  // // JavaScript to update the custom property
+  // function updateVh() {
+  //   document.documentElement.style.setProperty(
+  //     "--vh",
+  //     `${window.innerHeight * 0.01}px`
+  //   );
+  // }
 </script>
 
 <svelte:head>
@@ -275,7 +282,7 @@
     </div>
     <div
       class={!homepage
-        ? "bg-2 lg:h-screen lg:root w-full overflow-scroll lg:pb-8 lg:overflow-auto mobile-height overflow-x-hidden"
+        ? "bg-2 lg:h-screen lg:root w-full lg:pb-8 lg:overflow-auto overflow-x-hidden"
         : "root h-screen bg"}
     >
       <slot />

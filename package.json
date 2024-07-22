@@ -36,6 +36,10 @@
 	},
 	"dependencies": {
 		"@0xsequence/multicall": "^0.39.0",
+		"@capacitor/cli": "^6.1.1",
+		"@capacitor/core": "^6.1.1",
+		"@capacitor/ios": "^6.1.1",
+		"@capacitor/status-bar": "^6.0.0",
 		"@codingwithmanny/blockies": "^1.1.0",
 		"@formkit/auto-animate": "^1.0.0-beta.6",
 		"@sveltejs/pancake": "^0.0.18",

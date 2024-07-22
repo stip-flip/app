@@ -1,0 +1,28 @@
+PODS:
+  - Capacitor (6.1.1):
+    - CapacitorCordova
+  - CapacitorCordova (6.1.1)
+  - CapacitorStatusBar (6.0.0):
+    - Capacitor
+
+DEPENDENCIES:
+  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+
+EXTERNAL SOURCES:
+  Capacitor:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorCordova:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorStatusBar:
+    :path: "../../node_modules/@capacitor/status-bar"
+
+SPEC CHECKSUMS:
+  Capacitor: 8941aba4364ba9d1b22188569001f2ce45cc2b00
+  CapacitorCordova: 8f2cc8d8d3619c566e9418fe8772064a94266106
+  CapacitorStatusBar: 2e4369f99166125435641b1908d05f561eaba6f6
+
+PODFILE CHECKSUM: 816cca1e0996e5a4f8a6d3f70aad051f862b11c2
+
+COCOAPODS: 1.12.1
