@@ -142,7 +142,7 @@
 <div
   class="lg:border-2 rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:bg-gradient"
 >
-  <div class="p-4 container-height" id="container">
+  <div class="p-4 lg:h-auto lg:pt-0 container-height" id="container">
     <label class="label">
       <span class="label-text font-semibold text-base">Select pair</span>
     </label>
@@ -406,7 +406,10 @@
     <div class="border-b w-full border-base-content hidden lg:block mt-4" />
     <button
       class="btn btn-primary w-full mt-8"
-      disabled={!selectedSynth || !synthAmount}
+      disabled={!selectedSynth ||
+        !synthAmount ||
+        Number(selectedToken?.balance) < Number(synthAmount) ||
+        Number($useBalance?.balance) < Number(etcAmount)}
       on:click={async (_) => {
         console.log("click", $allowance, shares, synthAmount);
         const shares_ = (Number(synthAmount) * synthPrice) / synthRatio;

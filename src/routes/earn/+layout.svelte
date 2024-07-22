@@ -34,12 +34,6 @@
       <div
         class="flex flex-wrap justify-between w-full m-auto lg:space-x-4 lg:px-0 px-2 relative"
       >
-        <!-- <a
-        class="absolute btn btn-primary flex-grow btn-sm lg:hidden top-0 -mt-12 right-2"
-        id="new-position"
-        href={navigate("/earn/add", url)}
-        >+ New<span class="hidden lg:inline-block"> Position</span></a
-      > -->
         <div class="join lg:flex-grow lg:text-base" id="deposits">
           <div
             class="btn btn-outline lg:lg:btn-sm btn-xs btn-xs no-animation cursor-default hover:text-inherit join-item bg-gradient lg:flex-grow"
@@ -83,9 +77,7 @@
       </div>
     {/if}
   {:else}
-    <div
-      class="flex justify-between items-center lg:p-4 lg:pb-8 px-4 lg:border-b border-base-content w-full lg:relative"
-    >
+    <div class="flex justify-between items-center px-4 w-full lg:relative">
       <a class="lg:w-1/3" href={navigate("/earn", url)}>
         <Icon icon="ph-arrow-left-bold" class="text-2xl" />
       </a>

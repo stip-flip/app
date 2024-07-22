@@ -193,7 +193,7 @@
 />
 
 <div
-  class="lg:w-1/3 m-auto lg:mt-4 lg:mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient lg:h-auto container-height"
+  class="lg:w-1/3 m-auto lg:mt-4 lg:mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient lg:h-auto lg:pt-0 container-height"
   id="container"
 >
   <div
@@ -234,7 +234,7 @@
       </label>
       {#if selectedToken0 != undefined}
         <div
-          class="ml-4 text-sm text-neutral cursor-pointer"
+          class="ml-4 text-sm text-neutral cursor-pointer h-0"
           on:click={(_) => {
             amountOut = String($balance0 || 0);
             debOut();
@@ -333,6 +333,12 @@
     <button
       id="swap"
       class="btn btn-primary btn-lg w-full mt-8"
+      disabled={Number(amountOut) > Number(balance0) ||
+        (Number(amountOut || 0) == 0 &&
+          !!signer &&
+          !!supportedNetwork &&
+          selectedToken0 &&
+          selectedToken1)}
       on:click={async (_) => {
         if (!$signer) return modal.open();
         if (!supportedNetwork) return switchNetwork(63);

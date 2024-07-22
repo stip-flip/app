@@ -47,7 +47,7 @@
   class="lg:border-2 rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:bg-gradient"
 >
   <div
-    class="p-4 lg:pt-4 overflow-y-scroll overflow-x-hidden container-height"
+    class="p-4 lg:pt-0 lg:h-auto overflow-y-scroll overflow-x-hidden container-height"
     id="container"
   >
     <div class="lg:flex lg:space-x-4">
@@ -64,9 +64,9 @@
           {selectedPool?.token?.info?.name || "--"}
         </button>
         <label
-          id="position-opener"
           for="position-modal"
-          class="lg:btn lg:btn-outline w-full border border-current hidden"
+          id="position-opener"
+          class="lg:btn lg:btn-outline w-full border border-current"
           class:btn-outline={selectedPool != undefined}
           >{selectedPool?.token?.info?.name || "--"}</label
         >

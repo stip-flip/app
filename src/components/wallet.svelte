@@ -10,6 +10,7 @@
 
   import { renderSVGIcon } from "@codingwithmanny/blockies";
   import { modal } from "src/lib/web3";
+  import { onMount } from "svelte";
 
   export let trades: any[] = [];
 
@@ -23,6 +24,20 @@
         defaultEvmStores.disconnect();
       }
     }
+  });
+
+  onMount(() => {
+    modal.subscribeProvider((state) => {
+      console.log("hey");
+      if (state) {
+        console.log(state);
+        if (state.provider) {
+          defaultEvmStores.setProvider(state.provider);
+        } else {
+          defaultEvmStores.disconnect();
+        }
+      }
+    });
   });
 
   $: supportedNetwork = SUPPORTED_NETWORKS.includes(Number($chainId));
