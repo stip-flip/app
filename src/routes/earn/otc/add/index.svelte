@@ -66,7 +66,7 @@
         <label
           for="position-modal"
           id="position-opener"
-          class="lg:btn lg:btn-outline w-full border border-current"
+          class="lg:btn lg:btn-outline w-full border border-current hidden"
           class:btn-outline={selectedPool != undefined}
           >{selectedPool?.token?.info?.name || "--"}</label
         >

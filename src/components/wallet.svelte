@@ -14,17 +14,17 @@
 
   export let trades: any[] = [];
 
-  modal.subscribeProvider((state) => {
-    console.log("hey");
-    if (state) {
-      console.log(state);
-      if (state.provider) {
-        defaultEvmStores.setProvider(state.provider);
-      } else {
-        defaultEvmStores.disconnect();
-      }
-    }
-  });
+  // modal.subscribeProvider((state) => {
+  //   console.log("hey");
+  //   if (state) {
+  //     console.log(state);
+  //     if (state.provider) {
+  //       defaultEvmStores.setProvider(state.provider);
+  //     } else {
+  //       defaultEvmStores.disconnect();
+  //     }
+  //   }
+  // });
 
   onMount(() => {
     modal.subscribeProvider((state) => {
@@ -39,6 +39,14 @@
       }
     });
   });
+
+  // poll every 5 seconds for a new provider
+  setInterval(() => {
+    const p = modal.getWalletProvider();
+    if (p) {
+      defaultEvmStores.setProvider(p);
+    }
+  }, 5000);
 
   $: supportedNetwork = SUPPORTED_NETWORKS.includes(Number($chainId));
 </script>

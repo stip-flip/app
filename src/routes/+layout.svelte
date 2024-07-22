@@ -28,7 +28,7 @@
 
   $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : "";
 
-  export const ssr = false;
+  // export const ssr = false;
 
   let overlay: HTMLAreaElement;
 

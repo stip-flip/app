@@ -77,7 +77,9 @@
       </div>
     {/if}
   {:else}
-    <div class="flex justify-between items-center px-4 w-full lg:relative">
+    <div
+      class="flex justify-between items-center lg:pt-0 pt-4 px-4 w-full lg:relative"
+    >
       <a class="lg:w-1/3" href={navigate("/earn", url)}>
         <Icon icon="ph-arrow-left-bold" class="text-2xl" />
       </a>
