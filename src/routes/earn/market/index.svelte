@@ -4,9 +4,10 @@
   import CoinIcon from "src/components/coin-icon.svelte";
   import { usePoolInfos } from "src/hooks/uniswap/pool";
   import { useUniPositions } from "src/hooks/uniswap/position";
-  import { commify } from "src/lib";
+  import { commify, updateVc } from "src/lib";
   import Positions from "./_positions.svelte";
   import { navigate } from "src/lib/path";
+  import { onMount } from "svelte";
 
   $: poolInfos = usePoolInfos;
 
@@ -15,18 +16,10 @@
   $: positionExist = !!$positionInfos.length;
 
   $: url = new URL($page.url);
+
+  onMount(updateVc);
 </script>
 
-<div class="flex flex-wrap justify-end lg:w-1/2 m-auto space-x-4 relative">
-  <a
-    class="absolute btn btn-primary flex-grow lg:btn-md btn-sm top-0 -mt-12 right-2"
-    id="new-position"
-    href={navigate("/earn/add", url)}
-    >+ New<span class="hidden lg:inline-block"> Position</span></a
-  >
-  <!-- <a class="btn btn-primary" href={navigate("/earn/add", url)}>+ New Position</a
-  > -->
-</div>
 {#if !positionExist}
   <div
     class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"

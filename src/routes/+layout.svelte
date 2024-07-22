@@ -17,12 +17,15 @@
     resolvedTransactions,
     transactions,
   } from "src/hooks/transactions";
-  import { connectMetamask } from "src/lib";
+
   import { navigate } from "src/lib/path";
   import { chainId, connected } from "svelte-ethers-store";
   import { flip } from "svelte/animate";
   import { quintOut } from "svelte/easing";
   import { crossfade } from "svelte/transition";
+  import { goto } from "$app/navigation";
+
+  // export const ssr = false;
 
   let overlay: HTMLAreaElement;
 
@@ -160,7 +163,7 @@
   <input id="app-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col">
     <!-- Navbar -->
-    <div class="fixed w-full lg:p-4 z-10">
+    <div class="fixed w-full lg:p-4 z-10" id="navbar">
       <div class="justify-between navbar">
         {#if homepage}
           <div class="flex items-center w-content lg:mr-8"></div>
@@ -179,6 +182,7 @@
               <a
                 href="/swap"
                 class="p-1 rounded-md flex lg:space-x-1 hover:text-primary"
+                on:click|preventDefault={() => goto(navigate("/swap", url))}
               >
                 <span>App</span></a
               >
@@ -270,13 +274,14 @@
       <slot />
     </div>
     <div
-      class="btm-nav lg:hidden bg-transparent h-24 backdrop-blur-md"
+      class="btm-nav lg:hidden bg-transparent h-24 pb-8 backdrop-blur-xl"
       class:hidden={!!homepage}
       id="footer"
     >
       <a
         class:text-primary={$page.route?.id?.startsWith("/wallet")}
         href={navigate("/wallet", url)}
+        on:click|preventDefault={() => goto(navigate("/wallet", url))}
       >
         <Icon icon="mdi:wallet" class="text-3xl" />
         <span class="btm-nav-label text-xs">Wallet</span>
@@ -284,6 +289,7 @@
       <a
         class:text-primary={$page.route?.id?.startsWith("/swap")}
         href={navigate("/swap", url)}
+        on:click|preventDefault={() => goto(navigate("/swap", url))}
       >
         <Icon
           icon="mdi:swap-horizontal"
@@ -297,6 +303,7 @@
       <a
         class:text-primary={$page.route?.id?.startsWith("/earn")}
         href={navigate("/earn", url)}
+        on:click|preventDefault={() => goto(navigate("/earn", url))}
       >
         <Icon icon="mdi:chart-line" class="text-3xl" />
         <span class="btm-nav-label text-xs">Earn</span>

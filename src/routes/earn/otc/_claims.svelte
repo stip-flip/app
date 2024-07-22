@@ -32,14 +32,14 @@
   // $: timeleft = getTimeDifference(claim?.settlementTimestamp || 0, $timestamp);
 </script>
 
-<div class="overflow-x-auto bg-gradient">
+<div class="overflow-x-auto lg:bg-gradient">
   <table class="table w-full">
     <!-- head -->
     <thead>
       <tr>
         <th class="w-1/3 lg:w-auto">Kind</th>
         <th class="w-1/3 lg:w-auto">Estimated Amount</th>
-        <th class="w-1/3 lg:w-auto">Automated</th>
+        <th class="w-1/3 lg:w-auto lg:table-cell hidden">Automated</th>
         <th class="w-1/3 lg:w-auto text-right px-8">Settlement</th>
       </tr>
     </thead>
@@ -53,7 +53,7 @@
             <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
             {commify(formatEther(claim?.amount || 0), 4)}
           </td>
-          <td class="text-left">
+          <td class="text-left lg:table-cell hidden">
             {claim?.automated ? "Yes" : "No"}
           </td>
           <td class="text-right px-8">

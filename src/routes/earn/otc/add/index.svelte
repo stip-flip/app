@@ -5,16 +5,14 @@
   import { validator } from "src/actions/big-number-input";
   import LiquidityChart from "src/components/liquidity-chart.svelte";
   import { useBalance } from "src/hooks/balance";
+  import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useSynthInfos } from "src/hooks/sf/synth";
   import { broadcastTransaction } from "src/hooks/transactions";
   import { commify, updateVc } from "src/lib";
   import { sdk } from "src/stores";
+  import { onMount } from "svelte";
   import { signer } from "svelte-ethers-store";
   import Modal from "../../_modal.svelte";
-  import type { TokenInfoAndBalance } from "src/hooks/erc20";
-  import { navigate } from "src/lib/path";
-  import { Drawer } from "vaul-svelte";
-  import { onMount } from "svelte";
 
   let trigger: HTMLLabelElement;
 
@@ -48,21 +46,8 @@
 <div
   class="lg:border-2 rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:bg-gradient"
 >
-  <div class="lg:relative w-full">
-    <div
-      class="flex justify-between items-center lg:p-4 px-2 lg:pb-8 lg:border-b border-base-content"
-    >
-      <a class="lg:w-1/3" href={navigate("/earn", url)}>
-        <Icon icon="ph-arrow-left-bold" class="text-2xl" />
-      </a>
-      <h1 class="lg:text-xl text-lg lg:w-1/3 text-center lg:font-semibold">
-        New Position
-      </h1>
-      <div class="lg:w-1/3" />
-    </div>
-  </div>
   <div
-    class="p-4 lg:pt-4 pt-2 overflow-y-scroll overflow-x-hidden container-height"
+    class="p-4 lg:pt-0 lg:h-auto overflow-y-scroll overflow-x-hidden container-height"
     id="container"
   >
     <div class="lg:flex lg:space-x-4">
@@ -79,8 +64,8 @@
           {selectedPool?.token?.info?.name || "--"}
         </button>
         <label
-          id="position-opener"
           for="position-modal"
+          id="position-opener"
           class="lg:btn lg:btn-outline w-full border border-current hidden"
           class:btn-outline={selectedPool != undefined}
           >{selectedPool?.token?.info?.name || "--"}</label
@@ -139,6 +124,7 @@
               value={formatFR(FR)}
               on:change={(e) => (FR = Number(e.currentTarget.value) * 100)}
               type="number"
+              inputmode="decimal"
               step="0.1"
               min="0"
               max="640"
@@ -170,7 +156,7 @@
     {/if}
     <button
       class="btn btn-primary w-full mt-8"
-      disabled={!selectedPool || !amount}
+      disabled={!selectedPool || !Number(amount)}
       on:click={(_) => {
         broadcastTransaction(
           `Depositing liquidities to ${selectedPool?.token?.info?.symbol}`,

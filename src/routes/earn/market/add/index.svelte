@@ -142,18 +142,7 @@
 <div
   class="lg:border-2 rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:bg-gradient"
 >
-  <div
-    class="flex justify-between items-center lg:p-4 lg:pb-8 pb-4 px-4 lg:border-b border-base-content"
-  >
-    <a class="lg:w-1/3" href={navigate("/earn", url)}>
-      <Icon icon="ph-arrow-left-bold" class="text-2xl" />
-    </a>
-    <h1 class="lg:text-xl text-lg lg:w-1/3 text-center lg:font-semibold">
-      New Position
-    </h1>
-    <div class="lg:w-1/3" />
-  </div>
-  <div class="p-4 container-height" id="container">
+  <div class="p-4 lg:h-auto lg:pt-0 container-height" id="container">
     <label class="label">
       <span class="label-text font-semibold text-base">Select pair</span>
     </label>
@@ -197,11 +186,11 @@
         </div>
         <div class="my-4 font-semibold">Starting Price</div>
         <div class="flex justify-between items-center space-x-4">
-          <div class="form-control lg:w-full">
+          <div class="lg:form-control lg:w-full hidden">
             <div class="flex items-center">
               <label class="input-group bg-opaque fine-border p-4 rounded-xl">
                 <div
-                  class="input input-ghost input-bordered text-2xl lg:w-2/3 flex items-center"
+                  class="lg:input lg:input-ghost lg:input-bordered text-2xl lg:w-2/3 flex items-center"
                 >
                   1
                 </div>
@@ -218,6 +207,7 @@
               <label class="input-group bg-opaque fine-border p-4 rounded-xl">
                 <input
                   type="number"
+                  inputmode="decimal"
                   min="0"
                   step="0.1"
                   placeholder="0"
@@ -234,6 +224,19 @@
                 >
               </label>
             </div>
+          </div>
+          <div class="lg:hidden flex items-center space-x-1">
+            <span>1</span>
+            <CoinIcon
+              className="mr-2"
+              symbol={selectedSynth?.token?.info?.symbol}
+            /> <span>=</span>
+            <span
+              >{virtualPrice}<Icon
+                class="inline text-2xl text-green-600"
+                icon="mdi:ethereum"
+              /></span
+            >
           </div>
         </div>
       {:else}
@@ -268,13 +271,13 @@
                 recomputeETC();
               }}
               type="number"
+              inputmode="decimal"
               min="0"
               step="0.1"
               placeholder="0"
-              class="input input-ghost input-bordered lg:input-md input-sm w-2/3 lg:text-2xl"
+              class="input input-ghost input-bordered w-2/3 lg:text-2xl"
             />
-            <span
-              class="justify-center flex items-center flex-grow lg:text-base text-xs"
+            <span class="justify-center flex items-center flex-grow"
               ><Icon
                 class="inline text-xl text-green-600"
                 icon="mdi:ethereum"
@@ -304,13 +307,13 @@
                 recomputeSynth();
               }}
               type="number"
+              inputmode="decimal"
               min="0"
               step="0.1"
               placeholder="0"
-              class="input input-ghost input-bordered w-2/3 lg:input-md input-sm lg:text-2xl"
+              class="input input-ghost input-bordered w-2/3 lg:text-2xl"
             />
-            <span
-              class="justify-center flex items-center flex-grow lg:text-base text-xs"
+            <span class="justify-center flex items-center flex-grow"
               ><Icon
                 class="inline text-xl text-green-600"
                 icon="mdi:ethereum"
@@ -330,8 +333,9 @@
             <input
               bind:value={etcAmount}
               type="text"
+              inputmode="decimal"
               placeholder="0"
-              class="input input-ghost input-bordered w-2/3 lg:input-md input-sm lg:text-2xl"
+              class="input input-ghost input-bordered w-2/3 lg:text-2xl"
               class:input-error={Number(etcAmount) >
                 Number($useBalance?.balance)}
               on:validated={(v) => (etcAmount = v.detail)}
@@ -343,7 +347,7 @@
               }}
             />
             <span
-              class="w-24 text-center flex items-center justify-center flex-grow lg:text-base text-xs"
+              class="w-24 text-center flex items-center justify-center flex-grow"
               ><Icon
                 class="inline text-xl text-green-600"
                 icon="mdi:ethereum"
@@ -369,15 +373,15 @@
             <input
               bind:value={synthAmount}
               type="text"
+              inputmode="decimal"
               placeholder="0"
-              class="input input-ghost input-bordered w-2/3 lg:input-md input-sm lg:text-2xl"
+              class="input input-ghost input-bordered w-2/3 lg:text-2xl"
               class:input-error={Number(synthAmount) >
                 Number(selectedSynth?.token?.balance)}
               disabled={highPrice <= currentPrice}
               on:input={recomputeETC}
             />
-            <span
-              class="text-center flex items-center justify-center flex-grow lg:text-base text-xs"
+            <span class="text-center flex items-center justify-center flex-grow"
               ><CoinIcon
                 className="mr-2"
                 symbol={selectedSynth?.token?.info?.symbol}
@@ -402,7 +406,10 @@
     <div class="border-b w-full border-base-content hidden lg:block mt-4" />
     <button
       class="btn btn-primary w-full mt-8"
-      disabled={!selectedSynth || !synthAmount}
+      disabled={!selectedSynth ||
+        !synthAmount ||
+        Number(selectedToken?.balance) < Number(synthAmount) ||
+        Number($useBalance?.balance) < Number(etcAmount)}
       on:click={async (_) => {
         console.log("click", $allowance, shares, synthAmount);
         const shares_ = (Number(synthAmount) * synthPrice) / synthRatio;

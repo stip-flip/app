@@ -145,19 +145,61 @@ export function updateVc() {
     const container = document.getElementById("container");
     // find a div with id footer
     const footer = document.getElementById("footer");
+
+    const topper = document.getElementById("top");
+
+    const navbar = document.getElementById("navbar");
     // check the height of the footer
     if (!container || !footer) return;
     // see how many pixel it is from the top
+
     const top = container.getBoundingClientRect().top;
     const footerHeight = footer?.getBoundingClientRect().height;
-    console.log(top, footerHeight, window.innerHeight - top - footerHeight);
+    const topperBottom = topper?.getBoundingClientRect().bottom;
+    const navbarHeight = navbar?.getBoundingClientRect().height;
+    console.log(top, footerHeight, topperBottom, navbarHeight);
     document.documentElement.style.setProperty(
       "--vc",
-      `${(window.innerHeight - footerHeight - top) * 0.01}px`
+      `${window.innerHeight * 0.01}px`
     );
-    // document.documentElement.style.setProperty(
-    //   "--footer-height",
-    //   `${footerHeight}px`
-    // );
+    document.documentElement.style.setProperty(
+      "--footer-height",
+      `${footerHeight + 15}px`
+    );
+    document.documentElement.style.setProperty(
+      "--navbar-height",
+      `${navbarHeight}px`
+    );
+    document.documentElement.style.setProperty(
+      "--container-top",
+      `${topperBottom + 30}px`
+    );
+
+    let prevScrollPos = container.scrollTop;
+    // on scroll down, add a className to the top container
+    container.addEventListener("scroll", (e) => {
+      const currentScrollPos = container.scrollTop;
+      if (currentScrollPos > prevScrollPos + 50) {
+        topper?.classList.add("toggle-up");
+        navbar?.classList.add("blur-in");
+        prevScrollPos = currentScrollPos;
+      } else if (currentScrollPos < prevScrollPos - 50) {
+        topper?.classList.remove("toggle-up");
+        navbar?.classList.remove("blur-in");
+        prevScrollPos = currentScrollPos;
+      } else if (currentScrollPos == 0) {
+        topper?.classList.remove("toggle-up");
+        navbar?.classList.remove("blur-in");
+        prevScrollPos = currentScrollPos;
+      }
+    });
+
+    // if (topperBottom && top < 0) {
+    //   topper?.classList.add("sticky");
+    //   navbar?.classList.add("sticky");
+    // } else {
+    //   topper?.classList.remove("sticky");
+    //   navbar?.classList.remove("sticky");
+    // }
   }, 0);
 }

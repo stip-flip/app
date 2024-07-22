@@ -1,14 +1,15 @@
 import { sveltekit } from "@sveltejs/kit/vite";
+
 import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [sveltekit()],
-  ssr: {
-    noExternal: ["@lottiefiles/svelte-lottie-player"],
-  },
+  // WARN: this will not be necessary on your project
+  logLevel: "info",
   server: {
     fs: {
-      allow: ["eth-sdk"],
+      // Allow serving files from hoisted root node_modules
+      allow: ["eth-sdk", "../.."],
     },
   },
   resolve: {

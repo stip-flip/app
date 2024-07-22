@@ -184,9 +184,9 @@
 </label>
 
 <Drawer.Root bind:open>
-  <Drawer.Trigger />
+  <!-- <Drawer.Trigger /> -->
   <Drawer.Portal>
-    <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden" />
+    <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden z-10" />
     <Drawer.Content
       class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border lg:hidden z-10"
     >

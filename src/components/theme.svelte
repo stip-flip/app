@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
 
   import Icon from "@iconify/svelte";
-  let theme = "light";
+  let theme = "dark";
 
   onMount(() => {
     if (localStorage.getItem("theme")) {
