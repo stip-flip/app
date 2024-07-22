@@ -13,8 +13,8 @@
 >
   <!-- Navbar menu content here -->
   <div
-    class="absolute w-1/2 h-full border border-primary rounded-full transition-all"
-    class:right-0={mode == "market"}
+    class="absolute w-1/2 h-full border border-primary rounded-full transition-all left-1/2"
+    class:!left-0={mode == "otc"}
   ></div>
   <li id="otc-mode">
     <a
