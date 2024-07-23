@@ -12,15 +12,13 @@
   import CoinIcon from "src/components/coin-icon.svelte";
   import { useBalance } from "src/hooks/balance";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
-  import { useBalance as useBal } from "src/hooks/erc20";
   import { useSynthInfos } from "src/hooks/sf/synth";
   import { broadcastTransaction } from "src/hooks/transactions";
-  import { commify, getTimeDifference, switchNetwork, updateVc } from "src/lib";
+  import { commify, getTimeDifference, switchNetwork } from "src/lib";
   import { modal } from "src/lib/web3";
   import { SUPPORTED_NETWORKS, sdk, timestamp } from "src/stores";
   import { chainId, signer, signerAddress } from "svelte-ethers-store";
   import Modal from "../components/_modal.svelte";
-  import { onMount } from "svelte";
 
   let amountOut: string;
   let amountIn: string;
@@ -187,7 +185,7 @@
     }
   }, 1000);
 
-  onMount(updateVc);
+  // onMount(updateVc);
 </script>
 
 <Modal

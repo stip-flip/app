@@ -1,14 +1,12 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { sdk } from "src/stores";
-  import { useSynthInfos } from "src/hooks/sf/synth";
   import { useClaims } from "src/hooks/claims";
+  import { useSynthInfos } from "src/hooks/sf/synth";
+  import { broadcastTransaction } from "src/hooks/transactions";
+  import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Otc from "./_otc.svelte";
   import Token from "./_token.svelte";
-  import { broadcastTransaction } from "src/hooks/transactions";
-  import { onMount } from "svelte";
-  import { updateVc } from "src/lib";
 
   $: poolInfos = useSynthInfos;
   $: claimInfos = useClaims;
@@ -18,7 +16,7 @@
   $: claims = $claimInfos;
 
   $: claimExists = claims?.some((c) => !!c.length);
-  onMount(updateVc);
+  // onMount(updateVc);
 </script>
 
 <div

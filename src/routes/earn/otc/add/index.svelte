@@ -8,9 +8,8 @@
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { useSynthInfos } from "src/hooks/sf/synth";
   import { broadcastTransaction } from "src/hooks/transactions";
-  import { commify, updateVc } from "src/lib";
+  import { commify } from "src/lib";
   import { sdk } from "src/stores";
-  import { onMount } from "svelte";
   import { signer } from "svelte-ethers-store";
   import Modal from "../../_modal.svelte";
 
@@ -33,7 +32,7 @@
     return Number(fr.toFixed(1)) / 100;
   }
 
-  onMount(updateVc);
+  // onMount(updateVc);
 </script>
 
 <Modal

@@ -1,16 +1,12 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
-  import { formatEther } from "ethers/lib/utils";
   import CoinIcon from "src/components/coin-icon.svelte";
   import { usePositions, usePositionsStats } from "src/hooks/sf/position";
   import { usePositionClaims } from "src/hooks/sf/positionClaims";
   import { useSynthInfos } from "src/hooks/sf/synth";
-  import { commify, updateVc } from "src/lib";
   import Claims from "./_claims.svelte";
   import Positions from "./_positions.svelte";
-  import { navigate } from "src/lib/path";
-  import { onMount } from "svelte";
 
   $: synthInfos = useSynthInfos;
 
@@ -32,7 +28,7 @@
 
   $: url = new URL($page.url);
 
-  onMount(updateVc);
+  // onMount(updateVc);
 </script>
 
 <div

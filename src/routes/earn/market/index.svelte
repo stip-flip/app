@@ -4,10 +4,8 @@
   import CoinIcon from "src/components/coin-icon.svelte";
   import { usePoolInfos } from "src/hooks/uniswap/pool";
   import { useUniPositions } from "src/hooks/uniswap/position";
-  import { commify, updateVc } from "src/lib";
+  import { commify } from "src/lib";
   import Positions from "./_positions.svelte";
-  import { navigate } from "src/lib/path";
-  import { onMount } from "svelte";
 
   $: poolInfos = usePoolInfos;
 
@@ -17,7 +15,7 @@
 
   $: url = new URL($page.url);
 
-  onMount(updateVc);
+  // onMount(updateVc);
 </script>
 
 {#if !positionExist}

@@ -19,7 +19,8 @@
   } from "src/hooks/transactions";
 
   import { goto } from "$app/navigation";
-  import { StatusBar } from "@capacitor/status-bar";
+  import { Keyboard } from "@capacitor/keyboard";
+  import { updateVc } from "src/lib";
   import { navigate } from "src/lib/path";
   import { chainId, connected } from "svelte-ethers-store";
   import { flip } from "svelte/animate";
@@ -41,13 +42,24 @@
 
   let lastResolvedIndex = 0;
 
+  page.subscribe((value) => {
+    updateVc();
+  });
+
+  Keyboard.addListener("keyboardWillShow", () => {
+    document.getElementById("footer")?.classList.add("hidden");
+  });
+
+  Keyboard.addListener("keyboardWillHide", () => {
+    document.getElementById("footer")?.classList.remove("hidden");
+  });
+
   onMount(() => {
     try {
       // Initial update
-      updateVh();
-
+      // updateVh();
       // Update on resize
-      window.addEventListener("resize", updateVh);
+      // window.addEventListener("resize", updateVh);
       // connectMetamask();
       // defaultEvmStores.setProvider().catch((e) => console.warn(e));
     } catch (e) {
@@ -282,7 +294,7 @@
     </div>
     <div
       class={!homepage
-        ? "bg-2 lg:h-screen lg:root w-full lg:pb-8 lg:overflow-auto overflow-x-hidden"
+        ? "lg:h-screen lg:root w-full lg:pb-8 lg:overflow-auto overflow-x-hidden"
         : "root h-screen bg"}
     >
       <slot />

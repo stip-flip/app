@@ -4,12 +4,15 @@
   import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
   import CoinIcon from "src/components/coin-icon.svelte";
   import { useSynthInfos } from "src/hooks/sf/synth";
-  import { commify, updateVc } from "src/lib";
+  import { commify } from "src/lib";
   import Modal from "../../_modal.svelte";
 
+  import { validator } from "src/actions/big-number-input";
+  import { signPermit } from "src/actions/sign";
+  import { useBalance } from "src/hooks/balance";
   import { useAllowance, type TokenInfoAndBalance } from "src/hooks/erc20";
+  import { broadcastTransaction } from "src/hooks/transactions";
   import { usePoolInfos } from "src/hooks/uniswap/pool";
-  import { navigate } from "src/lib/path";
   import { reverseRatio } from "src/lib/sf/reverse";
   import { computeAmount0, computeAmount1 } from "src/lib/uniswap/math";
   import {
@@ -19,11 +22,6 @@
   } from "src/lib/uniswap/tick";
   import { sdk } from "src/stores";
   import { signer, signerAddress } from "svelte-ethers-store";
-  import { useBalance } from "src/hooks/balance";
-  import { onMount } from "svelte";
-  import { validator } from "src/actions/big-number-input";
-  import { signPermit } from "src/actions/sign";
-  import { broadcastTransaction } from "src/hooks/transactions";
 
   let open: boolean = false;
 
@@ -127,9 +125,7 @@
       )
     );
   }
-  onMount(() => {
-    updateVc();
-  });
+  // onMount(updateVc);
 </script>
 
 <Modal
