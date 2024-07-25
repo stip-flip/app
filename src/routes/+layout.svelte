@@ -25,8 +25,6 @@
   import { crossfade } from "svelte/transition";
   import { goto } from "$app/navigation";
 
-  // export const ssr = false;
-
   let overlay: HTMLAreaElement;
 
   let lastResolvedIndex = 0;
