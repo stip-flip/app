@@ -36,7 +36,6 @@
   <div
     class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
     id="container"
-    style="max-height: 60vh"
   >
     {#each $poolInfos as pool}
       <br class="odd:first:hidden lg:hidden mb-0" />
