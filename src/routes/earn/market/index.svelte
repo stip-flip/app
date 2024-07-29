@@ -38,7 +38,7 @@
     id="container"
   >
     {#each $poolInfos as pool}
-      <br class="odd:first:hidden lg:hidden mb-0" />
+      <!-- <br class="odd:first:hidden lg:hidden mb-0" /> -->
       {#if $positionInfos.some((p) => p.token0 + p.token1 == (pool.token0?.info?.address || "") + (pool.token1?.info?.address || ""))}
         <div class="lg:divider odd:first:hidden hidden mb-0"></div>
         <h1 class="lg:p-2 px-4 lg:py-4 flex justify-between">
