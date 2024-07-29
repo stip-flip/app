@@ -43,7 +43,7 @@
   // poll every 5 seconds for a new provider
   setInterval(() => {
     const p = modal.getWalletProvider();
-    if (p) {
+    if (p && !$signerAddress) {
       defaultEvmStores.setProvider(p);
     }
   }, 5000);

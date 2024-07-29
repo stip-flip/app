@@ -3,6 +3,7 @@ import { derived, get } from "svelte/store";
 
 import { sdk as ethsdk } from "src/stores/eth-sdk";
 import { resolvedTransactions } from "../transactions";
+import { signerAddress } from "svelte-ethers-store";
 
 export type OracleInfo = {
   minStake: BigNumber;
@@ -34,9 +35,10 @@ export const oracleInfoAsync = async (
 };
 
 export const useOracleInfo = (account: string, oracleAddress: string) => {
+  console.log("useOracleInfo", account, oracleAddress);
   return derived(
-    [ethsdk, resolvedTransactions],
-    ([$ethsdk, $pt], set) => {
+    [ethsdk, resolvedTransactions, signerAddress],
+    ([$ethsdk, $pt, $sa], set) => {
       if (!$ethsdk || !account || !oracleAddress) return;
       oracleInfoAsync(account, oracleAddress).then((info) => {
         set(info);
