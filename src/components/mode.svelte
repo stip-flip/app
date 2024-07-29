@@ -13,7 +13,7 @@
 >
   <!-- Navbar menu content here -->
   <div
-    class="absolute w-1/2 h-full rounded-full transition-all left-1/2 bg-opaque"
+    class="absolute w-1/2 h-full rounded-full transition-all left-1/2 selected"
     class:!left-0={mode == "market"}
   ></div>
   <li id="market-mode">
@@ -21,7 +21,6 @@
       href={url.pathname + `/?mode=market`}
       class="rounded-full w-20 text-center block"
       class:text-primary={mode == "market"}
-      class:selected={mode == "market"}
     >
       Market
     </a>
@@ -31,7 +30,6 @@
       href={url.pathname + `/?mode=otc`}
       class="rounded-full w-20 text-center block"
       class:text-primary={mode == "otc"}
-      class:selected={mode == "otc"}
     >
       OTC
     </a>
