@@ -7,7 +7,7 @@ export const walletSteps = [
       var li = document.getElementById("wallet");
 
       if (li) {
-        li.firstChild?.click();
+        li?.click();
       }
     },
     popover: {

@@ -9,7 +9,7 @@
   import { signer, signerAddress } from "svelte-ethers-store";
   // import {  } from "svelte/transition";
 
-  $: oracleInfo = useOracleInfo($signerAddress, $sdk.ORACLE.address);
+  const oracleInfo = useOracleInfo($signerAddress, $sdk.ORACLE.address);
 </script>
 
 <div

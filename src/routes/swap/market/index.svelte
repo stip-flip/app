@@ -275,6 +275,7 @@
         for="selectToken"
         tabindex="0"
         class="w-full btn rounded-lg shadow-lg"
+        id="token1"
         on:click={(_) => {
           open = true;
           selectToken = "token1";

@@ -6,7 +6,7 @@ export const swapSteps = [
     onHighlightStarted: (element, step, { config, state }) => {
       var li = document.getElementById("swap");
       if (li) {
-        li.firstChild?.click();
+        li.click();
       }
     },
     popover: {
@@ -45,22 +45,28 @@ export const swapSteps = [
         list?.click();
       }
     },
+    onDeselected: (element, step, { config, state }) => {
+      var done = document.getElementById("overlay");
+      if (done) {
+        done?.click();
+      }
+    },
     popover: {
       title: "Select Sell Token",
       description: "Select in the list the token you would like to sell",
     },
   },
   {
-    element: "#modal-next",
+    element: "#token1",
     onDeselected: (element, step, { config, state }) => {
-      var next = document.getElementById("modal-next");
-      if (next) {
-        next?.click();
+      var label = document.getElementById("token1");
+      if (label) {
+        label?.click();
       }
     },
     popover: {
-      title: "Go to next step",
-      description: "Click here to select the buy token",
+      title: "Buy Token",
+      description: "Select the token you would like to buy",
     },
   },
   {
@@ -73,9 +79,15 @@ export const swapSteps = [
     },
     onDeselected: (element, step, { config, state }) => {
       var done = document.getElementById("selectToken");
+      var overlay = document.getElementById("overlay");
+      var content = document.getElementById("drawer-content");
       if (done) {
         done?.click();
       }
+      console.log(overlay);
+      overlay?.setAttribute("data-vaul-drawer-visible", "false");
+      content?.setAttribute("data-vaul-drawer-visible", "false");
+      overlay?.click();
     },
     popover: {
       title: "Select Buy Token",

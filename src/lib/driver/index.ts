@@ -73,6 +73,6 @@ export const appTour = driver({
     },
     ...walletSteps,
     ...swapSteps,
-    ...earnSteps,
+    // ...earnSteps,
   ],
 });

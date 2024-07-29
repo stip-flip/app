@@ -34,6 +34,7 @@ export const oracleInfoAsync = async (
 };
 
 export const useOracleInfo = (account: string, oracleAddress: string) => {
+  console.log("oracle info", account, oracleAddress);
   return derived(
     [ethsdk, resolvedTransactions],
     ([$ethsdk, $pt], set) => {

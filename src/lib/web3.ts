@@ -25,7 +25,7 @@ const metadata = {
   name: "Stip&Flip",
   description: "Decentralized Synthetic trading",
   url: "https://sf.exchange", // url must match your domain & subdomain
-  icons: ["https://avatars.mywebsite.com/"],
+  icons: ["https://sf.exchange/favicon.ico"],
 };
 
 // 4. Create Ethers config
@@ -37,8 +37,8 @@ const ethersConfig = defaultConfig({
   enableEIP6963: true, // true by default
   enableInjected: true, // true by default
   enableCoinbase: true, // true by default
-  rpcUrl: "...", // used for the Coinbase SDK
-  defaultChainId: 1, // used for the Coinbase SDK
+  rpcUrl: "https://ether.sf.exchange", // used for the Coinbase SDK
+  defaultChainId: 61, // used for the Coinbase SDK
 });
 
 // 5. Create a Web3Modal instance

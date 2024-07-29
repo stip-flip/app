@@ -28,9 +28,7 @@
 
   onMount(() => {
     modal.subscribeProvider((state) => {
-      console.log("hey");
       if (state) {
-        console.log(state);
         if (state.provider) {
           defaultEvmStores.setProvider(state.provider);
         } else {

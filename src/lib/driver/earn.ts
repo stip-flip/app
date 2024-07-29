@@ -6,7 +6,7 @@ export const earnSteps = [
     onHighlightStarted: (element, step, { config, state }) => {
       var li = document.getElementById("earn");
       if (li) {
-        li.firstChild?.click();
+        li?.click();
       }
     },
     popover: {
@@ -59,6 +59,9 @@ export const earnSteps = [
       if (next) {
         next?.click();
       }
+    },
+    onNextClick: (element, step, { config, state }) => {
+      console.log("next clicked");
     },
     popover: {
       title: "Select market",

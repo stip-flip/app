@@ -19,7 +19,7 @@
   } from "src/hooks/transactions";
 
   import { goto } from "$app/navigation";
-  import { Keyboard } from "@capacitor/keyboard";
+  // import { Keyboard } from "@capacitor/keyboard";
   import { updateVc } from "src/lib";
   import { navigate } from "src/lib/path";
   import { chainId, connected } from "svelte-ethers-store";
@@ -42,17 +42,19 @@
 
   let lastResolvedIndex = 0;
 
-  page.subscribe((value) => {
-    updateVc();
+  onMount(() => {
+    page.subscribe((value) => {
+      updateVc();
+    });
   });
 
-  Keyboard.addListener("keyboardWillShow", () => {
-    document.getElementById("footer")?.classList.add("hidden");
-  });
+  // Keyboard.addListener("keyboardWillShow", () => {
+  //   document.getElementById("footer")?.classList.add("hidden");
+  // });
 
-  Keyboard.addListener("keyboardWillHide", () => {
-    document.getElementById("footer")?.classList.remove("hidden");
-  });
+  // Keyboard.addListener("keyboardWillHide", () => {
+  //   document.getElementById("footer")?.classList.remove("hidden");
+  // });
 
   onMount(() => {
     try {
@@ -248,7 +250,7 @@
               class="menu menu-md menu-horizontal bg-gradient rounded-full shadow-sm shadow-base-content bg-opacity-50 lg:bg-gradient p-0"
             >
               <!-- Navbar menu content here -->
-              <li id="wallet">
+              <!-- <li id="wallet">
                 <a
                   href={navigate("/wallet", url)}
                   class="rounded-full"
@@ -256,8 +258,8 @@
                   class:selected={$page.route?.id?.startsWith("/wallet")}
                   >Wallet</a
                 >
-              </li>
-              <li id="swap">
+              </li> -->
+              <!-- <li id="swap">
                 <a
                   href={navigate("/swap", url)}
                   class="rounded-full"
@@ -272,7 +274,7 @@
                   class:text-primary={$page.route?.id?.startsWith("/earn")}
                   class:selected={$page.route?.id?.startsWith("/earn")}>Earn</a
                 >
-              </li>
+              </li> -->
               <li>
                 <a
                   href={navigate("/faucet", url)}
@@ -307,6 +309,7 @@
       <a
         class:text-primary={$page.route?.id?.startsWith("/wallet")}
         href={navigate("/wallet", url)}
+        id="wallet"
         on:click|preventDefault={() => goto(navigate("/wallet", url))}
       >
         <Icon icon="mdi:wallet" class="text-3xl" />
@@ -315,6 +318,7 @@
       <a
         class:text-primary={$page.route?.id?.startsWith("/swap")}
         href={navigate("/swap", url)}
+        id="swap"
         on:click|preventDefault={() => goto(navigate("/swap", url))}
       >
         <Icon
@@ -329,6 +333,7 @@
       <a
         class:text-primary={$page.route?.id?.startsWith("/earn")}
         href={navigate("/earn", url)}
+        id="earn"
         on:click|preventDefault={() => goto(navigate("/earn", url))}
       >
         <Icon icon="mdi:chart-line" class="text-3xl" />

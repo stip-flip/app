@@ -58,13 +58,13 @@
         </label>
         <button
           class="btn btn-outline w-full border border-current lg:hidden"
+          id="position-opener"
           on:click={(_) => (open = true)}
         >
           {selectedPool?.token?.info?.name || "--"}
         </button>
         <label
           for="position-modal"
-          id="position-opener"
           class="lg:btn lg:btn-outline w-full border border-current hidden"
           class:btn-outline={selectedPool != undefined}
           >{selectedPool?.token?.info?.name || "--"}</label

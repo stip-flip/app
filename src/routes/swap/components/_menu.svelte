@@ -102,7 +102,7 @@
   </li>
 </ul>
 
-<div class="join w-full lg:hidden px-4">
+<div class="join w-full lg:hidden px-4" id="menu">
   <button
     class="btn btn-primary btn-outline join-item w-1/3"
     class:btn-active={selected["squared-leverage"]}
