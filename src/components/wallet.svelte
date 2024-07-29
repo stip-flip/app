@@ -69,7 +69,7 @@
       <label
         for="wallet-drawer"
         class:border-warning={!supportedNetwork}
-        class="border border-primary rounded-full flex cursor-pointer items-center h-8 bg-gradient"
+        class="rounded-full flex cursor-pointer items-center h-8 bg-2"
       >
         <div
           class="text-primary tracking-wider px-4 hidden lg:inline-block"
