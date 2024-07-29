@@ -61,15 +61,15 @@
         class="absolute w-1/4 lg:m-0 mt-24"
         style="transform: translate(150%, 10%);"
       />
-      <div class="lg:w-1/2 h-1/2 m-auto flex items-end">
+      <div class="lg:w-full h-1/2 m-auto flex items-end">
         <div class="">
-          <h1 class="lg:text-7xl text-3xl font-bold">Stip&Flip</h1>
+          <h1 class="lg:text-7xl text-3xl font-bold text-center w-full">
+            Stip&Flip
+          </h1>
           <h2
             class="lg:mt-8 mt-2 lg:text-4xl text-xl lg:px-0 px-4 text-base-content"
           >
             Trade <strong class="text-primary">everything</strong>
-            <strong class="text-secondary">anywhere</strong>
-            <strong class="">as you want</strong>
           </h2>
           <div
             class="flex lg:justify-between space-x-2 lg:mt-8 lg:h-4 lg:px-0 px-8"

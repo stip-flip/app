@@ -5,7 +5,7 @@
 
   $: url = new URL($page.url);
 
-  $: mode = url.searchParams.get("mode") || "otc";
+  $: mode = url.searchParams.get("mode") || "market";
 
   $: console.log(mode);
 </script>
