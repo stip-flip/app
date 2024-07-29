@@ -252,7 +252,8 @@
             debOut();
           }}
         >
-          Balance: {commify(balance0, 4)}
+          <span class="lg:inline-block hidden">Balance:</span>
+          {commify(balance0, 4)}
         </div>
       {/if}
     </div>
