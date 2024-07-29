@@ -19,6 +19,15 @@
     "/F-XMR.svg",
   ];
 
+  const iconName = [
+    "Stip-USD",
+    "Stip-BTC",
+    "Stip-SOL",
+    "Stip-ETH",
+    "Stip-DOGE",
+    "Flip-XMR",
+  ];
+
   const iconsTranslate = [2, 4, 3, 9, 1, 7];
 
   import { spring } from "svelte/motion";
@@ -63,11 +72,11 @@
       />
       <div class="lg:w-full h-1/2 m-auto flex items-end">
         <div class="mx-auto mb-8">
-          <h1 class="lg:text-7xl text-3xl font-bold text-center w-full">
+          <h1 class="lg:text-8xl text-3xl text-center w-full padauk font-bold">
             Stip&Flip
           </h1>
           <h2
-            class="lg:mt-8 mt-2 lg:text-4xl text-xl lg:px-0 px-4 text-base-content text-center"
+            class="lg:mt-8 mt-2 lg:text-4xl text-xl lg:px-0 px-4 text-base-content text-center padauk"
           >
             Trade <strong class="text-primary">everything</strong>
           </h2>
@@ -114,39 +123,47 @@
     <div class="bg-2 h-full"></div>
   </StickyLayer>
 
-  <StickyLayer rate={1} offset={{ top: 1, bottom: 2 }} let:progress>
-    <div class="flex p-8 lg:px-32 z-10" style="opacity: {2 - 2 * progress};">
+  <StickyLayer rate={1} offset={{ top: 0.8, bottom: 2 }} let:progress>
+    <div
+      class="lg:flex items-center p-8 lg:px-32 z-10"
+      style="opacity: {2 - 2 * progress};"
+    >
       <div>
-        <h3 class="text-primary lg:text-5xl text-2xl mt-24">
-          Trade any synthetic asset
-        </h3>
+        <h3 class="text-primary lg:text-5xl text-2xl mt-24">Trade any asset</h3>
         <div class="py-4 lg:text-2xl">
-          <p class="py-4">DeFi now has access to any real world asset</p>
-          <p class="py-4">If you have the data - we can mint it</p>
+          <p class="py-4">Thanks to our innovative oracle system</p>
+          <p class="py-4">You can trade any indices</p>
+        </div>
+      </div>
+      <div
+        class="lg:block hidden mockup-phone lg:mt-36 overflow-visible lg:h-auto"
+        style="transform: skewX({-30 *
+          Math.max(0, 1 - 2 * progress)}deg) skewY({30 *
+          Math.max(0, 1 - 2 * progress)}deg) rotateX({-30 *
+          Math.max(0, 1 - 2 * progress)}deg) rotateY({30 *
+          Math.max(0, 1 - 2 * progress)}deg)"
+      >
+        <div class="camera" />
+        <div class="display !overflow-visible">
+          <div
+            class="artboard artboard-demo phone-1 items-start justify-start pt-12 px-2 overflow-visible rounded-3xl"
+          >
+            {#each icons as icon, i}
+              <div
+                class="flex items-center space-x-4 px-4 py-2 rounded-full w-full border mt-2 bg-white bg-opacity-20"
+                style="transform: translate({100 *
+                  Math.min(0, 2 * progress - 1) *
+                  (i + 1)}px, 0);"
+              >
+                <img src={icon} class="h-8" />
+                <p class="text-xl">{iconName[i]}</p>
+              </div>
+            {/each}
+          </div>
         </div>
       </div>
     </div>
   </StickyLayer>
-
-  {#each icons as icon, i}
-    <StickyLayer
-      rate={1 + Math.random()}
-      offset={{ top: 1, bottom: 2 }}
-      let:progress
-    >
-      <div
-        class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 lg:h-32 h-16 lg:w-32 w-16 lg:p-4 p-2"
-        style="margin-top: 80vh; margin-left: {25 +
-          i * 10}%; transform: translateY(-{progress *
-          (10 - iconsTranslate[i]) *
-          100 +
-          iconsTranslate[i] * 50}%) scale({1 - progress * 0.5}); opacity: {3 -
-          3 * progress};"
-      >
-        <img src={icon} />
-      </div>
-    </StickyLayer>
-  {/each}
 
   <StickyLayer rate={2} offset={{ top: 2, bottom: 4 }} let:progress>
     <div

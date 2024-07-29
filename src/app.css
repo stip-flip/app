@@ -25,6 +25,10 @@
   height: calc(var(--vh, 1vh) * 100);
 }
 
+.padauk {
+  font-family: "Padauk", sans-serif;
+}
+
 #top {
   opacity: 1;
   animation: all 0.5s;
