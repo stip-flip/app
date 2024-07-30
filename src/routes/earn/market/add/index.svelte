@@ -7,6 +7,7 @@
   import { commify } from "src/lib";
   import Modal from "../../_modal.svelte";
 
+  import type { RSV } from "eth-permit/dist/rpc";
   import { validator } from "src/actions/big-number-input";
   import { signPermit } from "src/actions/sign";
   import { useBalance } from "src/hooks/balance";
@@ -91,9 +92,12 @@
 
   $: tickUpper = getClosestTick(highRatio);
 
+  let signature: RSV | undefined;
+
   // recompute synth (amount0)
   function recomputeSynth() {
     if (!selectedSynth) return;
+    signature = undefined;
     const shares = computeAmount0(
       currentRatio,
       getRatioForTick(tickLower),
@@ -409,8 +413,7 @@
       on:click={async (_) => {
         console.log("click", $allowance, shares, synthAmount);
         const shares_ = (Number(synthAmount) * synthPrice) / synthRatio;
-        let signature;
-        if ($allowance < shares_) {
+        if ($allowance < shares_ && !signature) {
           console.log("signature");
           signature = await signPermit(
             selectedSynth?.address || "",
@@ -418,6 +421,7 @@
             parseEther(shares_.toString()),
             Math.round(Date.now() / 1000 + 60 * 60)
           );
+          return;
         }
         console.log(tickLower, tickUpper, selectedSynth?.address);
         broadcastTransaction(
@@ -492,6 +496,8 @@
         Insufficient {selectedToken.info.symbol} balance
       {:else if Number($useBalance?.balance) < Number(etcAmount)}
         Insufficient ETC balance
+      {:else if $allowance < (Number(synthAmount) * synthPrice) / synthRatio && !signature}
+        Approve
       {:else}
         Add Liquidity
       {/if}

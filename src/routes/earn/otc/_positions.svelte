@@ -1,9 +1,10 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { formatEther } from "ethers/lib/utils";
+  import { formatEther, parseEther } from "ethers/lib/utils";
   import { commify } from "src/lib";
   import Modal from "./_modal.svelte";
   import type { Position } from "src/hooks/sf/position";
+  import { BigNumber } from "ethers";
 
   export let bytes: string[];
   export let poolName: string;
@@ -41,9 +42,27 @@
           }}
         >
           <td class="w-1/3 lg:w-auto">{positions[b].tick / 100}%</td>
-          <td class="w-1/3 lg:w-auto lg:flex items-center">
+          <td class="w-1/3 lg:w-auto lg:flex items-center hidden">
             <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
             {commify(formatEther(positions[b].liquidity), 3)}
+          </td>
+          <td class="lg:hidden table-cell">
+            <div
+              class="rounded-full w-full border border-primary bg-primary relative overflow-hidden bg-opacity-40"
+              class:border-warning={positions[b].liquidityActive < 0.1}
+              class:bg-warning={positions[b].liquidityActive < 0.1}
+            >
+              <div
+                class="bg-primary whitespace-nowrap text-base-300"
+                class:bg-warning={positions[b].liquidityActive < 0.1}
+                class:text-accent={positions[b].liquidityActive > 0.5}
+                style={`width: ${positions[b].liquidityActive * 100}%`}
+              >
+                <span class="pl-2"
+                  >{commify(formatEther(positions[b].liquidity), 3)}</span
+                >
+              </div>
+            </div>
           </td>
           <td class="hidden lg:table-cell">
             <div
@@ -69,19 +88,6 @@
             <Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
             {commify(formatEther(positions[b].pnl), 3)}
           </td>
-          <!-- <td class="hidden lg:table-cell">
-            <label
-              for={poolAddress}
-              on:click={(_) => {
-                selectedPosition = positions[b];
-              }}
-            >
-              <Icon
-                icon="material-symbols:upload"
-                class="cursor-pointer w-6 h-6"
-              />
-            </label>
-          </td> -->
         </tr>
       {/each}
     </tbody>

@@ -9,7 +9,7 @@
 
   $: url = new URL($page.url);
 
-  $: mode = url.searchParams.get("mode") || "otc";
+  $: mode = url.searchParams.get("mode") || "market";
 
   $: add = url.pathname.includes("add");
 </script>
@@ -32,7 +32,7 @@
   {#if !add}
     {#if mode == "otc"}
       <div
-        class="flex flex-wrap justify-between w-full m-auto lg:space-x-4 lg:px-0 px-2 relative"
+        class="flex flex-wrap justify-between w-full m-auto lg:space-x-4 lg:px-0 px-0 relative"
       >
         <div class="join lg:flex-grow lg:text-base" id="deposits">
           <div

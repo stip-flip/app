@@ -1,6 +1,5 @@
 import { createWeb3Modal, defaultConfig } from "@web3modal/ethers5";
 
-// 1. Get projectId from https://cloud.walletconnect.com
 const projectId = "dd1aa6f8f217f1aeee645355fb4e24e8";
 
 // 2. Set chains

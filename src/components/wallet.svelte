@@ -14,18 +14,6 @@
 
   export let trades: any[] = [];
 
-  // modal.subscribeProvider((state) => {
-  //   console.log("hey");
-  //   if (state) {
-  //     console.log(state);
-  //     if (state.provider) {
-  //       defaultEvmStores.setProvider(state.provider);
-  //     } else {
-  //       defaultEvmStores.disconnect();
-  //     }
-  //   }
-  // });
-
   onMount(() => {
     modal.subscribeProvider((state) => {
       if (state) {
@@ -41,7 +29,7 @@
   // poll every 5 seconds for a new provider
   setInterval(() => {
     const p = modal.getWalletProvider();
-    if (p) {
+    if (p && !$signerAddress) {
       defaultEvmStores.setProvider(p);
     }
   }, 5000);
@@ -79,7 +67,7 @@
       <label
         for="wallet-drawer"
         class:border-warning={!supportedNetwork}
-        class="border border-primary rounded-full flex cursor-pointer items-center h-8 bg-gradient"
+        class="rounded-full flex cursor-pointer items-center h-8 bg-gradient shadow-sm shadow-base-content"
       >
         <div
           class="text-primary tracking-wider px-4 hidden lg:inline-block"

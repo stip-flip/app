@@ -234,7 +234,10 @@
             debOut();
           }}
         >
-          Balance: {commify($balance0, 4)}
+          <span class="lg:inline-block hidden">Balance: </span>{commify(
+            $balance0,
+            4
+          )}
         </div>
       {/if}
     </div>
@@ -302,7 +305,7 @@
           </span>
           <span>for</span>
           <span class="flex items-center space-x-2"
-            >{commify(price)}
+            >{commify(price, 6)}
             <CoinIcon className="ml-2" symbol={selectedToken1.info.symbol} />
           </span>
         </strong>

@@ -12,7 +12,7 @@
 
     setTimeout(() => {
       const p = modal.getWalletProvider();
-      if (p) {
+      if (p && !defaultEvmStores.signerAddress) {
         defaultEvmStores.setProvider(p);
         // $page.url = "/wallet";
         goto("/swap");

@@ -8,7 +8,7 @@ module.exports = {
       {
         dark: {
           // ...require("daisyui/src/colors/themes")["[data-theme=night]"],
-          primary: "#6dc096",
+          primary: "#a3ddac",
           secondary: "#309aa8",
           accent: "#3774d6",
           neutral: "#2D2933",
