@@ -145,7 +145,9 @@
       </div>
     </li>
   {/each}
-  <Help />
+  {#if $pendingTransactions.length == 0}
+    <Help />
+  {/if}
 </ul>
 
 <!-- {#if $resolvedTransactions[lastResolvedIndex] && !!$resolvedTransactions[lastResolvedIndex].resolved && $resolvedTransactions[lastResolvedIndex].status == 1}

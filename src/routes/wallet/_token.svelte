@@ -65,7 +65,7 @@
     <strong>{token?.name}</strong>
   </td>
   <td>
-    {commify(balance, 4)}
+    {commify(balance, 6)}
   </td>
   <td class="text-right">
     {Number(commify(formatUnits(tick || 0, 2)))} %

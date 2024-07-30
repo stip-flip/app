@@ -5,9 +5,8 @@
   import { usePoolInfos } from "src/hooks/uniswap/pool";
   import { useUniPositions } from "src/hooks/uniswap/position";
   import { commify, updateVc } from "src/lib";
-  import Positions from "./_positions.svelte";
-  import { navigate } from "src/lib/path";
   import { onMount } from "svelte";
+  import Positions from "./_positions.svelte";
 
   $: poolInfos = usePoolInfos;
 
@@ -41,7 +40,7 @@
       <!-- <br class="odd:first:hidden lg:hidden mb-0" /> -->
       {#if $positionInfos.some((p) => p.token0 + p.token1 == (pool.token0?.info?.address || "") + (pool.token1?.info?.address || ""))}
         <div class="lg:divider odd:first:hidden hidden mb-0"></div>
-        <h1 class="lg:p-2 px-4 lg:py-4 flex justify-between">
+        <h1 class="lg:p-2 px-2 lg:py-4 flex justify-between">
           <strong class="flex space-x-2 items-center"
             ><CoinIcon symbol={pool?.synth?.info?.symbol || ""} /><span
               >{pool?.synth?.info?.name}</span

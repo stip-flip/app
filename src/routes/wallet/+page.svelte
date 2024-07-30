@@ -18,6 +18,7 @@
   $: claims = $claimInfos;
 
   $: claimExists = claims?.some((c) => !!c.length);
+
   onMount(updateVc);
 </script>
 

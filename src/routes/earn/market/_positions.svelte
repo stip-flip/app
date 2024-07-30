@@ -111,7 +111,7 @@
                     )
                   ).toFixed()
                 ),
-                3
+                5
               )}<CoinIcon symbol={pool.synth?.info?.symbol} className="ml-2" />
             </div>
           </td>
