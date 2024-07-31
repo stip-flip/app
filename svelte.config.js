@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-auto";
+import adapter from "@sveltejs/adapter-static";
 // import adapter from "@sveltejs/adapter-static";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
@@ -9,7 +9,10 @@ const config = {
   preprocess: vitePreprocess(),
 
   kit: {
-    adapter: adapter(), // may differ from host to host
+    adapter: adapter({ fallback: "index.html" }), // may differ from host to host
+    serviceWorker: {
+      register: false,
+    },
   },
 };
 
