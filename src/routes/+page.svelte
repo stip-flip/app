@@ -97,11 +97,11 @@
       />
       <div class="lg:w-full h-1/2 m-auto flex items-end">
         <div class="mx-auto mb-8">
-          <h1 class="lg:text-8xl text-3xl text-center w-full padauk font-bold">
-            Stip&Flip
-          </h1>
+          <!-- <h1 class="lg:text-6xl text-3xl text-center w-full padauk font-bold">
+            S&F
+          </h1> -->
           <h2
-            class="lg:mt-8 mt-2 lg:text-4xl text-xl lg:px-0 px-4 text-base-content text-center padauk"
+            class="lg:mt-8 mt-2 lg:text-8xl text-xl lg:px-0 px-4 text-base-content text-center padauk"
           >
             Trade <strong class="text-primary">everything</strong>
           </h2>
@@ -154,7 +154,7 @@
         {#if progress < 0.3}
           <div class="absolute w-1/3">
             <h3 class="text-primary lg:text-5xl text-2xl mt-24">
-              Trade everything
+              Innovative Oracle system
             </h3>
             <div class="py-4">
               <p>With our groundbreaking proof of stake oracle contract</p>
@@ -172,7 +172,10 @@
               <h3 class="text-primary lg:text-5xl text-2xl mt-24">
                 <strong class="text-primary">Over The Counter</strong>
               </h3>
-              <p class="py-4">at the next Oracle price with no slippage</p>
+              <p class="py-4">
+                Your trade will be active at the next Oracle price with no
+                slippage
+              </p>
             {/if}
           </div>
         {:else if progress < 0.8}
@@ -403,7 +406,7 @@
         {#if progress < 0.3}
           <div class="absolute w-1/3">
             <h3 class="text-primary lg:text-5xl text-2xl mt-24">
-              <strong>Earn</strong>
+              <strong>Earn</strong> on your liquidity
             </h3>
             <div class="py-4">
               <p>Take the trader counterparty</p>
@@ -459,9 +462,7 @@
 
   <StickyLayer rate={1} offset={{ top: 19, bottom: 20 }}>
     <div class="flex justify-around items-end lg:h-1/3 h-5/6">
-      <a class="btn-primary text-white btn btn-lg lg:w-1/3" href="swap"
-        >Start Trading</a
-      >
+      <a class=" text-white btn btn-lg lg:w-1/3" href="swap">Start Trading</a>
       <a
         class="btn-info text-white btn btn-lg lg:w-1/3"
         href="https://docs.sf.exchange/">Learn more</a
