@@ -19,6 +19,8 @@
 
   $: claimExists = claims?.some((c) => !!c.length);
 
+  $: console.log("claimInfos", $claimInfos);
+
   onMount(updateVc);
 </script>
 

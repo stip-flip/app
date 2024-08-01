@@ -10,23 +10,48 @@
     document.getElementsByTagName("html")[0].setAttribute("data-theme", "dark");
   });
 
+  let mode = "market";
+
   const icons = [
     "/S-USD.svg",
     "/S-BTC.svg",
+    "/S-BTC³.svg",
+    "/S-ETH².svg",
+    "/F-ETH³.svg",
     "/S-SOL.svg",
-    "/S-ETH.svg",
-    "/F-DOGE.svg",
-    "/F-XMR.svg",
+    "/F-BTC².svg",
+    // "/S-ETH.svg",
+    // "/F-DOGE.svg",
+    // "/S-DOGE.svg",
+    // "/F-XMR.svg",
+    // "/S-SOL².svg",
   ];
 
   const iconName = [
     "Stip-USD",
     "Stip-BTC",
+    "Stip-BTC³",
+    "Stip-ETH²",
+    "Flip-ETH³",
     "Stip-SOL",
-    "Stip-ETH",
-    "Stip-DOGE",
-    "Flip-XMR",
+    "Flip-BTC²",
+    // "Stip-ETH",
+    // "Flip-DOGE",
+    // "Stip-DOGE",
+    // "Flip-XMR",
+    // "Stip-SOL²",
   ];
+
+  const iconSquared = ["/S-ETH².svg", "/F-BTC².svg", "/S-SOL².svg"];
+
+  const iconNameSquared = ["Stip-ETH²", "Flip-BTC²", "Stip-SOL²"];
+
+  const iconCubed = ["/S-BTC³.svg", "/F-ETH³.svg"];
+  const iconNameCubed = ["Stip-BTC³", "Flip-ETH³"];
+
+  const iconFlip = ["/F-DOGE.svg", "/F-XMR.svg", "/F-BTC.svg", "/F-ETH.svg"];
+
+  const iconNameFlip = ["Flip-DOGE", "Flip-XMR", "Flip-BTC", "Flip-ETH"];
 
   const iconsTranslate = [2, 4, 3, 9, 1, 7];
 
@@ -60,8 +85,8 @@
   };
 </script>
 
-<Parallax sections={7}>
-  <ParallaxLayer rate={1} offset={0}>
+<Parallax sections={20}>
+  <ParallaxLayer rate={1} offset={0} let:progress>
     <div
       class="text-center lg:text-start lg:mt-0 lg:left-28 h-full flex justify-between flex-col"
     >
@@ -119,162 +144,321 @@
     </div>
   </ParallaxLayer>
 
-  <StickyLayer rate={2} offset={{ top: 1, bottom: 7 }}>
+  <StickyLayer rate={2} offset={{ top: 1, bottom: 20 }}>
     <div class="bg-2 h-full"></div>
   </StickyLayer>
 
-  <StickyLayer rate={1} offset={{ top: 0.8, bottom: 2 }} let:progress>
-    <div
-      class="lg:flex items-center p-8 lg:px-32 z-10"
-      style="opacity: {2 - 2 * progress};"
-    >
-      <div>
-        <h3 class="text-primary lg:text-5xl text-2xl mt-24">Trade any asset</h3>
-        <div class="py-4 lg:text-2xl">
-          <p class="py-4">Thanks to our innovative oracle system</p>
-          <p class="py-4">You can trade any indices</p>
-        </div>
+  <StickyLayer rate={1} offset={{ top: 1, bottom: 9 }} let:progress>
+    <div class="lg:flex items-center justify-between p-8 lg:px-32 z-10">
+      <div class="w-1/3 h-32">
+        {#if progress < 0.3}
+          <div class="absolute w-1/3">
+            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+              Trade everything
+            </h3>
+            <div class="py-4">
+              <p>With our groundbreaking proof of stake oracle contract</p>
+              <p>Now you can trade any indices</p>
+              <p>And earn by becoming an Oracle Operator</p>
+            </div>
+          </div>
+        {:else if progress < 0.6}
+          <div class="absolute w-1/3">
+            {#if progress < 0.45}
+              <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+                Trade on the <strong class="text-primary">Market</strong>
+              </h3>
+            {:else}
+              <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+                <strong class="text-primary">Over The Counter</strong>
+              </h3>
+              <p class="py-4">at the next Oracle price with no slippage</p>
+            {/if}
+          </div>
+        {:else if progress < 0.8}
+          <div class="absolute w-1/3">
+            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+              on <strong>Leverage</strong>
+            </h3>
+            <div class="py-4">
+              <p>Discover squared and cubed trading</p>
+              <p>Increase your position volatility with no liquidation risk</p>
+            </div>
+          </div>
+        {:else}
+          <div class="absolute w-1/3">
+            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+              on <strong>Reverse</strong>
+            </h3>
+            <div class="py-4">
+              <p>
+                A flip is an instrument that inversely tracks the price of an
+                asset
+              </p>
+            </div>
+          </div>
+        {/if}
       </div>
+
       <div
         class="lg:block hidden mockup-phone lg:mt-36 overflow-visible lg:h-auto"
         style="transform: skewX({-30 *
-          Math.max(0, 1 - 2 * progress)}deg) skewY({30 *
-          Math.max(0, 1 - 2 * progress)}deg) rotateX({-30 *
-          Math.max(0, 1 - 2 * progress)}deg) rotateY({30 *
-          Math.max(0, 1 - 2 * progress)}deg)"
+          Math.max(0, 1 - 8 * progress)}deg) skewY({30 *
+          Math.max(0, 1 - 8 * progress)}deg) rotateX({-30 *
+          Math.max(0, 1 - 8 * progress)}deg) rotateY({30 *
+          Math.max(0, 1 - 8 * progress)}deg)"
       >
         <div class="camera" />
         <div class="display !overflow-visible">
           <div
-            class="artboard artboard-demo phone-1 items-start justify-start pt-12 px-2 overflow-visible rounded-3xl"
+            class="artboard artboard-demo phone-1 items-start justify-start px-2 overflow-visible rounded-3xl relative"
           >
-            {#each icons as icon, i}
+            <ul
+              class="relative menu menu-md menu-horizontal bg-gradient rounded-full bg-opacity-50 p-0 shadow-sm shadow-base-content mt-8"
+              id="modes"
+              style="transform: translate({100 *
+                Math.min(0, 8 * progress - 1) *
+                3}px, 0);"
+            >
               <div
-                class="flex items-center space-x-4 px-4 py-2 rounded-full w-full border mt-2 bg-white bg-opacity-20"
-                style="transform: translate({100 *
-                  Math.min(0, 2 * progress - 1) *
-                  (i + 1)}px, 0);"
+                class="absolute w-1/2 h-full rounded-full transition-all left-1/2 selected"
+                class:!left-0={progress > 0.3 && progress < 0.45}
+              ></div>
+              <li id="market-mode">
+                <a
+                  class="rounded-full w-20 text-center block"
+                  class:text-primary={progress > 0.3 && progress < 0.45}
+                >
+                  Market
+                </a>
+              </li>
+              <li id="otc-mode">
+                <a
+                  class="rounded-full w-20 text-center block"
+                  class:text-primary={progress > 0.45}
+                >
+                  OTC
+                </a>
+              </li>
+            </ul>
+            <div class="w-full mt-8">
+              {#if progress < 0.6}
+                {#each icons as icon, i}
+                  <div
+                    class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+                    style="transform: translate({100 *
+                      Math.min(0, 8 * progress - 1) *
+                      (i + 1)}px, 0);"
+                  >
+                    <img src={icon} class="h-8" />
+                    <p class="text-xl">{iconName[i]}</p>
+                  </div>
+                {/each}
+              {:else if progress < 0.7}
+                {#each iconSquared as icon, i}
+                  <div
+                    class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+                  >
+                    <img src={icon} class="h-8" />
+                    <p class="text-xl">{iconNameSquared[i]}</p>
+                  </div>
+                {/each}
+              {:else if progress < 0.8}
+                {#each iconCubed as icon, i}
+                  <div
+                    class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+                  >
+                    <img src={icon} class="h-8" />
+                    <p class="text-xl">{iconNameCubed[i]}</p>
+                  </div>
+                {/each}
+              {:else}{#each iconFlip as icon, i}
+                  <div
+                    class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+                  >
+                    <img src={icon} class="h-8" />
+                    <p class="text-xl">{iconNameFlip[i]}</p>
+                  </div>
+                {/each}{/if}
+            </div>
+            <div
+              class="fixed bottom-8 join m-auto"
+              style="width: calc(100% - 2rem); transform: translate({100 *
+                Math.min(0, 8 * progress - 1) *
+                3}px, 0);"
+            >
+              <button
+                class="btn btn-outline join-item w-1/3"
+                class:btn-active={progress > 0.6 && progress < 0.7}
+                >Squared</button
               >
-                <img src={icon} class="h-8" />
-                <p class="text-xl">{iconName[i]}</p>
-              </div>
-            {/each}
+              <button
+                class="btn btn-outline join-item w-1/3"
+                class:btn-active={progress > 0.7 && progress < 0.8}
+                >Cubed</button
+              >
+              <button
+                class="btn btn-outline join-item w-1/3"
+                class:btn-active={progress > 0.8}>Flip</button
+              >
+            </div>
           </div>
         </div>
+      </div>
+    </div></StickyLayer
+  >
+
+  <!-- Investor Chart -->
+  <StickyLayer
+    rate={3}
+    offset={{ top: 10, bottom: 18 }}
+    onProgress={onChartProgress}
+    let:progress
+  >
+    <div class="flex justify-between items-center h-full">
+      <div
+        class="mockup-window bg-base-300 border h-1/2 w-1/2 relative ml-20 overflow-visible p-8"
+        style="transform: skewX({15 *
+          Math.max(0, 1 - 8 * progress)}deg) skewY({-15 *
+          Math.max(0, 1 - 8 * progress)}deg) rotateX({-30 *
+          Math.max(0, 1 - 8 * progress)}deg) rotateY({30 *
+          Math.max(0, 1 - 8 * progress)}deg)"
+      >
+        <div class="mt-4">
+          <div
+            class="flex lg:space-x-4 space-x-2 py-8"
+            style="transform: translate({-100 *
+              Math.min(0, 8 * progress - 1) *
+              5}px, 0);"
+          >
+            <div
+              class="btn btn-outline lg:btn-wide"
+              class:btn-primary={progress > 0.3 && progress < 0.45}
+              class:btn-active={progress > 0.3 && progress < 0.45}
+            >
+              <CoinIcon symbol="F-BTC" />Flip-Bitcoin
+            </div>
+            <div class="join">
+              <div
+                class="btn btn-outline join-item"
+                class:btn-primary={progress > 0.45 && progress < 0.6}
+                class:btn-active={progress > 0.45 && progress < 0.6}
+              >
+                APY
+              </div>
+              <div
+                class="btn btn-outline join-item"
+                class:btn-primary={progress > 0.45 && progress < 0.6}
+              >
+                0.3%
+              </div>
+            </div>
+            <div class="join">
+              <div
+                class="btn btn-outline join-item"
+                class:btn-primary={progress > 0.6 && progress < 0.8}
+                class:btn-active={progress > 0.6 && progress < 0.8}
+              >
+                PNL
+              </div>
+              <div
+                class="btn btn-outline join-item"
+                class:btn-primary={progress > 0.6 && progress < 0.8}
+              >
+                3.0 <Icon icon="mdi:ethereum" class="text-green-600 text-2xl" />
+              </div>
+            </div>
+          </div>
+          <div
+            class="rounded-2xl bg-gradient h-52 lg:margin-auto pb-4"
+            style="transform: translate({-100 *
+              Math.min(0, 8 * progress - 1) *
+              2}px, 0);"
+          >
+            <LiquidityChart initializedTicks={ticks} FR={$FR} />
+          </div>
+          <div
+            class="join mt-8"
+            style="transform: translate({-100 *
+              Math.min(0, 8 * progress - 1) *
+              6}px, 0);"
+          >
+            <div
+              class="btn btn-outline lg:btn-wide join-item"
+              class:btn-primary={progress > 0.8}
+              class:btn-active={progress > 0.8}
+            >
+              Activation Rate
+            </div>
+            <div
+              class="btn btn-outline join-item"
+              class:btn-primary={progress > 0.8}
+            >
+              {($FR / 100).toFixed(2)}%
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-1/3 h-1/2">
+        {#if progress < 0.3}
+          <div class="absolute w-1/3">
+            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+              <strong>Earn</strong>
+            </h3>
+            <div class="py-4">
+              <p>Take the trader counterparty</p>
+              <p>Earn yields on your liquidity</p>
+              <p>Catch the traders swap fees</p>
+            </div>
+          </div>
+        {:else if progress < 0.6}
+          <div class="absolute w-1/3">
+            {#if progress < 0.45}
+              <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+                Choose your <strong class="text-primary">Exposition</strong>
+              </h3>
+              <p class="py-4">Your liquidities are used by one pool only</p>
+            {:else}
+              <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+                Earn the pool <strong class="text-primary">APY</strong>
+              </h3>
+              <div class="py-4">
+                <p>
+                  Traders will pay you a yearly rate for holding your liquidity
+                </p>
+              </div>
+            {/if}
+          </div>
+        {:else if progress < 0.8}
+          <div class="absolute w-1/3">
+            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+              Collect <strong>Swap Fees</strong>
+            </h3>
+            <div class="py-4">
+              <p>The PnL will include the pool swap fees</p>
+              <p>The traders' PnL</p>
+              <p>and the accumulated APY</p>
+            </div>
+          </div>
+        {:else}
+          <div class="absolute w-1/3">
+            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+              Hedge your <strong>Risk</strong>
+            </h3>
+            <div class="py-4">
+              <p>
+                Your liquidity will not be used when the pool APY is below this
+                rate
+              </p>
+            </div>
+          </div>
+        {/if}
       </div>
     </div>
   </StickyLayer>
 
-  <StickyLayer rate={2} offset={{ top: 2, bottom: 4 }} let:progress>
-    <div
-      class="lg:h-1/3 h-2/3 flex justify-end lg:items-start items-end lg:p-8 lg:px-32 z-10"
-      style="margin-top: {30 - (progress < 0.2 ? 0 : (progress - 0.2) * 40)}vh;"
-    >
-      <div>
-        <h3
-          class="text-primary lg:text-5xl text-3xl lg:mt-24 lg:px-0 px-4 text-right"
-        >
-          Anti-Fragile
-        </h3>
-        <div class="lg:py-4 lg:text-2xl text-xl text-right">
-          <p
-            class="lg:py-4 lg:px-0 px-4"
-            style="opacity: {progress > 0.5 ? 0 : 1}; transition: all 1s ease;"
-          >
-            Put your hard money to work on your <strong class="text-primary"
-              >own terms</strong
-            >
-          </p>
-          <p
-            class="py-4"
-            style="opacity: {progress < 0.5 ? 0 : 1}; transition: all 1s ease;"
-          >
-            <strong class="text-primary">Zero liquidation</strong> risk embedded
-            leverage
-          </p>
-        </div>
-      </div>
-    </div>
-    <div
-      class="flex lg:space-x-32 lg:ml-24 mt-8"
-      style="transform: translateX({50 - progress * 100}%); opacity: {progress <
-      0.5
-        ? 0
-        : 1}; transition: opacity 1s ease;"
-    >
-      {#each leveraged as icon, i}
-        <div
-          class="rounded-full shadow-xl border shadow-white bg-white bg-opacity-10 p-4"
-        >
-          <img src={icon} class="lg:min-h-32 lg:min-w-32 min-w-16" />
-        </div>
-      {/each}
-    </div>
-    <div
-      class="flex lg:space-x-8 items-center justify-around lg:ml-24 mt-20 z-10 lg:px-0 px-4"
-      style="opacity: {progress < 0.5 ? 0 : 1}; transition: all 1s ease;"
-    >
-      <p class="lg:text-2xl lg:text-right text-xl">
-        Trade your synthetic squared or cubed <br /><br />
-        long or short <br /><br />
-        stip or flip <br /><br />
-      </p>
-      <a class="btn btn-outline lg:w-1/3" href="https://docs.sf.exchange"
-        >Learn More</a
-      >
-    </div>
-  </StickyLayer>
-  <StickyLayer
-    rate={3}
-    offset={{ top: 2, bottom: 3 }}
-    onProgress={onChartProgress}
-    let:progress
-  >
-    <div
-      style="margin-top: 30vh; height: 100vh; transform: scale({0.8 +
-        0.2 * progress});"
-    >
-      <div class="flex lg:space-x-4 space-x-2 lg:ml-24 mb-8 -mt-24">
-        <div class="btn btn-primary btn-outline lg:btn-wide lg:btn-lg">
-          <CoinIcon symbol="F-BTC" />Flip-Bitcoin
-        </div>
-        <div class="join">
-          <div class="btn btn-outline lg:btn-wide lg:btn-lg join-item">
-            Pool Funding Rate
-          </div>
-          <div class="btn btn-outline lg:btn-lg join-item">0.3%</div>
-        </div>
-      </div>
-      <div
-        class="lg:ml-24 lg:p-4 border border-primary rounded-2xl bg-gradient h-1/4 lg:w-1/2 w-full lg:margin-auto shadow-md shadow-primary"
-      >
-        <LiquidityChart initializedTicks={ticks} FR={$FR} />
-      </div>
-      <div class="join lg:ml-24 mt-8">
-        <div class="btn btn-primary lg:btn-wide lg:btn-lg join-item">
-          Deposit Liquidity at
-        </div>
-        <div class="btn btn-primary btn-outline lg:btn-lg join-item">
-          {($FR / 100).toFixed(2)}%
-        </div>
-      </div>
-    </div>
-  </StickyLayer>
-  <StickyLayer rate={1} offset={{ top: 5, bottom: 6 }}>
-    <div
-      class="lg:h-2/3 flex justify-around lg:items-start items-end lg:px-0 px-4"
-    >
-      <div>
-        <h3 class="text-primary lg:text-5xl text-2xl mt-64">Secure</h3>
-        <div class="py-4 lg:text-2xl">
-          <p class="py-4">Built on the most secure smart contract blockchain</p>
-          <p class="py-4">100% Decentralized - no single point of failure</p>
-        </div>
-      </div>
-    </div>
-  </StickyLayer>
-  <StickyLayer rate={1} offset={{ top: 5, bottom: 6 }}>
-    <div class="flex justify-around items-end lg:h-2/3 h-5/6">
+  <StickyLayer rate={1} offset={{ top: 19, bottom: 20 }}>
+    <div class="flex justify-around items-end lg:h-1/3 h-5/6">
       <a class="btn-primary text-white btn btn-lg lg:w-1/3" href="swap"
         >Start Trading</a
       >
@@ -302,4 +486,8 @@
     border-bottom-left-radius: 8rem;
   }
   /* animate the down button every 1 seconds */
+
+  .selected {
+    background: hsl(var(--bc) / 0.08);
+  }
 </style>
