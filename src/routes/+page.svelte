@@ -101,20 +101,31 @@
             S&F
           </h1> -->
           <h2
-            class="lg:mt-8 mt-2 lg:text-8xl text-xl lg:px-0 px-4 text-base-content text-center padauk"
+            class="lg:mt-8 mt-2 lg:text-8xl text-xl lg:px-0 px-4 text-base-content text-center"
           >
             Trade <strong class="text-primary">everything</strong>
           </h2>
+          <p class="text-center mt-8">
+            Stip&Flip is the leading DeFi protocol for decentralized and
+            permissionless asset tokenisation.
+          </p>
+          <p class="text-center">
+            Trade any synthetic indices or earn by providing liquidity.
+          </p>
+
           <div
-            class="flex lg:justify-center space-x-2 lg:mt-8 lg:h-4 lg:px-0 px-8"
+            class="flex lg:justify-center space-x-2 lg:mt-8 lg:px-0 px-8 z-20"
           >
-            <div class="flex space-x-4 w-1/4 lg">
+            <div class="flex space-x-4 w-1/4">
               <a href="https://github.com/stip-flip" target="_blank"
                 ><Icon class="lg:text-4xl text-2xl" icon="mdi:github" /></a
               >
               <a href="https://twitter.com/stipflip" target="_blank">
                 <Icon class="lg:text-4xl text-2xl" icon="mdi:twitter" /></a
               >
+              <!-- <a href="https://twitter.com/stipflip" target="_blank">
+                <Icon class="lg:text-2xl text-xl mt-2" icon="bi:substack" /></a
+              > -->
             </div>
             <!-- <div class="flex-grow w-1/4" /> -->
           </div>
@@ -123,26 +134,28 @@
       <div class="lg:h-1/3 w-full flex justify-center items-end">
         <Countdown />
       </div>
-      <div class="lg:h-1/4 h-1/6" />
-      <!-- {#if !import.meta.env.SSR}
-        <LottiePlayer
-          class="absolute"
-          src="https://assets-global.website-files.com/649053a6e993a59c07215fb1/64a1a28e8d584d2e53d44d93_header-lottie-loop.json"
-          autoplay={true}
-          loop={true}
-          renderer="svg"
-          background="transparent"
-        />
-      {/if} -->
-      <div class="flex w-full absolute bottom-4">
-        {#each Array.from({ length: 10 }) as _, i}
-          <div class="lg:min-w-32 lg:min-h-32">
-            <img src="/golden-gate-bridge.svg" />
+      <div class="lg:h-1/4 h-1/6">
+        <!-- call to scroll -->
+        <div
+          class="animate-bounce h-8 mx-auto absolute w-full justify-center flex bottom-4"
+        >
+          <Icon
+            icon="fluent:triangle-down-32-regular"
+            class="text-4xl text-primary"
+          />
+        </div>
+        <div>
+          <div class="flex w-full absolute bottom-4">
+            {#each Array.from({ length: 10 }) as _, i}
+              <div class="lg:min-w-32 lg:min-h-32">
+                <img src="/golden-gate-bridge.svg" />
+              </div>
+            {/each}
           </div>
-        {/each}
+        </div>
       </div>
-    </div>
-  </ParallaxLayer>
+    </div></ParallaxLayer
+  >
 
   <StickyLayer rate={2} offset={{ top: 1, bottom: 20 }}>
     <div class="bg-2 h-full"></div>

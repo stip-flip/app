@@ -11,13 +11,13 @@
   <div class="lg:w-1/2 lg:px-0 px-4 lg:m-auto">
     <div class="lg:py-2 flex lg:space-x-4 space-x-2">
       <a
-        class="text-center font-thin lg:py-12 py-4 text-xl fine-border rounded-tl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
+        class="text-center lg:py-12 py-4 text-xl fine-border rounded-tl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
         href="/swap"
       >
         Trade
       </a>
       <a
-        class="text-center font-thin lg:py-12 py-4 text-xl fine-border rounded-tr-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
+        class="text-center lg:py-12 py-4 text-xl fine-border rounded-tr-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
         href="/earn"
       >
         Deposit
@@ -25,13 +25,13 @@
     </div>
     <div class="py-2 flex lg:space-x-4 space-x-2">
       <a
-        class="text-center font-thin lg:py-12 py-4 text-xl fine-border rounded-bl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
+        class="text-center lg:py-12 py-4 text-xl fine-border rounded-bl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
         href="/oracle/deposit"
       >
         Stake
       </a>
       <a
-        class="text-center font-thin lg:py-12 py-4 text-xl fine-border rounded-br-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
+        class="text-center lg:py-12 py-4 text-xl fine-border rounded-br-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
         href="https://docs.sf.exchange"
       >
         Learn
