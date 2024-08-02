@@ -56,6 +56,7 @@
   const iconsTranslate = [2, 4, 3, 9, 1, 7];
 
   import { spring } from "svelte/motion";
+  import { fade } from "svelte/transition";
 
   $: FR = spring(500, { stiffness: 0.1, damping: 0.8 });
 
@@ -83,9 +84,11 @@
   const onChartProgress = (progress: number) => {
     FR.set(progress * 1000);
   };
+
+  let parallax: Parallax;
 </script>
 
-<Parallax sections={20}>
+<Parallax sections={20} bind:this={parallax}>
   <ParallaxLayer rate={1} offset={0} let:progress>
     <div
       class="text-center lg:text-start lg:mt-0 lg:left-28 h-full flex justify-between flex-col"
@@ -157,15 +160,17 @@
     </div></ParallaxLayer
   >
 
-  <StickyLayer rate={2} offset={{ top: 1, bottom: 20 }}>
+  <StickyLayer rate={2} offset={{ top: 1, bottom: 20 }} let:progress>
     <div class="bg-2 h-full"></div>
   </StickyLayer>
 
   <StickyLayer rate={1} offset={{ top: 1, bottom: 9 }} let:progress>
-    <div class="lg:flex items-center justify-between p-8 lg:px-32 z-10">
+    <div class="lg:flex items-center justify-around p-8 w-2/3 m-auto">
       <div class="w-1/3 h-32">
-        {#if progress < 0.3}
-          <div class="absolute w-1/3">
+        {#if progress < 0.1}
+          <span />
+        {:else if progress < 0.3}
+          <div class="absolute w-1/3" in:fade>
             <h3 class="text-primary lg:text-5xl text-2xl mt-24">
               Innovative Oracle system
             </h3>
@@ -174,36 +179,65 @@
               <p>Now you can trade any indices</p>
               <p>And earn by becoming an Oracle Operator</p>
             </div>
+            <a
+              class="btn btn-outline"
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://docs.sf.exchange/docs/protocol-rules/data-provider"
+              >Learn More</a
+            >
           </div>
         {:else if progress < 0.6}
           <div class="absolute w-1/3">
             {#if progress < 0.45}
-              <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+              <h3 id="market" class="text-primary lg:text-5xl text-2xl mt-24">
                 Trade on the <strong class="text-primary">Market</strong>
               </h3>
+              <p class="py-4">As you would on any other DEX</p>
+              <a
+                class="btn btn-outline"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://docs.sf.exchange/docs/protocol-rules/trader"
+                >Learn More</a
+              >
             {:else}
-              <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+              <h3 id="otc" class="text-primary lg:text-5xl text-2xl mt-24">
                 <strong class="text-primary">Over The Counter</strong>
               </h3>
               <p class="py-4">
                 Your trade will be active at the next Oracle price with no
                 slippage
               </p>
+              <a
+                class="btn btn-outline"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://docs.sf.exchange/docs/protocol-rules/trader"
+                >Learn More</a
+              >
             {/if}
           </div>
         {:else if progress < 0.8}
           <div class="absolute w-1/3">
-            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+            <h3 id="leverage" class="text-primary lg:text-5xl text-2xl mt-24">
               on <strong>Leverage</strong>
             </h3>
             <div class="py-4">
               <p>Discover squared and cubed trading</p>
               <p>Increase your position volatility with no liquidation risk</p>
             </div>
+            <a
+              class="btn btn-outline"
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://docs.sf.exchange/docs/protocol-rules/leverage"
+              >Learn More</a
+            >
           </div>
         {:else}
           <div class="absolute w-1/3">
-            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+            <h3 id="flip" class="text-primary lg:text-5xl text-2xl mt-24">
               on <strong>Reverse</strong>
             </h3>
             <div class="py-4">
@@ -217,109 +251,126 @@
       </div>
 
       <div
-        class="lg:block hidden mockup-phone lg:mt-36 overflow-visible lg:h-auto"
-        style="transform: skewX({-30 *
+        class="border-4 border-black bg-base-300 py-4 px-2 lg:mt-36 overflow-visible lg:h-auto"
+        style="border-radius: 2.5rem; transform: skewX({-30 *
           Math.max(0, 1 - 8 * progress)}deg) skewY({30 *
           Math.max(0, 1 - 8 * progress)}deg) rotateX({-30 *
           Math.max(0, 1 - 8 * progress)}deg) rotateY({30 *
-          Math.max(0, 1 - 8 * progress)}deg)"
+          Math.max(0, 1 - 8 * progress)}deg) translateX(-{100 *
+          Math.max(0, 1 - 8 * progress)}px)"
       >
-        <div class="camera" />
-        <div class="display !overflow-visible">
+        <div class="bg-black rounded-full h-5 w-2/5 mx-auto" />
+
+        <ul
+          class="relative menu menu-md menu-horizontal bg-gradient rounded-full bg-opacity-50 p-0 shadow-sm shadow-base-content mt-4"
+          id="modes"
+          style="transform: translate({100 *
+            Math.min(0, 8 * progress - 1) *
+            3}px, 0);"
+        >
           <div
-            class="artboard artboard-demo phone-1 items-start justify-start px-2 overflow-visible rounded-3xl relative"
-          >
-            <ul
-              class="relative menu menu-md menu-horizontal bg-gradient rounded-full bg-opacity-50 p-0 shadow-sm shadow-base-content mt-8"
-              id="modes"
-              style="transform: translate({100 *
-                Math.min(0, 8 * progress - 1) *
-                3}px, 0);"
+            class="absolute w-1/2 h-full rounded-full transition-all left-1/2 selected"
+            class:!left-0={progress > 0.3 && progress < 0.45}
+            class:border={progress > 0.3 && progress < 0.6}
+            class:border-primary={progress > 0.3 && progress < 0.6}
+          ></div>
+          <li id="market-mode">
+            <a
+              class="rounded-full w-20 text-center block"
+              class:text-primary={progress > 0.3 && progress < 0.45}
+              on:click={() =>
+                parallax.scrollTo(5, {
+                  duration: 500,
+                })}
             >
+              Market
+            </a>
+          </li>
+          <li id="otc-mode">
+            <a
+              class="rounded-full w-20 text-center block"
+              class:text-primary={progress > 0.45}
+              on:click={() =>
+                parallax.scrollTo(6, {
+                  duration: 500,
+                })}
+            >
+              OTC
+            </a>
+          </li>
+        </ul>
+        <div class="w-full mt-4 h-72">
+          {#if progress < 0.6}
+            {#each icons as icon, i}
               <div
-                class="absolute w-1/2 h-full rounded-full transition-all left-1/2 selected"
-                class:!left-0={progress > 0.3 && progress < 0.45}
-              ></div>
-              <li id="market-mode">
-                <a
-                  class="rounded-full w-20 text-center block"
-                  class:text-primary={progress > 0.3 && progress < 0.45}
-                >
-                  Market
-                </a>
-              </li>
-              <li id="otc-mode">
-                <a
-                  class="rounded-full w-20 text-center block"
-                  class:text-primary={progress > 0.45}
-                >
-                  OTC
-                </a>
-              </li>
-            </ul>
-            <div class="w-full mt-8">
-              {#if progress < 0.6}
-                {#each icons as icon, i}
-                  <div
-                    class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
-                    style="transform: translate({100 *
-                      Math.min(0, 8 * progress - 1) *
-                      (i + 1)}px, 0);"
-                  >
-                    <img src={icon} class="h-8" />
-                    <p class="text-xl">{iconName[i]}</p>
-                  </div>
-                {/each}
-              {:else if progress < 0.7}
-                {#each iconSquared as icon, i}
-                  <div
-                    class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
-                  >
-                    <img src={icon} class="h-8" />
-                    <p class="text-xl">{iconNameSquared[i]}</p>
-                  </div>
-                {/each}
-              {:else if progress < 0.8}
-                {#each iconCubed as icon, i}
-                  <div
-                    class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
-                  >
-                    <img src={icon} class="h-8" />
-                    <p class="text-xl">{iconNameCubed[i]}</p>
-                  </div>
-                {/each}
-              {:else}{#each iconFlip as icon, i}
-                  <div
-                    class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
-                  >
-                    <img src={icon} class="h-8" />
-                    <p class="text-xl">{iconNameFlip[i]}</p>
-                  </div>
-                {/each}{/if}
-            </div>
-            <div
-              class="fixed bottom-8 join m-auto"
-              style="width: calc(100% - 2rem); transform: translate({100 *
-                Math.min(0, 8 * progress - 1) *
-                3}px, 0);"
-            >
-              <button
-                class="btn btn-outline join-item w-1/3"
-                class:btn-active={progress > 0.6 && progress < 0.7}
-                >Squared</button
+                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+                style="transform: translate({100 *
+                  Math.min(0, 8 * progress - 1) *
+                  (i + 1)}px, 0);"
               >
-              <button
-                class="btn btn-outline join-item w-1/3"
-                class:btn-active={progress > 0.7 && progress < 0.8}
-                >Cubed</button
+                <img src={icon} class="h-8" />
+                <p class="text-xl">{iconName[i]}</p>
+              </div>
+            {/each}
+          {:else if progress < 0.7}
+            {#each iconSquared as icon, i}
+              <div
+                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
               >
-              <button
-                class="btn btn-outline join-item w-1/3"
-                class:btn-active={progress > 0.8}>Flip</button
+                <img src={icon} class="h-8" />
+                <p class="text-xl">{iconNameSquared[i]}</p>
+              </div>
+            {/each}
+          {:else if progress < 0.8}
+            {#each iconCubed as icon, i}
+              <div
+                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
               >
-            </div>
-          </div>
+                <img src={icon} class="h-8" />
+                <p class="text-xl">{iconNameCubed[i]}</p>
+              </div>
+            {/each}
+          {:else}{#each iconFlip as icon, i}
+              <div
+                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+              >
+                <img src={icon} class="h-8" />
+                <p class="text-xl">{iconNameFlip[i]}</p>
+              </div>
+            {/each}{/if}
         </div>
+        <div
+          class="join m-auto w-full mt-4"
+          style="transform: translate({100 *
+            Math.min(0, 8 * progress - 1) *
+            3}px, 0);"
+        >
+          <button
+            class="btn btn-outline join-item w-1/3"
+            class:btn-active={progress > 0.6 && progress < 0.7}
+            on:click={() =>
+              parallax.scrollTo(7, {
+                duration: 500,
+              })}>Squared</button
+          >
+          <button
+            class="btn btn-outline join-item w-1/3"
+            class:btn-active={progress > 0.7 && progress < 0.8}
+            on:click={() =>
+              parallax.scrollTo(8, {
+                duration: 500,
+              })}>Cubed</button
+          >
+          <button
+            class="btn btn-outline join-item w-1/3"
+            class:btn-active={progress > 0.8}
+            on:click={() =>
+              parallax.scrollTo(9, {
+                duration: 500,
+              })}>Flip</button
+          >
+        </div>
+        <div class="h-1 rounded-full bg-white w-1/4 m-auto mt-4" />
       </div>
     </div></StickyLayer
   >
@@ -331,14 +382,15 @@
     onProgress={onChartProgress}
     let:progress
   >
-    <div class="flex justify-between items-center h-full">
+    <div class="flex justify-between items-center h-full w-4/5 m-auto">
       <div
         class="mockup-window bg-base-300 border h-1/2 w-1/2 relative ml-20 overflow-visible p-8"
         style="transform: skewX({15 *
           Math.max(0, 1 - 8 * progress)}deg) skewY({-15 *
           Math.max(0, 1 - 8 * progress)}deg) rotateX({-30 *
           Math.max(0, 1 - 8 * progress)}deg) rotateY({30 *
-          Math.max(0, 1 - 8 * progress)}deg)"
+          Math.max(0, 1 - 8 * progress)}deg) translateX({200 *
+          Math.max(0, 1 - 8 * progress)}px)"
       >
         <div class="mt-4">
           <div
@@ -351,6 +403,10 @@
               class="btn btn-outline lg:btn-wide"
               class:btn-primary={progress > 0.3 && progress < 0.45}
               class:btn-active={progress > 0.3 && progress < 0.45}
+              on:click={() =>
+                parallax.scrollTo(14, {
+                  duration: 500,
+                })}
             >
               <CoinIcon symbol="F-BTC" />Flip-Bitcoin
             </div>
@@ -359,6 +415,10 @@
                 class="btn btn-outline join-item"
                 class:btn-primary={progress > 0.45 && progress < 0.6}
                 class:btn-active={progress > 0.45 && progress < 0.6}
+                on:click={() =>
+                  parallax.scrollTo(15, {
+                    duration: 500,
+                  })}
               >
                 APY
               </div>
@@ -374,6 +434,10 @@
                 class="btn btn-outline join-item"
                 class:btn-primary={progress > 0.6 && progress < 0.8}
                 class:btn-active={progress > 0.6 && progress < 0.8}
+                on:click={() =>
+                  parallax.scrollTo(16, {
+                    duration: 500,
+                  })}
               >
                 PNL
               </div>
@@ -403,6 +467,10 @@
               class="btn btn-outline lg:btn-wide join-item"
               class:btn-primary={progress > 0.8}
               class:btn-active={progress > 0.8}
+              on:click={() =>
+                parallax.scrollTo(18, {
+                  duration: 500,
+                })}
             >
               Activation Rate
             </div>
@@ -416,8 +484,10 @@
         </div>
       </div>
       <div class="w-1/3 h-1/2">
-        {#if progress < 0.3}
-          <div class="absolute w-1/3">
+        {#if progress < 0.1}
+          <span />
+        {:else if progress < 0.3}
+          <div class="absolute w-1/3" in:fade>
             <h3 class="text-primary lg:text-5xl text-2xl mt-24">
               <strong>Earn</strong> on your liquidity
             </h3>
@@ -426,6 +496,13 @@
               <p>Earn yields on your liquidity</p>
               <p>Catch the traders swap fees</p>
             </div>
+            <a
+              class="btn btn-outline"
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://docs.sf.exchange/docs/protocol-rules/liquidity-provider"
+              >Learn More</a
+            >
           </div>
         {:else if progress < 0.6}
           <div class="absolute w-1/3">
@@ -488,6 +565,42 @@
           style="opacity: {i * 0.03}; height: {i * 2}px;"
         />
       {/each}
+    </div>
+  </StickyLayer>
+
+  <StickyLayer
+    rate={2}
+    offset={{ top: 1, bottom: 18 }}
+    let:progress
+    style="height: 0px !important;"
+  >
+    <div class="pt-32 pl-20">
+      <ul class="border-l-2 border-primary pl-8 z-20">
+        <li
+          class="cursor-pointer"
+          class:font-bold={progress < 0.5}
+          class:text-primary={progress < 0.5}
+          class:text-xl={progress < 0.5}
+          on:click={() =>
+            parallax.scrollTo(3, {
+              duration: 500,
+            })}
+        >
+          Trader
+        </li>
+        <li
+          class="cursor-pointer"
+          class:font-bold={progress > 0.5}
+          class:text-primary={progress > 0.5}
+          class:text-xl={progress > 0.5}
+          on:click={() =>
+            parallax.scrollTo(12, {
+              duration: 500,
+            })}
+        >
+          Liquidity Provider
+        </li>
+      </ul>
     </div>
   </StickyLayer>
 </Parallax>
