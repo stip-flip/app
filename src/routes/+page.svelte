@@ -165,22 +165,26 @@
   </StickyLayer>
 
   <StickyLayer rate={1} offset={{ top: 1, bottom: 9 }} let:progress>
-    <div class="lg:flex items-center justify-around p-8 w-2/3 m-auto">
-      <div class="w-1/3 h-32">
+    <div
+      class="lg:flex lg:items-center lg:justify-center lg:p-8 lg:w-2/3 m-auto"
+    >
+      <div
+        class="lg:w-1/2 lg:h-32 h-32 lg:mt-24 mt-16 relative lg:px-0 px-4 text-center lg:text-right"
+      >
         {#if progress < 0.1}
           <span />
         {:else if progress < 0.3}
-          <div class="absolute w-1/3" in:fade>
-            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
+          <div class="lg:absolute" in:fade>
+            <h3 class="text-primary lg:text-5xl text-2xl">
               Innovative Oracle system
             </h3>
-            <div class="py-4">
+            <div class="lg:py-4 lg:text-base text-sm">
               <p>With our groundbreaking proof of stake oracle contract</p>
               <p>Now you can trade any indices</p>
               <p>And earn by becoming an Oracle Operator</p>
             </div>
             <a
-              class="btn btn-outline"
+              class="lg:btn lg:btn-outline hidden"
               target="_blank"
               rel="noopener noreferrer"
               href="https://docs.sf.exchange/docs/protocol-rules/data-provider"
@@ -188,29 +192,29 @@
             >
           </div>
         {:else if progress < 0.6}
-          <div class="absolute w-1/3">
+          <div class="lg:absolute">
             {#if progress < 0.45}
-              <h3 id="market" class="text-primary lg:text-5xl text-2xl mt-24">
+              <h3 id="market" class="text-primary lg:text-5xl text-2xl">
                 Trade on the <strong class="text-primary">Market</strong>
               </h3>
-              <p class="py-4">As you would on any other DEX</p>
+              <p class="lg:py-4">As you would on any other DEX</p>
               <a
-                class="btn btn-outline"
+                class="lg:btn lg:btn-outline hidden"
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://docs.sf.exchange/docs/protocol-rules/trader"
                 >Learn More</a
               >
             {:else}
-              <h3 id="otc" class="text-primary lg:text-5xl text-2xl mt-24">
+              <h3 id="otc" class="text-primary lg:text-5xl text-2xl">
                 <strong class="text-primary">Over The Counter</strong>
               </h3>
-              <p class="py-4">
+              <p class="lg:py-4">
                 Your trade will be active at the next Oracle price with no
                 slippage
               </p>
               <a
-                class="btn btn-outline"
+                class="lg:btn lg:btn-outline hidden"
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://docs.sf.exchange/docs/protocol-rules/trader"
@@ -219,16 +223,16 @@
             {/if}
           </div>
         {:else if progress < 0.8}
-          <div class="absolute w-1/3">
-            <h3 id="leverage" class="text-primary lg:text-5xl text-2xl mt-24">
+          <div class="absolute">
+            <h3 id="leverage" class="text-primary lg:text-5xl text-2xl">
               on <strong>Leverage</strong>
             </h3>
-            <div class="py-4">
+            <div class="lg:py-4">
               <p>Discover squared and cubed trading</p>
               <p>Increase your position volatility with no liquidation risk</p>
             </div>
             <a
-              class="btn btn-outline"
+              class="lg:btn lg:btn-outline hidden"
               target="_blank"
               rel="noopener noreferrer"
               href="https://docs.sf.exchange/docs/protocol-rules/leverage"
@@ -236,11 +240,11 @@
             >
           </div>
         {:else}
-          <div class="absolute w-1/3">
-            <h3 id="flip" class="text-primary lg:text-5xl text-2xl mt-24">
+          <div class="absolute">
+            <h3 id="flip" class="text-primary lg:text-5xl text-2xl">
               on <strong>Reverse</strong>
             </h3>
-            <div class="py-4">
+            <div class="lg:py-4">
               <p>
                 A flip is an instrument that inversely tracks the price of an
                 asset
@@ -251,7 +255,7 @@
       </div>
 
       <div
-        class="border-4 border-black bg-base-300 py-4 px-2 lg:mt-36 overflow-visible lg:h-auto"
+        class="border-4 border-black bg-base-300 py-4 px-2 lg:mt-36 overflow-visible lg:h-auto lg:w-auto w-64 m-auto"
         style="border-radius: 2.5rem; transform: skewX({-30 *
           Math.max(0, 1 - 8 * progress)}deg) skewY({30 *
           Math.max(0, 1 - 8 * progress)}deg) rotateX({-30 *
@@ -382,9 +386,11 @@
     onProgress={onChartProgress}
     let:progress
   >
-    <div class="flex justify-between items-center h-full w-4/5 m-auto">
+    <div
+      class="lg:flex lg:justify-between lg:items-center lg:h-full lg:w-4/5 m-auto lg:px-0 px-1"
+    >
       <div
-        class="mockup-window bg-base-300 border h-1/2 w-1/2 relative ml-20 overflow-visible p-8"
+        class="mockup-window bg-base-300 border lg:h-1/2 lg:w-1/2 relative lg:ml-20 mt-24 overflow-visible lg:p-8 p-4"
         style="transform: skewX({15 *
           Math.max(0, 1 - 8 * progress)}deg) skewY({-15 *
           Math.max(0, 1 - 8 * progress)}deg) rotateX({-30 *
@@ -392,15 +398,15 @@
           Math.max(0, 1 - 8 * progress)}deg) translateX({200 *
           Math.max(0, 1 - 8 * progress)}px)"
       >
-        <div class="mt-4">
+        <div class="lg:mt-4">
           <div
-            class="flex lg:space-x-4 space-x-2 py-8"
+            class="flex lg:space-x-4 space-x-2 lg:py-8"
             style="transform: translate({-100 *
               Math.min(0, 8 * progress - 1) *
               5}px, 0);"
           >
             <div
-              class="btn btn-outline lg:btn-wide"
+              class="btn btn-outline lg:btn-md btn-sm lg:btn-wide"
               class:btn-primary={progress > 0.3 && progress < 0.45}
               class:btn-active={progress > 0.3 && progress < 0.45}
               on:click={() =>
@@ -412,7 +418,7 @@
             </div>
             <div class="join">
               <div
-                class="btn btn-outline join-item"
+                class="btn btn-outline lg:btn-md btn-sm join-item"
                 class:btn-primary={progress > 0.45 && progress < 0.6}
                 class:btn-active={progress > 0.45 && progress < 0.6}
                 on:click={() =>
@@ -423,7 +429,7 @@
                 APY
               </div>
               <div
-                class="btn btn-outline join-item"
+                class="btn btn-outline lg:btn-md btn-sm join-item"
                 class:btn-primary={progress > 0.45 && progress < 0.6}
               >
                 0.3%
@@ -431,7 +437,7 @@
             </div>
             <div class="join">
               <div
-                class="btn btn-outline join-item"
+                class="btn btn-outline lg:btn-md btn-sm join-item"
                 class:btn-primary={progress > 0.6 && progress < 0.8}
                 class:btn-active={progress > 0.6 && progress < 0.8}
                 on:click={() =>
@@ -442,7 +448,7 @@
                 PNL
               </div>
               <div
-                class="btn btn-outline join-item"
+                class="btn btn-outline lg:btn-md btn-sm join-item"
                 class:btn-primary={progress > 0.6 && progress < 0.8}
               >
                 3.0 <Icon icon="mdi:ethereum" class="text-green-600 text-2xl" />
@@ -450,7 +456,7 @@
             </div>
           </div>
           <div
-            class="rounded-2xl bg-gradient h-52 lg:margin-auto pb-4"
+            class="rounded-2xl bg-gradient lg:h-52 h-32 lg:margin-auto pb-4"
             style="transform: translate({-100 *
               Math.min(0, 8 * progress - 1) *
               2}px, 0);"
@@ -458,13 +464,13 @@
             <LiquidityChart initializedTicks={ticks} FR={$FR} />
           </div>
           <div
-            class="join mt-8"
+            class="join lg:mt-8 mt-4"
             style="transform: translate({-100 *
               Math.min(0, 8 * progress - 1) *
               6}px, 0);"
           >
             <div
-              class="btn btn-outline lg:btn-wide join-item"
+              class="btn btn-outline lg:btn-wide lg:btn-md btn-sm join-item"
               class:btn-primary={progress > 0.8}
               class:btn-active={progress > 0.8}
               on:click={() =>
@@ -475,7 +481,7 @@
               Activation Rate
             </div>
             <div
-              class="btn btn-outline join-item"
+              class="btn btn-outline lg:btn-md btn-sm join-item"
               class:btn-primary={progress > 0.8}
             >
               {($FR / 100).toFixed(2)}%
@@ -483,11 +489,11 @@
           </div>
         </div>
       </div>
-      <div class="w-1/3 h-1/2">
+      <div class="lg:w-2/5 lg:h-1/2 relative lg:text-left text-center">
         {#if progress < 0.1}
           <span />
         {:else if progress < 0.3}
-          <div class="absolute w-1/3" in:fade>
+          <div class="lg:absolute" in:fade>
             <h3 class="text-primary lg:text-5xl text-2xl mt-24">
               <strong>Earn</strong> on your liquidity
             </h3>
@@ -505,7 +511,7 @@
             >
           </div>
         {:else if progress < 0.6}
-          <div class="absolute w-1/3">
+          <div class="lg:absolute">
             {#if progress < 0.45}
               <h3 class="text-primary lg:text-5xl text-2xl mt-24">
                 Choose your <strong class="text-primary">Exposition</strong>
@@ -523,7 +529,7 @@
             {/if}
           </div>
         {:else if progress < 0.8}
-          <div class="absolute w-1/3">
+          <div class="lg:absolute">
             <h3 class="text-primary lg:text-5xl text-2xl mt-24">
               Collect <strong>Swap Fees</strong>
             </h3>
@@ -534,7 +540,7 @@
             </div>
           </div>
         {:else}
-          <div class="absolute w-1/3">
+          <div class="lg:absolute">
             <h3 class="text-primary lg:text-5xl text-2xl mt-24">
               Hedge your <strong>Risk</strong>
             </h3>
@@ -573,6 +579,7 @@
     offset={{ top: 1, bottom: 18 }}
     let:progress
     style="height: 0px !important;"
+    class="lg:block hidden"
   >
     <div class="pt-32 pl-20">
       <ul class="border-l-2 border-primary pl-8 z-20">
