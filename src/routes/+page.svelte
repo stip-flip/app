@@ -89,22 +89,22 @@
 </script>
 
 <Parallax sections={20} bind:this={parallax}>
+  <ParallaxLayer rate={1} offset={0}>
+    <div class="absolute w-full flex justify-center z-0">
+      <img src="/icon.svg" class="w-1/4 lg:m-0 mt-24" />
+    </div>
+  </ParallaxLayer>
   <ParallaxLayer rate={1} offset={0} let:progress>
     <div
       class="text-center lg:text-start lg:mt-0 lg:left-28 h-full flex justify-between flex-col"
     >
-      <img
-        src="/icon.svg"
-        class="absolute w-1/4 lg:m-0 mt-24"
-        style="transform: translate(150%, 10%);"
-      />
       <div class="lg:w-full h-1/2 m-auto flex items-end">
         <div class="mx-auto mb-8">
           <!-- <h1 class="lg:text-6xl text-3xl text-center w-full padauk font-bold">
             S&F
           </h1> -->
           <h2
-            class="lg:mt-8 mt-2 lg:text-8xl text-xl lg:px-0 px-4 text-base-content text-center"
+            class="lg:mt-8 mt-2 lg:text-8xl text-3xl lg:px-0 px-4 text-base-content text-center"
           >
             Trade <strong class="text-primary">everything</strong>
           </h2>
@@ -137,6 +137,7 @@
       <div class="lg:h-1/3 w-full flex justify-center items-end">
         <Countdown />
       </div>
+
       <div class="lg:h-1/4 h-1/6">
         <!-- call to scroll -->
         <div
@@ -174,7 +175,7 @@
         {#if progress < 0.1}
           <span />
         {:else if progress < 0.3}
-          <div class="lg:absolute" in:fade>
+          <div class="" in:fade>
             <h3 class="text-primary lg:text-5xl text-2xl">
               Innovative Oracle system
             </h3>
@@ -192,7 +193,7 @@
             >
           </div>
         {:else if progress < 0.6}
-          <div class="lg:absolute">
+          <div class="">
             {#if progress < 0.45}
               <h3 id="market" class="text-primary lg:text-5xl text-2xl">
                 Trade on the <strong class="text-primary">Market</strong>
@@ -223,7 +224,7 @@
             {/if}
           </div>
         {:else if progress < 0.8}
-          <div class="absolute">
+          <div class="">
             <h3 id="leverage" class="text-primary lg:text-5xl text-2xl">
               on <strong>Leverage</strong>
             </h3>
@@ -240,7 +241,7 @@
             >
           </div>
         {:else}
-          <div class="absolute">
+          <div class="">
             <h3 id="flip" class="text-primary lg:text-5xl text-2xl">
               on <strong>Reverse</strong>
             </h3>
@@ -557,17 +558,42 @@
   </StickyLayer>
 
   <StickyLayer rate={1} offset={{ top: 19, bottom: 20 }}>
-    <div class="flex justify-around items-end lg:h-1/3 h-5/6">
-      <a class=" text-white btn btn-lg lg:w-1/3" href="swap">Start Trading</a>
-      <a
-        class="btn-info text-white btn btn-lg lg:w-1/3"
-        href="https://docs.sf.exchange/">Learn more</a
-      >
+    <div class="w-screen z-10 mt-32">
+      <div class="lg:w-1/2 lg:px-0 px-4 lg:m-auto">
+        <div class="lg:py-2 flex lg:space-x-4 space-x-2">
+          <a
+            class="text-center lg:py-12 py-4 text-xl fine-border rounded-tl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
+            href="/swap"
+          >
+            Trade
+          </a>
+          <a
+            class="text-center lg:py-12 py-4 text-xl fine-border rounded-tr-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
+            href="/earn"
+          >
+            Deposit
+          </a>
+        </div>
+        <div class="py-2 flex lg:space-x-4 space-x-2">
+          <a
+            class="text-center lg:py-12 py-4 text-xl fine-border rounded-bl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
+            href="/oracle/deposit"
+          >
+            Stake
+          </a>
+          <a
+            class="text-center lg:py-12 py-4 text-xl fine-border rounded-br-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
+            href="https://docs.sf.exchange"
+          >
+            Learn
+          </a>
+        </div>
+      </div>
     </div>
     <div class="absolute h-1/2 w-full bottom-0 left-0">
       {#each Array.from({ length: 19 }) as _, i}
         <div
-          class="bg-primary h-4 mt-2"
+          class="bg-white h-4 mt-2"
           style="opacity: {i * 0.03}; height: {i * 2}px;"
         />
       {/each}
