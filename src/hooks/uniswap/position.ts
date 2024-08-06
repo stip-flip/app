@@ -1,9 +1,9 @@
+import { BigNumber, type BigNumberish } from "ethers";
 import { gqlsdk, sdk } from "src/stores";
-import { derived, get } from "svelte/store";
-import { resolvedTransactions } from "../transactions";
 import { signerAddress } from "svelte-ethers-store";
+import { derived, get } from "svelte/store";
 import type { UniPositionFragment } from "../subgraph";
-import { constants, type BigNumberish, BigNumber } from "ethers";
+import { resolvedTransactions } from "../transactions";
 
 export type UniPositionInfo = UniPositionFragment & {
   fees: {
@@ -13,27 +13,41 @@ export type UniPositionInfo = UniPositionFragment & {
 };
 
 export const asyncUniPositions = async (owner: string) => {
-  const results = await get(gqlsdk).getUniPositions({
-    where: { owner: owner.toLowerCase() },
-  });
-  const fees = await Promise.all(
-    results.uniPositions.map(
-      async (p) =>
-        await get(sdk).POSITION_MANAGER.callStatic.collect({
-          tokenId: p.id,
-          recipient: get(signerAddress),
-          amount0Max: BigNumber.from("1").shl(128).sub(1),
-          amount1Max: BigNumber.from("1").shl(128).sub(1),
-        })
+  const balance = await get(sdk).POSITION_MANAGER.balanceOf(owner);
+
+  const tokenIDs = await Promise.all(
+    Array.from(
+      { length: balance.toNumber() },
+      async (_, i) =>
+        await get(sdk).POSITION_MANAGER.tokenOfOwnerByIndex(owner, i)
     )
   );
 
-  return results.uniPositions
-    .map((p, i) => ({
-      ...p,
-      fees: fees[i],
-    }))
-    .filter((up) => up.liquidity > 0);
+  const positions = await Promise.all(
+    tokenIDs.map(async (id) => {
+      const p = await get(sdk).POSITION_MANAGER.positions(id);
+      const fees = await get(sdk).POSITION_MANAGER.callStatic.collect({
+        tokenId: id,
+        recipient: get(signerAddress),
+        amount0Max: BigNumber.from("1").shl(128).sub(1),
+        amount1Max: BigNumber.from("1").shl(128).sub(1),
+      });
+      return {
+        ...p,
+        token0: p.token0.toLowerCase(),
+        token1: p.token1.toLowerCase(),
+        id,
+        fees,
+      };
+    })
+  );
+
+  console.log(
+    positions,
+    positions.filter((p) => !p.liquidity.isZero())
+  );
+
+  return positions.filter((p) => !p.liquidity.isZero());
 };
 
 export const useUniPositions = derived(

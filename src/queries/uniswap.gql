@@ -1,13 +1,13 @@
 fragment UniPosition on UniPosition {
   id
-  owner
-  liquidity
-  token0
-  token1
-  tickLower
-  tickUpper
-  tokensOwed0
-  tokensOwed1
+  # owner
+  # liquidity
+  # token0
+  # token1
+  # tickLower
+  # tickUpper
+  # tokensOwed0
+  # tokensOwed1
 }
 
 query getUniPositions($where: UniPosition_filter) {

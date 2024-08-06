@@ -14,8 +14,7 @@
 
   $: positionExist = !!$positionInfos.length;
 
-  $: url = new URL($page.url);
-
+  $: console.log($positionInfos, $poolInfos);
   onMount(updateVc);
 </script>
 

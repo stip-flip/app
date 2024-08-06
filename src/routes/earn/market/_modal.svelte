@@ -429,9 +429,9 @@
 <Drawer.Root bind:open>
   <Drawer.Trigger />
   <Drawer.Portal>
-    <Drawer.Overlay class="fixed inset-0 bg-black/40" />
+    <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden" />
     <Drawer.Content
-      class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border z-20"
+      class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border z-20 lg:hidden"
     >
       <div class="w-1/6 mb-8 h-1 bg-base-content rounded-full border- m-auto" />
       <div class="px-4">

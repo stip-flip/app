@@ -267,7 +267,7 @@
         <div class="bg-black rounded-full h-5 w-2/5 mx-auto" />
 
         <ul
-          class="relative menu menu-md menu-horizontal bg-gradient rounded-full bg-opacity-50 p-0 shadow-sm shadow-base-content mt-4"
+          class="relative menu menu-sm menu-horizontal rounded-full bg-opacity-50 p-0 fine-border mt-4"
           id="modes"
           style="transform: translate({100 *
             Math.min(0, 8 * progress - 1) *
@@ -308,38 +308,38 @@
           {#if progress < 0.6}
             {#each icons as icon, i}
               <div
-                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg bg-black bg-opacity-20"
                 style="transform: translate({100 *
                   Math.min(0, 8 * progress - 1) *
                   (i + 1)}px, 0);"
               >
-                <img src={icon} class="h-8" />
+                <img src={icon} class="h-7" />
                 <p class="text-xl">{iconName[i]}</p>
               </div>
             {/each}
           {:else if progress < 0.7}
             {#each iconSquared as icon, i}
               <div
-                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg bg-black bg-opacity-20"
               >
-                <img src={icon} class="h-8" />
+                <img src={icon} class="h-7" />
                 <p class="text-xl">{iconNameSquared[i]}</p>
               </div>
             {/each}
           {:else if progress < 0.8}
             {#each iconCubed as icon, i}
               <div
-                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg bg-black bg-opacity-20"
               >
-                <img src={icon} class="h-8" />
+                <img src={icon} class="h-7" />
                 <p class="text-xl">{iconNameCubed[i]}</p>
               </div>
             {/each}
           {:else}{#each iconFlip as icon, i}
               <div
-                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg fine-border bg-black bg-opacity-20"
+                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg bg-black bg-opacity-20"
               >
-                <img src={icon} class="h-8" />
+                <img src={icon} class="h-7" />
                 <p class="text-xl">{iconNameFlip[i]}</p>
               </div>
             {/each}{/if}
@@ -351,7 +351,7 @@
             3}px, 0);"
         >
           <button
-            class="btn btn-outline join-item w-1/3"
+            class="btn btn-sm btn-outline fine-border join-item w-1/3 text-xs"
             class:btn-active={progress > 0.6 && progress < 0.7}
             on:click={() =>
               parallax.scrollTo(7, {
@@ -359,7 +359,7 @@
               })}>Squared</button
           >
           <button
-            class="btn btn-outline join-item w-1/3"
+            class="btn btn-sm btn-outline fine-border join-item w-1/3 text-xs"
             class:btn-active={progress > 0.7 && progress < 0.8}
             on:click={() =>
               parallax.scrollTo(8, {
@@ -367,7 +367,7 @@
               })}>Cubed</button
           >
           <button
-            class="btn btn-outline join-item w-1/3"
+            class="btn btn-sm btn-outline fine-border join-item w-1/3 text-xs"
             class:btn-active={progress > 0.8}
             on:click={() =>
               parallax.scrollTo(9, {
