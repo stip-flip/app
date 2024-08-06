@@ -247,6 +247,15 @@
                   class:selected={$page.route?.id?.startsWith("/earn")}>Earn</a
                 >
               </li>
+              <li id="stake">
+                <a
+                  href={navigate("/oracle", url)}
+                  class="rounded-full"
+                  class:text-primary={$page.route?.id?.startsWith("/oracle")}
+                  class:selected={$page.route?.id?.startsWith("/oracle")}
+                  >Stake</a
+                >
+              </li>
               <li>
                 <a
                   href={navigate("/faucet", url)}
@@ -307,6 +316,14 @@
       >
         <Icon icon="mdi:chart-line" class="text-3xl" />
         <span class="btm-nav-label text-xs">Earn</span>
+      </a>
+      <a
+        class:text-primary={$page.route?.id?.startsWith("/oracle")}
+        href={navigate("/oracle", url)}
+        on:click|preventDefault={() => goto(navigate("/oracle", url))}
+      >
+        <Icon icon="mingcute:coin-2-line" class="text-3xl" />
+        <span class="btm-nav-label text-xs">Stake</span>
       </a>
     </div>
   </div>

@@ -26,7 +26,7 @@
     <div class="py-2 flex lg:space-x-4 space-x-2">
       <a
         class="text-center lg:py-12 py-4 text-xl fine-border rounded-bl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
-        href="/oracle/deposit"
+        href="/oracle"
       >
         Stake
       </a>

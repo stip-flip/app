@@ -46,8 +46,8 @@
 
 <div class="flex mt-4 space-x-8 items-center">
   <button
-    class="btn btn-primary w-1/3"
-    class:w-full={depositTooLow}
+    class="btn btn-primary lg:w-1/3 w-full"
+    class:lg:w-full={depositTooLow}
     disabled={deposit == ""}
     on:click={(_) => {
       if (depositTooHigh) return;
