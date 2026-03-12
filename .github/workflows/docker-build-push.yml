@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: docker.nuts.cash
-  IMAGE_NAME: sf-app
+  IMAGE_NAME: app
 
 jobs:
   build-and-push:
