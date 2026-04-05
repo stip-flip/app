@@ -6,8 +6,8 @@ module.exports = sdk.defineConfig({
     ether: "https://etc.blockscout.com/api",
   },
   rpc: {
-    mordor: "https://mordor.sf.exchange",
-    ether: "https://etc.etcdesktop.com",
+    mordor: "https://mordor.stipflip.xyz",
+    ether: "https://classic.stipflip.xyz",
   },
   contracts: {
     mordor: {
