@@ -14,7 +14,7 @@ export const INITIAL_BLOCK = 3108107;
 
 const networks = {
   61: "etc.etcdesktop.com",
-  63: "mordor.sf.exchange",
+  63: "mordor.stipflip.xyz",
 };
 
 const providerMap = {

@@ -188,7 +188,7 @@
               class="lg:btn lg:btn-outline hidden"
               target="_blank"
               rel="noopener noreferrer"
-              href="https://docs.sf.exchange/docs/protocol-rules/data-provider"
+              href="https://docs.stipflip.xyz/docs/protocol-rules/data-provider"
               >Learn More</a
             >
           </div>
@@ -203,7 +203,7 @@
                 class="lg:btn lg:btn-outline hidden"
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://docs.sf.exchange/docs/protocol-rules/trader"
+                href="https://docs.stipflip.xyz/docs/protocol-rules/trader"
                 >Learn More</a
               >
             {:else}
@@ -218,7 +218,7 @@
                 class="lg:btn lg:btn-outline hidden"
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://docs.sf.exchange/docs/protocol-rules/trader"
+                href="https://docs.stipflip.xyz/docs/protocol-rules/trader"
                 >Learn More</a
               >
             {/if}
@@ -236,7 +236,7 @@
               class="lg:btn lg:btn-outline hidden"
               target="_blank"
               rel="noopener noreferrer"
-              href="https://docs.sf.exchange/docs/protocol-rules/leverage"
+              href="https://docs.stipflip.xyz/docs/protocol-rules/leverage"
               >Learn More</a
             >
           </div>
@@ -507,7 +507,7 @@
               class="btn btn-outline"
               target="_blank"
               rel="noopener noreferrer"
-              href="https://docs.sf.exchange/docs/protocol-rules/liquidity-provider"
+              href="https://docs.stipflip.xyz/docs/protocol-rules/liquidity-provider"
               >Learn More</a
             >
           </div>
@@ -583,7 +583,7 @@
           </a>
           <a
             class="text-center lg:py-12 py-4 text-xl fine-border rounded-br-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal bg-gradient"
-            href="https://docs.sf.exchange"
+            href="https://docs.stipflip.xyz"
           >
             Learn
           </a>

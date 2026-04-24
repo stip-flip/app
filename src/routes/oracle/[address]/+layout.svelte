@@ -83,7 +83,7 @@
     <br />To learn more on how to become a price provider
     <a
       class="text-info font-bold"
-      href="https://docs.sf.exchange/docs/developer/provide-data"
+      href="https://docs.stipflip.xyz/docs/developer/provide-data"
       >visit this page</a
     >
   </div> -->
@@ -94,7 +94,7 @@
       To learn more on how to become a price provider
       <a
         class="text-info font-bold"
-        href="https://docs.sf.exchange/docs/developer/provide-data"
+        href="https://docs.stipflip.xyz/docs/developer/provide-data"
         >visit this page</a
       >
     </div>

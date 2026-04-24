@@ -33,7 +33,7 @@ export const swapSteps = [
     popover: {
       title: "Token Filter",
       description:
-        "Use this menu to filter out the tokens you are interested in. Filter by exposition (long or short) or by leverage, you can use no leverage or squared and cubed leverage. Learn more <a href='https://docs.sf.exchange/docs/protocol-rules/leverage'>here</a>",
+        "Use this menu to filter out the tokens you are interested in. Filter by exposition (long or short) or by leverage, you can use no leverage or squared and cubed leverage. Learn more <a href='https://docs.stipflip.xyz/docs/protocol-rules/leverage'>here</a>",
     },
   },
   {

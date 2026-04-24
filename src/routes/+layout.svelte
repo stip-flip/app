@@ -62,7 +62,7 @@
     }
   }
 
-  let docurl = "https://docs.sf.exchange/docs";
+  let docurl = "https://docs.stipflip.xyz/docs";
 
   const idToChain: any = {
     61: "etc",
@@ -153,7 +153,7 @@
 <!-- {#if $resolvedTransactions[lastResolvedIndex] && !!$resolvedTransactions[lastResolvedIndex].resolved && $resolvedTransactions[lastResolvedIndex].status == 1}
   <div class="toast z-10">
     <div class="alert alert-success flex space-x-2">
-      
+
     </div>
   </div>
 {/if} -->
@@ -175,7 +175,7 @@
             </a>
             <div class="flex space-x-4">
               <a
-                href="https://docs.sf.exchange"
+                href="https://docs.stipflip.xyz"
                 class="p-1 rounded-md text-base-content hover:text-primary"
                 >Documentation</a
               >

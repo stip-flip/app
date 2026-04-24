@@ -32,7 +32,7 @@
       </a>
       <a
         class="text-center lg:py-12 py-4 text-xl fine-border rounded-br-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
-        href="https://docs.sf.exchange"
+        href="https://docs.stipflip.xyz"
       >
         Learn
       </a>

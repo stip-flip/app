@@ -23,7 +23,7 @@
     // wait 1 seconds before fetching the last claim
     await new Promise((resolve) => setTimeout(resolve, 100));
     const res = await fetch(
-      `https://faucet.sf.exchange/last-claim?to=${$signerAddress}`
+      `https://faucet.stipflip.xyz/last-claim?to=${$signerAddress}`
     );
     // parse the response as a string
     const text = await res.text();
@@ -35,7 +35,7 @@
 
   onMount(fetchLastClaim);
 
-  $: faucetURL = `https://faucet.sf.exchange/?to=${$signerAddress}`;
+  $: faucetURL = `https://faucet.stipflip.xyz/?to=${$signerAddress}`;
   // $: faucetURL = `http://localhost:3030/?to=${$signerAddress}`;
 </script>
 

@@ -14,7 +14,7 @@ export const networkInfos: { [key: string]: any } = {
   61: {
     name: "The Ether",
     icon: "mdi:ethereum",
-    rpc: "https://ether.sf.exchange",
+    rpc: "https://ether.stipflip.xyz",
     explorer: "https://etc.blockscout.com/",
     tokenName: "Ether Coin",
     symbol: "ETC",
@@ -23,7 +23,7 @@ export const networkInfos: { [key: string]: any } = {
   63: {
     name: "Mordor",
     icon: "mdi:ethereum",
-    rpc: "https://mordor.sf.exchange",
+    rpc: "https://mordor.stipflip.xyz",
     explorer: "https://mordor-etc.blockscout.com/",
     symbol: "METC",
     decimals: 18,

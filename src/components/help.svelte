@@ -26,7 +26,7 @@
     >
       <li><a on:click={(_) => appTour.drive()}>App Tour</a></li>
       <li><a on:click={(_) => pageTour(pageName).drive()}> Page Tour</a></li>
-      <li><a href="https://docs.sf.exchange">Documentation</a></li>
+      <li><a href="https://docs.stipflip.xyz">Documentation</a></li>
     </ul>
   </div>
 {/if}
