@@ -8,7 +8,7 @@ const mainnet = {
   name: "Ethereum Classic",
   currency: "ETC",
   explorerUrl: "https://etc.blockscout.com/",
-  rpcUrl: "https://ether.stipflip.xyz",
+  rpcUrl: "https://classic.stipflip.xyz",
 };
 
 const testnet = {
@@ -36,7 +36,7 @@ const ethersConfig = defaultConfig({
   enableEIP6963: true, // true by default
   enableInjected: true, // true by default
   enableCoinbase: true, // true by default
-  rpcUrl: "https://ether.stipflip.xyz", // used for the Coinbase SDK
+  rpcUrl: "https://classic.stipflip.xyz", // used for the Coinbase SDK
   defaultChainId: 61, // used for the Coinbase SDK
 });
 

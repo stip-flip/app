@@ -14,7 +14,7 @@ export const networkInfos: { [key: string]: any } = {
   61: {
     name: "The Ether",
     icon: "mdi:ethereum",
-    rpc: "https://ether.stipflip.xyz",
+    rpc: "https://classic.stipflip.xyz",
     explorer: "https://etc.blockscout.com/",
     tokenName: "Ether Coin",
     symbol: "ETC",
