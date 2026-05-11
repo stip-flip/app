@@ -6,7 +6,6 @@
   import { connected } from "svelte-ethers-store";
 
   $: url = new URL($page.url);
-  $: console.log($page.route.id?.split("/")[1]);
   $: pageName = $page.route.id?.split("/")[1];
 </script>
 

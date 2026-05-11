@@ -15,7 +15,7 @@
   <div class="modal-box">
     <h3 class="text-lg font-bold">Welcome to Stip&Flip</h3>
     <p class="py-4">
-      Stip&Flip provide decentralised and permissionless synthetic trading.
+      Stip&Flip provides decentralized and permissionless synthetic trading.
       <br />
       Trade anything, long and short, with or without leverage, and zero liquidation
       risk.

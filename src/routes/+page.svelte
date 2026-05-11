@@ -1,653 +1,715 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import CoinIcon from "src/components/coin-icon.svelte";
-  import Countdown from "src/components/countdown.svelte";
-  import LiquidityChart from "src/components/liquidity-chart.svelte";
   import { onMount } from "svelte";
-  import { Parallax, ParallaxLayer, StickyLayer } from "svelte-parallax";
 
   onMount(() => {
     document.getElementsByTagName("html")[0].setAttribute("data-theme", "dark");
   });
 
-  let mode = "market";
-
-  const icons = [
-    "/S-USD.svg",
-    "/S-BTC.svg",
-    "/S-BTC³.svg",
-    "/S-ETH².svg",
-    "/F-ETH³.svg",
-    "/S-SOL.svg",
-    "/F-BTC².svg",
-    // "/S-ETH.svg",
-    // "/F-DOGE.svg",
-    // "/S-DOGE.svg",
-    // "/F-XMR.svg",
-    // "/S-SOL².svg",
+  const paths = [
+    {
+      title: "Trade",
+      text: "Enter tokenized perpetual exposure through OTC settlement or instant secondary markets.",
+      href: "/swap",
+      icon: "mdi:swap-horizontal",
+    },
+    {
+      title: "Provide liquidity",
+      text: "Back synthetic exposure through funding-rate markets and earn protocol flows.",
+      href: "/earn",
+      icon: "mdi:chart-line",
+    },
+    {
+      title: "Submit prices",
+      text: "Stake ETC, participate in oracle rounds, and earn bounties for accurate data.",
+      href: "/oracle",
+      icon: "mdi:database-eye",
+    },
+    {
+      title: "Create markets",
+      text: "Launch new synthetic assets and build execution around S&F position tokens.",
+      href: "https://docs.stipflip.xyz/docs/developer/synth-creation",
+      icon: "mdi:source-branch-plus",
+    },
   ];
 
-  const iconName = [
-    "Stip-USD",
-    "Stip-BTC",
-    "Stip-BTC³",
-    "Stip-ETH²",
-    "Flip-ETH³",
-    "Stip-SOL",
-    "Flip-BTC²",
-    // "Stip-ETH",
-    // "Flip-DOGE",
-    // "Stip-DOGE",
-    // "Flip-XMR",
-    // "Stip-SOL²",
+  const settlement = [
+    "ETC collateral",
+    "Issuance and redemption",
+    "Funding-rate accounting",
+    "Open oracle rounds",
+    "Position-token balances",
   ];
 
-  const iconSquared = ["/S-ETH².svg", "/F-BTC².svg", "/S-SOL².svg"];
-
-  const iconNameSquared = ["Stip-ETH²", "Flip-BTC²", "Stip-SOL²"];
-
-  const iconCubed = ["/S-BTC³.svg", "/F-ETH³.svg"];
-  const iconNameCubed = ["Stip-BTC³", "Flip-ETH³"];
-
-  const iconFlip = ["/F-DOGE.svg", "/F-XMR.svg", "/F-BTC.svg", "/F-ETH.svg"];
-
-  const iconNameFlip = ["Flip-DOGE", "Flip-XMR", "Flip-BTC", "Flip-ETH"];
-
-  const iconsTranslate = [2, 4, 3, 9, 1, 7];
-
-  import { spring } from "svelte/motion";
-  import { fade } from "svelte/transition";
-
-  $: FR = spring(500, { stiffness: 0.1, damping: 0.8 });
-
-  let ticks = {
-    0: 1000,
-    50: 1000,
-    100: 200,
-    240: 600,
-    350: 800,
-    500: 100,
-    600: 200,
-  };
-
-  let leveraged = [
-    "/S-ETH².svg",
-    "/F-BTC².svg",
-    "/S-SOL².svg",
-    "/F-ETH.svg",
-    "/S-DOGE².svg",
-    "/F-SOL.svg",
-    "/F-XMR².svg",
-    "/S-BTC.svg",
+  const comparisons = [
+    ["Position", "Venue account state", "Wallet-held token"],
+    ["Execution", "One venue", "Any market"],
+    ["Oracle", "Liquidation feed", "Settlement feed"],
+    ["Listings", "Operator controlled", "Permissionless"],
+    ["Collateral", "Venue assumptions", "ETC base layer"],
   ];
-
-  const onChartProgress = (progress: number) => {
-    FR.set(progress * 1000);
-  };
-
-  let parallax: Parallax;
 </script>
 
-<Parallax sections={20} bind:this={parallax}>
-  <ParallaxLayer rate={1} offset={0}>
-    <div class="absolute w-full flex justify-center z-0">
-      <img src="/icon.svg" class="w-1/4 lg:m-0 mt-24" />
-    </div>
-  </ParallaxLayer>
-  <ParallaxLayer rate={1} offset={0} let:progress>
-    <div
-      class="text-center lg:text-start lg:mt-0 lg:left-28 h-full flex justify-between flex-col"
-    >
-      <div class="lg:w-full h-1/2 m-auto flex items-end">
-        <div class="mx-auto mb-8">
-          <!-- <h1 class="lg:text-6xl text-3xl text-center w-full padauk font-bold">
-            S&F
-          </h1> -->
-          <h2
-            class="lg:mt-8 mt-2 lg:text-8xl text-3xl lg:px-0 px-4 text-base-content text-center"
-          >
-            Trade <strong class="text-primary">everything</strong>
-          </h2>
-          <p class="text-center mt-8">
-            Stip&Flip is the leading DeFi protocol for decentralized and
-            permissionless asset tokenisation.
-          </p>
-          <p class="text-center">
-            Trade any synthetic indices or earn by providing liquidity.
-          </p>
+<svelte:head>
+  <title>Stip & Flip | Perpetual Settlement Layer</title>
+  <meta
+    name="description"
+    content="Stip & Flip is the settlement layer for tokenized perpetual markets on ETC."
+  />
+</svelte:head>
 
-          <div
-            class="flex lg:justify-center space-x-2 lg:mt-8 lg:px-0 px-8 z-20"
-          >
-            <div class="flex space-x-4 w-1/4">
-              <a href="https://github.com/stip-flip" target="_blank"
-                ><Icon class="lg:text-4xl text-2xl" icon="mdi:github" /></a
-              >
-              <a href="https://twitter.com/stipflip" target="_blank">
-                <Icon class="lg:text-4xl text-2xl" icon="mdi:twitter" /></a
-              >
-              <!-- <a href="https://twitter.com/stipflip" target="_blank">
-                <Icon class="lg:text-2xl text-xl mt-2" icon="bi:substack" /></a
-              > -->
-            </div>
-            <!-- <div class="flex-grow w-1/4" /> -->
-          </div>
+<main class="landing-page min-h-screen overflow-hidden bg-protocol text-base-content">
+  <section class="hero relative px-5 pb-16 pt-28 lg:px-12 lg:pb-20">
+    <img class="hero-mark" src="/icon.svg" alt="" aria-hidden="true" />
+    <div class="mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-center">
+      <div class="hero-copy max-w-5xl">
+        <div class="eyebrow">
+          <Icon icon="mdi:ethereum" />
+          ETC settlement
         </div>
-      </div>
-      <div class="lg:h-1/3 w-full flex justify-center items-end">
-        <Countdown />
-      </div>
 
-      <div class="lg:h-1/4 h-1/6">
-        <!-- call to scroll -->
-        <div
-          class="animate-bounce h-8 mx-auto absolute w-full justify-center flex bottom-4"
-        >
-          <Icon
-            icon="fluent:triangle-down-32-regular"
-            class="text-4xl text-primary"
-          />
-        </div>
-        <div>
-          <div class="flex w-full absolute bottom-4">
-            {#each Array.from({ length: 10 }) as _, i}
-              <div class="lg:min-w-32 lg:min-h-32">
-                <img src="/golden-gate-bridge.svg" />
-              </div>
-            {/each}
-          </div>
-        </div>
-      </div>
-    </div></ParallaxLayer
-  >
+        <h1>The perpetual settlement layer.</h1>
 
-  <StickyLayer rate={2} offset={{ top: 1, bottom: 20 }} let:progress>
-    <div class="bg-2 h-full"></div>
-  </StickyLayer>
+        <p class="hero-subtitle">
+          S&F makes perpetual positions work like tokens. You can trade them anywhere, while the protocol handles collateral, prices, funding, and settlement.
+        </p>
 
-  <StickyLayer rate={1} offset={{ top: 1, bottom: 9 }} let:progress>
-    <div
-      class="lg:flex lg:items-center lg:justify-center lg:p-8 lg:w-2/3 m-auto"
-    >
-      <div
-        class="lg:w-1/2 lg:h-32 h-32 lg:mt-24 mt-16 relative lg:px-0 px-4 text-center lg:text-right"
-      >
-        {#if progress < 0.1}
-          <span />
-        {:else if progress < 0.3}
-          <div class="" in:fade>
-            <h3 class="text-primary lg:text-5xl text-2xl">
-              Innovative Oracle system
-            </h3>
-            <div class="lg:py-4 lg:text-base text-sm">
-              <p>With our groundbreaking proof of stake oracle contract</p>
-              <p>Now you can trade any indices</p>
-              <p>And earn by becoming an Oracle Operator</p>
-            </div>
-            <a
-              class="lg:btn lg:btn-outline hidden"
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://docs.stipflip.xyz/docs/protocol-rules/data-provider"
-              >Learn More</a
-            >
-          </div>
-        {:else if progress < 0.6}
-          <div class="">
-            {#if progress < 0.45}
-              <h3 id="market" class="text-primary lg:text-5xl text-2xl">
-                Trade on the <strong class="text-primary">Market</strong>
-              </h3>
-              <p class="lg:py-4">As you would on any other DEX</p>
-              <a
-                class="lg:btn lg:btn-outline hidden"
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://docs.stipflip.xyz/docs/protocol-rules/trader"
-                >Learn More</a
-              >
-            {:else}
-              <h3 id="otc" class="text-primary lg:text-5xl text-2xl">
-                <strong class="text-primary">Over The Counter</strong>
-              </h3>
-              <p class="lg:py-4">
-                Your trade will be active at the next Oracle price with no
-                slippage
-              </p>
-              <a
-                class="lg:btn lg:btn-outline hidden"
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://docs.stipflip.xyz/docs/protocol-rules/trader"
-                >Learn More</a
-              >
-            {/if}
-          </div>
-        {:else if progress < 0.8}
-          <div class="">
-            <h3 id="leverage" class="text-primary lg:text-5xl text-2xl">
-              on <strong>Leverage</strong>
-            </h3>
-            <div class="lg:py-4">
-              <p>Discover squared and cubed trading</p>
-              <p>Increase your position volatility with no liquidation risk</p>
-            </div>
-            <a
-              class="lg:btn lg:btn-outline hidden"
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://docs.stipflip.xyz/docs/protocol-rules/leverage"
-              >Learn More</a
-            >
-          </div>
-        {:else}
-          <div class="">
-            <h3 id="flip" class="text-primary lg:text-5xl text-2xl">
-              on <strong>Reverse</strong>
-            </h3>
-            <div class="lg:py-4">
-              <p>
-                A flip is an instrument that inversely tracks the price of an
-                asset
-              </p>
-            </div>
-          </div>
-        {/if}
-      </div>
-
-      <div
-        class="border-4 border-black bg-base-300 py-4 px-2 lg:mt-36 overflow-visible lg:h-auto lg:w-auto w-64 m-auto"
-        style="border-radius: 2.5rem; transform: skewX({-30 *
-          Math.max(0, 1 - 8 * progress)}deg) skewY({30 *
-          Math.max(0, 1 - 8 * progress)}deg) rotateX({-30 *
-          Math.max(0, 1 - 8 * progress)}deg) rotateY({30 *
-          Math.max(0, 1 - 8 * progress)}deg) translateX(-{100 *
-          Math.max(0, 1 - 8 * progress)}px)"
-      >
-        <div class="bg-black rounded-full h-5 w-2/5 mx-auto" />
-
-        <ul
-          class="relative menu menu-sm menu-horizontal rounded-full bg-opacity-50 p-0 fine-border mt-4"
-          id="modes"
-          style="transform: translate({100 *
-            Math.min(0, 8 * progress - 1) *
-            3}px, 0);"
-        >
-          <div
-            class="absolute w-1/2 h-full rounded-full transition-all left-1/2 selected"
-            class:!left-0={progress > 0.3 && progress < 0.45}
-            class:border={progress > 0.3 && progress < 0.6}
-            class:border-primary={progress > 0.3 && progress < 0.6}
-          ></div>
-          <li id="market-mode">
-            <a
-              class="rounded-full w-20 text-center block"
-              class:text-primary={progress > 0.3 && progress < 0.45}
-              on:click={() =>
-                parallax.scrollTo(5, {
-                  duration: 500,
-                })}
-            >
-              Market
-            </a>
-          </li>
-          <li id="otc-mode">
-            <a
-              class="rounded-full w-20 text-center block"
-              class:text-primary={progress > 0.45}
-              on:click={() =>
-                parallax.scrollTo(6, {
-                  duration: 500,
-                })}
-            >
-              OTC
-            </a>
-          </li>
-        </ul>
-        <div class="w-full mt-4 h-72">
-          {#if progress < 0.6}
-            {#each icons as icon, i}
-              <div
-                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg bg-black bg-opacity-20"
-                style="transform: translate({100 *
-                  Math.min(0, 8 * progress - 1) *
-                  (i + 1)}px, 0);"
-              >
-                <img src={icon} class="h-7" />
-                <p class="text-xl">{iconName[i]}</p>
-              </div>
-            {/each}
-          {:else if progress < 0.7}
-            {#each iconSquared as icon, i}
-              <div
-                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg bg-black bg-opacity-20"
-              >
-                <img src={icon} class="h-7" />
-                <p class="text-xl">{iconNameSquared[i]}</p>
-              </div>
-            {/each}
-          {:else if progress < 0.8}
-            {#each iconCubed as icon, i}
-              <div
-                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg bg-black bg-opacity-20"
-              >
-                <img src={icon} class="h-7" />
-                <p class="text-xl">{iconNameCubed[i]}</p>
-              </div>
-            {/each}
-          {:else}{#each iconFlip as icon, i}
-              <div
-                class="flex items-center space-x-4 px-4 w-full mt-2 rounded-lg bg-black bg-opacity-20"
-              >
-                <img src={icon} class="h-7" />
-                <p class="text-xl">{iconNameFlip[i]}</p>
-              </div>
-            {/each}{/if}
-        </div>
-        <div
-          class="join m-auto w-full mt-4"
-          style="transform: translate({100 *
-            Math.min(0, 8 * progress - 1) *
-            3}px, 0);"
-        >
-          <button
-            class="btn btn-sm btn-outline fine-border join-item w-1/3 text-xs"
-            class:btn-active={progress > 0.6 && progress < 0.7}
-            on:click={() =>
-              parallax.scrollTo(7, {
-                duration: 500,
-              })}>Squared</button
-          >
-          <button
-            class="btn btn-sm btn-outline fine-border join-item w-1/3 text-xs"
-            class:btn-active={progress > 0.7 && progress < 0.8}
-            on:click={() =>
-              parallax.scrollTo(8, {
-                duration: 500,
-              })}>Cubed</button
-          >
-          <button
-            class="btn btn-sm btn-outline fine-border join-item w-1/3 text-xs"
-            class:btn-active={progress > 0.8}
-            on:click={() =>
-              parallax.scrollTo(9, {
-                duration: 500,
-              })}>Flip</button
-          >
-        </div>
-        <div class="h-1 rounded-full bg-white w-1/4 m-auto mt-4" />
-      </div>
-    </div></StickyLayer
-  >
-
-  <!-- Investor Chart -->
-  <StickyLayer
-    rate={3}
-    offset={{ top: 10, bottom: 18 }}
-    onProgress={onChartProgress}
-    let:progress
-  >
-    <div
-      class="lg:flex lg:justify-between lg:items-center lg:h-full lg:w-4/5 m-auto lg:px-0 px-1"
-    >
-      <div
-        class="mockup-window bg-base-300 border lg:h-1/2 lg:w-1/2 relative lg:ml-20 mt-24 overflow-visible lg:p-8 p-4"
-        style="transform: skewX({15 *
-          Math.max(0, 1 - 8 * progress)}deg) skewY({-15 *
-          Math.max(0, 1 - 8 * progress)}deg) rotateX({-30 *
-          Math.max(0, 1 - 8 * progress)}deg) rotateY({30 *
-          Math.max(0, 1 - 8 * progress)}deg) translateX({200 *
-          Math.max(0, 1 - 8 * progress)}px)"
-      >
-        <div class="lg:mt-4">
-          <div
-            class="flex lg:space-x-4 space-x-2 lg:py-8"
-            style="transform: translate({-100 *
-              Math.min(0, 8 * progress - 1) *
-              5}px, 0);"
-          >
-            <div
-              class="btn btn-outline lg:btn-md btn-sm lg:btn-wide"
-              class:btn-primary={progress > 0.3 && progress < 0.45}
-              class:btn-active={progress > 0.3 && progress < 0.45}
-              on:click={() =>
-                parallax.scrollTo(14, {
-                  duration: 500,
-                })}
-            >
-              <CoinIcon symbol="F-BTC" />Flip-Bitcoin
-            </div>
-            <div class="join">
-              <div
-                class="btn btn-outline lg:btn-md btn-sm join-item"
-                class:btn-primary={progress > 0.45 && progress < 0.6}
-                class:btn-active={progress > 0.45 && progress < 0.6}
-                on:click={() =>
-                  parallax.scrollTo(15, {
-                    duration: 500,
-                  })}
-              >
-                APY
-              </div>
-              <div
-                class="btn btn-outline lg:btn-md btn-sm join-item"
-                class:btn-primary={progress > 0.45 && progress < 0.6}
-              >
-                0.3%
-              </div>
-            </div>
-            <div class="join">
-              <div
-                class="btn btn-outline lg:btn-md btn-sm join-item"
-                class:btn-primary={progress > 0.6 && progress < 0.8}
-                class:btn-active={progress > 0.6 && progress < 0.8}
-                on:click={() =>
-                  parallax.scrollTo(16, {
-                    duration: 500,
-                  })}
-              >
-                PNL
-              </div>
-              <div
-                class="btn btn-outline lg:btn-md btn-sm join-item"
-                class:btn-primary={progress > 0.6 && progress < 0.8}
-              >
-                3.0 <Icon icon="mdi:ethereum" class="text-green-600 text-2xl" />
-              </div>
-            </div>
-          </div>
-          <div
-            class="rounded-2xl bg-gradient lg:h-52 h-32 lg:margin-auto pb-4"
-            style="transform: translate({-100 *
-              Math.min(0, 8 * progress - 1) *
-              2}px, 0);"
-          >
-            <LiquidityChart initializedTicks={ticks} FR={$FR} />
-          </div>
-          <div
-            class="join lg:mt-8 mt-4"
-            style="transform: translate({-100 *
-              Math.min(0, 8 * progress - 1) *
-              6}px, 0);"
-          >
-            <div
-              class="btn btn-outline lg:btn-wide lg:btn-md btn-sm join-item"
-              class:btn-primary={progress > 0.8}
-              class:btn-active={progress > 0.8}
-              on:click={() =>
-                parallax.scrollTo(18, {
-                  duration: 500,
-                })}
-            >
-              Activation Rate
-            </div>
-            <div
-              class="btn btn-outline lg:btn-md btn-sm join-item"
-              class:btn-primary={progress > 0.8}
-            >
-              {($FR / 100).toFixed(2)}%
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="lg:w-2/5 lg:h-1/2 relative lg:text-left text-center">
-        {#if progress < 0.1}
-          <span />
-        {:else if progress < 0.3}
-          <div class="lg:absolute" in:fade>
-            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
-              <strong>Earn</strong> on your liquidity
-            </h3>
-            <div class="py-4">
-              <p>Take the trader counterparty</p>
-              <p>Earn yields on your liquidity</p>
-              <p>Catch the traders swap fees</p>
-            </div>
-            <a
-              class="btn btn-outline"
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://docs.stipflip.xyz/docs/protocol-rules/liquidity-provider"
-              >Learn More</a
-            >
-          </div>
-        {:else if progress < 0.6}
-          <div class="lg:absolute">
-            {#if progress < 0.45}
-              <h3 class="text-primary lg:text-5xl text-2xl mt-24">
-                Choose your <strong class="text-primary">Exposition</strong>
-              </h3>
-              <p class="py-4">Your liquidities are used by one pool only</p>
-            {:else}
-              <h3 class="text-primary lg:text-5xl text-2xl mt-24">
-                Earn the pool <strong class="text-primary">APY</strong>
-              </h3>
-              <div class="py-4">
-                <p>
-                  Traders will pay you a yearly rate for holding your liquidity
-                </p>
-              </div>
-            {/if}
-          </div>
-        {:else if progress < 0.8}
-          <div class="lg:absolute">
-            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
-              Collect <strong>Swap Fees</strong>
-            </h3>
-            <div class="py-4">
-              <p>The PnL will include the pool swap fees</p>
-              <p>The traders' PnL</p>
-              <p>and the accumulated APY</p>
-            </div>
-          </div>
-        {:else}
-          <div class="lg:absolute">
-            <h3 class="text-primary lg:text-5xl text-2xl mt-24">
-              Hedge your <strong>Risk</strong>
-            </h3>
-            <div class="py-4">
-              <p>
-                Your liquidity will not be used when the pool APY is below this
-                rate
-              </p>
-            </div>
-          </div>
-        {/if}
-      </div>
-    </div>
-  </StickyLayer>
-
-  <StickyLayer rate={1} offset={{ top: 19, bottom: 20 }}>
-    <div class="w-screen z-10 mt-32">
-      <div class="lg:w-1/2 lg:px-0 px-4 lg:m-auto">
-        <div class="lg:py-2 flex lg:space-x-4 space-x-2">
-          <a
-            class="text-center lg:py-12 py-4 text-xl fine-border rounded-tl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal bg-gradient"
-            href="/swap"
-          >
-            Trade
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="/swap">
+            Launch App
+            <Icon icon="mdi:arrow-right" />
           </a>
           <a
-            class="text-center lg:py-12 py-4 text-xl fine-border rounded-tr-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal bg-gradient"
-            href="/earn"
+            class="btn btn-outline btn-lg fine-border"
+            href="https://docs.stipflip.xyz/docs/general-overview/core-thesis"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            Deposit
-          </a>
-        </div>
-        <div class="py-2 flex lg:space-x-4 space-x-2">
-          <a
-            class="text-center lg:py-12 py-4 text-xl fine-border rounded-bl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal bg-gradient"
-            href="/oracle"
-          >
-            Stake
-          </a>
-          <a
-            class="text-center lg:py-12 py-4 text-xl fine-border rounded-br-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal bg-gradient"
-            href="https://docs.stipflip.xyz"
-          >
-            Learn
+            Read Thesis
           </a>
         </div>
       </div>
     </div>
-    <div class="absolute h-1/2 w-full bottom-0 left-0">
-      {#each Array.from({ length: 19 }) as _, i}
-        <div
-          class="bg-white h-4 mt-2"
-          style="opacity: {i * 0.03}; height: {i * 2}px;"
-        />
+  </section>
+
+  <section class="visual-hero px-5 py-20 lg:px-12 lg:py-28">
+    <div class="mx-auto max-w-7xl">
+      <div class="visual-section-heading">
+        <span class="section-kicker">Settlement stack</span>
+        <h2>The position is portable. Settlement stays canonical.</h2>
+      </div>
+
+      <div class="settlement-stage" aria-label="S&F settlement stack">
+        <div class="venue-row">
+          <div class="venue-pill">S&F App</div>
+          <div class="venue-pill">AMMs</div>
+          <div class="venue-pill">Market makers</div>
+          <div class="venue-pill">Other venues</div>
+        </div>
+
+        <div class="token-orbit">
+          <div class="token-card">
+            <span>S-BTC</span>
+            <strong>Long BTC exposure</strong>
+          </div>
+          <div class="token-card">
+            <span>F-ETH²</span>
+            <strong>Inverse power exposure</strong>
+          </div>
+          <div class="token-card">
+            <span>S-SOL³</span>
+            <strong>Cubed SOL exposure</strong>
+          </div>
+        </div>
+
+        <div class="settlement-core">
+          <div>
+            <span class="core-label">S&F contracts on ETC</span>
+            <h2>Canonical settlement defines what every position token represents.</h2>
+          </div>
+          <ul>
+            {#each settlement as item}
+              <li><Icon icon="mdi:check-circle" /> {item}</li>
+            {/each}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ticker-band" aria-label="Protocol attributes">
+    <div>No company operator</div>
+    <div>Open oracle</div>
+    <div>No trader liquidation engine</div>
+    <div>Permissionless markets</div>
+    <div>Portable positions</div>
+    <div>ETC collateral</div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-5 py-24 lg:px-12">
+    <div class="split-intro">
+      <div>
+        <span class="section-kicker">The shift</span>
+        <h2>Perps should not be trapped inside venues.</h2>
+      </div>
+      <div class="intro-copy">
+        <p>
+          Most perpetual systems make the venue the center of the market. The venue owns the account model, execution path, oracle dependency, liquidation system, and listing surface.
+        </p>
+        <p>
+          S&F moves the center of gravity to the position token. A market can disappear, compete, or route elsewhere without becoming the canonical source of the position.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-5 py-10 lg:px-12">
+    <div class="path-grid">
+      {#each paths as path}
+        <a
+          class="path-card"
+          href={path.href}
+          target={path.href.startsWith("http") ? "_blank" : undefined}
+          rel={path.href.startsWith("http") ? "noopener noreferrer" : undefined}
+        >
+          <Icon icon={path.icon} />
+          <span>{path.title}</span>
+          <p>{path.text}</p>
+        </a>
       {/each}
     </div>
-  </StickyLayer>
+  </section>
 
-  <StickyLayer
-    rate={2}
-    offset={{ top: 1, bottom: 18 }}
-    let:progress
-    style="height: 0px !important;"
-    class="lg:block hidden"
-  >
-    <div class="pt-32 pl-20">
-      <ul class="border-l-2 border-primary pl-8 z-20">
-        <li
-          class="cursor-pointer"
-          class:font-bold={progress < 0.5}
-          class:text-primary={progress < 0.5}
-          class:text-xl={progress < 0.5}
-          on:click={() =>
-            parallax.scrollTo(3, {
-              duration: 500,
-            })}
-        >
-          Trader
-        </li>
-        <li
-          class="cursor-pointer"
-          class:font-bold={progress > 0.5}
-          class:text-primary={progress > 0.5}
-          class:text-xl={progress > 0.5}
-          on:click={() =>
-            parallax.scrollTo(12, {
-              duration: 500,
-            })}
-        >
-          Liquidity Provider
-        </li>
-      </ul>
+  <section class="mechanism-section mx-auto max-w-7xl px-5 py-24 lg:px-12">
+    <div class="section-heading">
+      <span class="section-kicker">How it works</span>
+      <h2>Settlement and execution are different jobs.</h2>
     </div>
-  </StickyLayer>
-</Parallax>
+
+    <div class="mechanism-visual">
+      <div class="mechanism-column">
+        <span>OTC settlement</span>
+        <h3>Issue or redeem position tokens</h3>
+        <p>OTC changes synthetic supply. It locks collateral or tokens, waits for the next oracle round, and settles against the protocol pool.</p>
+      </div>
+      <div class="connector" aria-hidden="true">
+        <div>Position tokens</div>
+      </div>
+      <div class="mechanism-column market">
+        <span>Market execution</span>
+        <h3>Trade existing tokens instantly</h3>
+        <p>Markets move ownership of tokens that already exist. They compete on liquidity, routing, and UX without becoming the source of truth.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-5 py-24 lg:px-12">
+    <div class="comparison-layout">
+      <div>
+        <span class="section-kicker">Compared to perp venues</span>
+        <h2>S&F is infrastructure, not only a place to trade.</h2>
+        <p>
+          dYdX, GMX, and Synthetix-style systems can be strong venues or liquidity networks. S&F is aiming at the lower layer: tokenized perpetual settlement without a single executor, custodian, or price-feed operator in charge.
+        </p>
+      </div>
+      <div class="comparison-table">
+        {#each comparisons as row}
+          <div class="comparison-row">
+            <span>{row[0]}</span>
+            <span>{row[1]}</span>
+            <strong>{row[2]}</strong>
+          </div>
+        {/each}
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-5 py-24 lg:px-12">
+    <div class="etc-panel">
+      <span class="section-kicker">Why ETC</span>
+      <h2>Neutral collateral for a neutral settlement layer.</h2>
+      <p>
+        If S&F is meant to be a common base for perpetual exposure, settlement should not depend on a venue chain, bridge, sequencer, or company-controlled collateral system. ETC is the app-wide settlement asset.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-5 pb-28 pt-14 lg:px-12">
+    <div class="final-cta">
+      <div>
+        <span class="section-kicker">Build the market layer</span>
+        <h2>Create execution around tokenized perpetual exposure.</h2>
+      </div>
+      <div class="final-actions">
+        <a class="btn btn-primary btn-lg" href="/swap">Launch App</a>
+        <a
+          class="btn btn-outline btn-lg fine-border"
+          href="https://docs.stipflip.xyz"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Read Docs
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
 
 <style>
-  .round {
-    border-top-left-radius: 30rem;
-    border-top-right-radius: 8rem;
-    border-bottom-right-radius: 30rem;
-    border-bottom-left-radius: 8rem;
+  :global(.root:has(.landing-page)) {
+    max-width: 100vw;
+    overflow-x: hidden;
   }
-  /* animate the down button every 1 seconds */
 
-  .selected {
-    background: hsl(var(--bc) / 0.08);
+  .landing-page {
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .bg-protocol {
+    background:
+      linear-gradient(115deg, hsl(var(--b3)) 0%, hsl(var(--b1)) 42%, #26383b 100%),
+      radial-gradient(circle at 12% 18%, hsl(var(--p) / 0.24), transparent 30rem);
+  }
+
+  .hero {
+    background:
+      radial-gradient(circle at 8% 22%, rgba(150, 232, 174, 0.18), transparent 30rem),
+      radial-gradient(circle at 82% 28%, rgba(147, 108, 255, 0.16), transparent 28rem);
+  }
+
+  .hero-mark {
+    position: absolute;
+    top: 7rem;
+    right: max(-1rem, calc((100vw - 92rem) / 2));
+    width: min(54vw, 48rem);
+    aspect-ratio: 1;
+    opacity: 0.34;
+    pointer-events: none;
+    user-select: none;
+    mix-blend-mode: screen;
+    filter:
+      sepia(0.42)
+      saturate(3.2)
+      hue-rotate(62deg)
+      brightness(1.28)
+      drop-shadow(0 34px 100px rgba(158, 230, 173, 0.34));
+  }
+
+  .hero-copy h1,
+  .visual-section-heading h2,
+  .split-intro h2,
+  .section-heading h2,
+  .comparison-layout h2,
+  .etc-panel h2,
+  .final-cta h2 {
+    font-weight: 650;
+    letter-spacing: 0;
+    color: hsl(var(--bc));
+  }
+
+  .hero-copy h1 {
+    max-width: 72rem;
+    font-size: clamp(3.55rem, 6.7vw, 7.1rem);
+    line-height: 0.92;
+    overflow-wrap: break-word;
+  }
+
+  .hero-subtitle {
+    max-width: 50rem;
+    margin-top: 1.25rem;
+    color: hsl(var(--bc) / 0.74);
+    font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+    line-height: 1.55;
+  }
+
+  .eyebrow,
+  .section-kicker,
+  .core-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #9ee6ad;
+    font-size: 0.78rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow {
+    margin-bottom: 1.4rem;
+    border: 1px solid rgba(158, 230, 173, 0.34);
+    border-radius: 999px;
+    padding: 0.65rem 0.9rem;
+    background: rgba(158, 230, 173, 0.08);
+  }
+
+  .hero-actions,
+  .final-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+  }
+
+  .visual-hero {
+    background:
+      radial-gradient(circle at 82% 42%, rgba(147, 108, 255, 0.16), transparent 30rem),
+      rgba(255, 255, 255, 0.015);
+  }
+
+  .visual-section-heading {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .visual-section-heading h2 {
+    max-width: 58rem;
+    font-size: clamp(2.6rem, 5.5vw, 6rem);
+    line-height: 0.94;
+  }
+
+  .settlement-stage {
+    position: relative;
+    min-height: auto;
+    border-radius: 1.4rem;
+    padding: clamp(1.1rem, 3vw, 2.5rem);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+      rgba(20, 22, 34, 0.44);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 38px 100px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+  }
+
+  .settlement-stage::before {
+    position: absolute;
+    inset: 12%;
+    content: "";
+    background:
+      linear-gradient(rgba(158, 230, 173, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(158, 230, 173, 0.08) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(circle, black, transparent 74%);
+  }
+
+  .venue-row,
+  .token-orbit,
+  .settlement-core {
+    position: relative;
+    z-index: 1;
+  }
+
+  .venue-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .venue-pill {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    padding: 0.8rem 1rem;
+    color: hsl(var(--bc) / 0.74);
+    background: rgba(255, 255, 255, 0.055);
+    font-size: 0.92rem;
+  }
+
+  .token-orbit {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 2.25rem 0 1.6rem;
+  }
+
+  .token-card {
+    min-height: 12rem;
+    border: 1px solid rgba(158, 230, 173, 0.24);
+    border-radius: 1rem;
+    padding: 1rem;
+    background: rgba(158, 230, 173, 0.08);
+  }
+
+  .token-card span {
+    color: #9ee6ad;
+    font-size: clamp(1.25rem, 2.1vw, 1.95rem);
+    font-weight: 800;
+  }
+
+  .token-card strong {
+    display: block;
+    margin-top: 0.45rem;
+    color: hsl(var(--bc) / 0.72);
+  }
+
+  .settlement-core {
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 1rem;
+    padding: 1.15rem;
+    background: rgba(17, 18, 28, 0.7);
+  }
+
+  .settlement-core h2 {
+    margin-top: 0.65rem;
+    font-size: clamp(1.45rem, 2.1vw, 2.05rem);
+    line-height: 1.02;
+  }
+
+  .settlement-core ul {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin-top: 1.35rem;
+    color: hsl(var(--bc) / 0.7);
+  }
+
+  .settlement-core li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .settlement-core li :global(svg) {
+    flex: none;
+    color: #9ee6ad;
+  }
+
+  .ticker-band {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(10rem, 1fr));
+    border-block: 1px solid rgba(255, 255, 255, 0.09);
+    overflow-x: auto;
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .ticker-band div {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1.1rem 1.25rem;
+    color: hsl(var(--bc) / 0.72);
+    white-space: nowrap;
+  }
+
+  .split-intro,
+  .comparison-layout,
+  .final-cta {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .split-intro h2,
+  .section-heading h2,
+  .comparison-layout h2,
+  .etc-panel h2,
+  .final-cta h2 {
+    margin-top: 0.7rem;
+    font-size: clamp(2.7rem, 5.2vw, 5.8rem);
+    line-height: 0.93;
+  }
+
+  .intro-copy,
+  .comparison-layout p,
+  .etc-panel p {
+    color: hsl(var(--bc) / 0.72);
+    font-size: 1.08rem;
+    line-height: 1.72;
+  }
+
+  .intro-copy {
+    display: grid;
+    gap: 1.2rem;
+  }
+
+  .path-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .path-card {
+    min-height: 15rem;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 1rem;
+    padding: 1.3rem;
+    background: rgba(255, 255, 255, 0.045);
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  }
+
+  .path-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(158, 230, 173, 0.34);
+    background: rgba(158, 230, 173, 0.075);
+  }
+
+  .path-card :global(svg) {
+    color: #9ee6ad;
+    font-size: 2rem;
+  }
+
+  .path-card span {
+    display: block;
+    margin-top: 2.6rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
+
+  .path-card p {
+    margin-top: 0.7rem;
+    color: hsl(var(--bc) / 0.68);
+    line-height: 1.55;
+  }
+
+  .section-heading {
+    max-width: 58rem;
+  }
+
+  .mechanism-visual {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2.4rem;
+  }
+
+  .mechanism-column {
+    border-radius: 1.15rem;
+    padding: clamp(1.3rem, 3vw, 2.25rem);
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+  }
+
+  .mechanism-column.market {
+    background: rgba(158, 230, 173, 0.08);
+  }
+
+  .mechanism-column span {
+    color: #9ee6ad;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+  }
+
+  .mechanism-column h3 {
+    margin-top: 0.9rem;
+    font-size: clamp(1.75rem, 3vw, 3rem);
+    line-height: 1;
+  }
+
+  .mechanism-column p {
+    margin-top: 1rem;
+    color: hsl(var(--bc) / 0.68);
+    line-height: 1.68;
+  }
+
+  .connector {
+    display: grid;
+    place-items: center;
+    color: #9ee6ad;
+    font-weight: 800;
+  }
+
+  .connector div {
+    border: 1px solid rgba(158, 230, 173, 0.32);
+    border-radius: 999px;
+    padding: 0.8rem 1rem;
+    background: rgba(158, 230, 173, 0.08);
+  }
+
+  .comparison-table {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 3rem;
+  }
+
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 0.75fr 1fr 1fr;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 0;
+    color: hsl(var(--bc) / 0.68);
+  }
+
+  .comparison-row span:first-child {
+    color: hsl(var(--bc));
+    font-weight: 700;
+  }
+
+  .comparison-row strong {
+    color: #9ee6ad;
+  }
+
+  .etc-panel,
+  .final-cta {
+    border-radius: 1.25rem;
+    border: 1px solid rgba(158, 230, 173, 0.2);
+    background:
+      radial-gradient(circle at 85% 15%, rgba(158, 230, 173, 0.16), transparent 25rem),
+      rgba(255, 255, 255, 0.045);
+    padding: clamp(1.4rem, 4vw, 3rem);
+  }
+
+  @media (min-width: 768px) {
+    .path-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mechanism-visual {
+      grid-template-columns: 1fr auto 1fr;
+      align-items: stretch;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .split-intro,
+    .final-cta {
+      grid-template-columns: 0.95fr 1.05fr;
+      align-items: center;
+    }
+
+    .comparison-layout {
+      display: block;
+    }
+
+    .comparison-layout > div:first-child {
+      max-width: 58rem;
+    }
+
+    .path-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hero-mark {
+      top: 6rem;
+      right: -5rem;
+      width: 22rem;
+      opacity: 0.18;
+    }
+
+    .hero-copy h1 {
+      font-size: clamp(2.85rem, 12.2vw, 3.55rem);
+    }
+
+    .hero-actions {
+      flex-direction: column;
+    }
+
+    .hero-actions .btn {
+      width: 100%;
+    }
+
+    .settlement-stage {
+      min-height: auto;
+    }
+
+    .venue-row,
+    .token-orbit,
+    .settlement-core ul,
+    .comparison-row {
+      grid-template-columns: 1fr;
+    }
+
+    .ticker-band {
+      grid-template-columns: repeat(6, minmax(12rem, 1fr));
+    }
   }
 </style>

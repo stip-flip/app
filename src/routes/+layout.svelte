@@ -46,10 +46,6 @@
     }
   });
 
-  // keep this right here
-  $: console.log($transactions);
-  $: console.log($resolvedTransactions);
-
   $: homepage = $page.route.id == "/";
 
   $: url = new URL($page.url);
@@ -96,7 +92,9 @@
   }
 </script>
 
-<TakeATour />
+{#if !homepage}
+  <TakeATour />
+{/if}
 
 <ul class="fixed bottom-0 right-0 z-10 m-4">
   {#each $pendingTransactions as pt (pt.hash)}
@@ -168,7 +166,7 @@
         {#if homepage}
           <div class="flex items-center w-content lg:mr-8"></div>
           <div
-            class="lg:w-2/3 w-full flex justify-between items-center rounded-full shadow-sm shadow-base-content bg-opacity-50 bg-gradient min-h-0 px-4"
+            class="homepage-nav lg:w-2/3 w-full flex justify-between items-center rounded-full min-h-0 px-4"
           >
             <a href={"/"} class="flex w-1/2 items-center">
               <Logo />
@@ -177,6 +175,7 @@
               <a
                 href="https://docs.stipflip.xyz"
                 class="p-1 rounded-md text-base-content hover:text-primary"
+                rel="noopener noreferrer"
                 >Documentation</a
               >
               <a
@@ -397,7 +396,7 @@
             >
             <ul on:click={(_) => overlay.click()}>
               <li>
-                <a href={docurl + "/general-overview/what-is-stup&flip"}>
+                <a href={docurl + "/general-overview/what-is-s&f"}>
                   <span>General Overview</span>
                 </a>
               </li>
@@ -433,13 +432,13 @@
                   </a>
                 </li>
                 <li>
-                  <a href={docurl + "/protocol-rules/swap-fees"} class="group">
+                  <a href={docurl + "/protocol-rules/fees"} class="group">
                     <span>Swap fees</span>
                   </a>
                 </li>
                 <li>
                   <a
-                    href={docurl + "/protocol-rules/funding-rate"}
+                    href={docurl + "/protocol-rules/fees#funding-rate"}
                     class="group"
                   >
                     <span>Funding Rate</span>
