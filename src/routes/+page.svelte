@@ -61,17 +61,18 @@
 <main class="landing-page min-h-screen overflow-hidden bg-protocol text-base-content">
   <section class="hero relative px-5 pb-16 pt-28 lg:px-12 lg:pb-20">
     <img class="hero-mark" src="/icon.svg" alt="" aria-hidden="true" />
+    <div class="hero-grid" aria-hidden="true"></div>
     <div class="mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-center">
       <div class="hero-copy max-w-5xl">
         <div class="eyebrow">
-          <Icon icon="mdi:ethereum" />
-          ETC settlement
+          <Icon icon="mdi:infinity" />
+          The perpetual protocol
         </div>
 
-        <h1>The perpetual settlement layer.</h1>
+        <h1>The settlement layer for perpetuals.</h1>
 
         <p class="hero-subtitle">
-          S&F makes perpetual positions work like tokens. You can trade them anywhere, while the protocol handles collateral, prices, funding, and settlement.
+          S&F mints perpetual positions as fungible tokens. Its settlement engine coordinates prices, funding, collateral, and settlement at the protocol level: decentralized, permissionless, and independent from any trading venue.
         </p>
 
         <div class="hero-actions">
@@ -209,7 +210,7 @@
         <span class="section-kicker">Compared to perp venues</span>
         <h2>S&F is infrastructure, not only a place to trade.</h2>
         <p>
-          dYdX, GMX, and Synthetix-style systems can be strong venues or liquidity networks. S&F is aiming at the lower layer: tokenized perpetual settlement without a single executor, custodian, or price-feed operator in charge.
+          Hyperliquid, dYdX, GMX, and Synthetix-style systems can be strong venues or liquidity networks. S&F is aiming at the lower layer: tokenized perpetual settlement without a single executor, custodian, or price-feed operator in charge.
         </p>
       </div>
       <div class="comparison-table">
@@ -273,27 +274,87 @@
   }
 
   .hero {
+    isolation: isolate;
     background:
-      radial-gradient(circle at 8% 22%, rgba(150, 232, 174, 0.18), transparent 30rem),
-      radial-gradient(circle at 82% 28%, rgba(147, 108, 255, 0.16), transparent 28rem);
+      radial-gradient(circle at 18% 34%, rgba(158, 230, 173, 0.2), transparent 24rem),
+      radial-gradient(circle at 72% 18%, rgba(158, 230, 173, 0.12), transparent 18rem),
+      radial-gradient(circle at 88% 34%, rgba(147, 108, 255, 0.2), transparent 31rem),
+      linear-gradient(118deg, rgba(12, 16, 22, 0.42), transparent 48%);
+  }
+
+  .hero::before {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    content: "";
+    background:
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 5.25rem 5.25rem;
+    mask-image:
+      radial-gradient(circle at 76% 48%, rgba(0, 0, 0, 0.78), transparent 34rem),
+      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.48) 45%, rgba(0, 0, 0, 0.24) 100%);
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  .hero::after {
+    position: absolute;
+    inset: auto -18rem -18rem auto;
+    z-index: 0;
+    width: 46rem;
+    height: 46rem;
+    content: "";
+    border-radius: 999px;
+    background:
+      radial-gradient(circle, rgba(158, 230, 173, 0.18), rgba(147, 108, 255, 0.08) 38%, transparent 68%);
+    filter: blur(12px);
+    pointer-events: none;
   }
 
   .hero-mark {
     position: absolute;
-    top: 7rem;
-    right: max(-1rem, calc((100vw - 92rem) / 2));
-    width: min(54vw, 48rem);
+    z-index: 1;
+    top: 5.2rem;
+    left: min(47vw, calc(50% + 1rem));
+    width: min(62vw, 56rem);
     aspect-ratio: 1;
-    opacity: 0.34;
+    opacity: 0.48;
     pointer-events: none;
     user-select: none;
-    mix-blend-mode: screen;
+    mix-blend-mode: lighten;
+    transform: translateX(-6%);
     filter:
-      sepia(0.42)
-      saturate(3.2)
+      sepia(0.6)
+      saturate(3.8)
       hue-rotate(62deg)
-      brightness(1.28)
-      drop-shadow(0 34px 100px rgba(158, 230, 173, 0.34));
+      brightness(1.55)
+      drop-shadow(0 30px 90px rgba(158, 230, 173, 0.44));
+  }
+
+  .hero-grid {
+    position: absolute;
+    z-index: 1;
+    top: 5.2rem;
+    left: min(47vw, calc(50% + 1rem));
+    width: min(62vw, 56rem);
+    aspect-ratio: 1;
+    background:
+      linear-gradient(90deg, rgba(158, 230, 173, 0.16) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(158, 230, 173, 0.12) 1px, transparent 1px),
+      radial-gradient(circle at 36% 34%, rgba(158, 230, 173, 0.24), transparent 18rem);
+    background-size: 4.25rem 4.25rem, 4.25rem 4.25rem, auto;
+    mask-image: url("/icon.svg");
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-image: url("/icon.svg");
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    opacity: 0.5;
+    transform: translateX(-6%);
+    pointer-events: none;
   }
 
   .hero-copy h1,
@@ -309,13 +370,18 @@
   }
 
   .hero-copy h1 {
+    position: relative;
+    z-index: 2;
     max-width: 72rem;
     font-size: clamp(3.55rem, 6.7vw, 7.1rem);
     line-height: 0.92;
     overflow-wrap: break-word;
+    text-shadow: 0 22px 80px rgba(0, 0, 0, 0.34);
   }
 
   .hero-subtitle {
+    position: relative;
+    z-index: 2;
     max-width: 50rem;
     margin-top: 1.25rem;
     color: hsl(var(--bc) / 0.74);
@@ -337,15 +403,24 @@
   }
 
   .eyebrow {
+    position: relative;
+    z-index: 2;
     margin-bottom: 1.4rem;
-    border: 1px solid rgba(158, 230, 173, 0.34);
+    border: 1px solid rgba(158, 230, 173, 0.42);
     border-radius: 999px;
     padding: 0.65rem 0.9rem;
-    background: rgba(158, 230, 173, 0.08);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+      rgba(158, 230, 173, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 16px 60px rgba(0, 0, 0, 0.16);
   }
 
   .hero-actions,
   .final-actions {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-wrap: wrap;
     gap: 0.85rem;
@@ -680,9 +755,18 @@
   @media (max-width: 767px) {
     .hero-mark {
       top: 6rem;
-      right: -5rem;
-      width: 22rem;
-      opacity: 0.18;
+      left: 52%;
+      width: 24rem;
+      opacity: 0.24;
+      transform: translateX(-12%);
+    }
+
+    .hero-grid {
+      top: 6rem;
+      left: 52%;
+      width: 24rem;
+      opacity: 0.32;
+      transform: translateX(-12%);
     }
 
     .hero-copy h1 {
