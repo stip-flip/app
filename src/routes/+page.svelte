@@ -58,7 +58,7 @@
   />
 </svelte:head>
 
-<main class="landing-page min-h-screen overflow-hidden bg-protocol text-base-content">
+<main class="landing-page min-h-screen overflow-x-hidden bg-protocol text-base-content">
   <section class="hero relative px-5 pb-16 pt-28 lg:px-12 lg:pb-20">
     <img class="hero-mark" src="/icon.svg" alt="" aria-hidden="true" />
     <div class="hero-grid" aria-hidden="true"></div>
@@ -72,7 +72,7 @@
         <h1>The settlement layer for perpetuals.</h1>
 
         <p class="hero-subtitle">
-          S&F mints perpetual positions as fungible tokens. Its settlement engine coordinates prices, funding, collateral, and settlement at the protocol level: decentralized, permissionless, and independent from any trading venue.
+          S&F mints perpetual positions as fungible tokens, then coordinates prices, funding, collateral, and settlement at the protocol level. Markets can compete on execution; S&F remains the permissionless source of truth.
         </p>
 
         <div class="hero-actions">
@@ -96,11 +96,12 @@
   <section class="visual-hero px-5 py-20 lg:px-12 lg:py-28">
     <div class="mx-auto max-w-7xl">
       <div class="visual-section-heading">
-        <span class="section-kicker">Settlement stack</span>
-        <h2>The position is portable. Settlement stays canonical.</h2>
+        <span class="section-kicker">Venue-native to protocol-native</span>
+        <h2>Perps are still venue-native. S&F makes them protocol-native.</h2>
       </div>
 
       <div class="settlement-stage" aria-label="S&F settlement stack">
+        <div class="stack-label">Venues trade</div>
         <div class="venue-row">
           <div class="venue-pill">S&F App</div>
           <div class="venue-pill">AMMs</div>
@@ -108,6 +109,11 @@
           <div class="venue-pill">Other venues</div>
         </div>
 
+        <div class="stack-arrow" aria-hidden="true">
+          <span>execute against</span>
+        </div>
+
+        <div class="stack-label">Tokenized positions move</div>
         <div class="token-orbit">
           <div class="token-card">
             <span>S-BTC</span>
@@ -123,9 +129,13 @@
           </div>
         </div>
 
+        <div class="stack-arrow" aria-hidden="true">
+          <span>settled by</span>
+        </div>
+
         <div class="settlement-core">
           <div>
-            <span class="core-label">S&F contracts on ETC</span>
+            <span class="core-label">S&F settles</span>
             <h2>Canonical settlement defines what every position token represents.</h2>
           </div>
           <ul>
@@ -258,8 +268,11 @@
 
 <style>
   :global(.root:has(.landing-page)) {
+    height: auto;
+    min-height: 100vh;
     max-width: 100vw;
     overflow-x: hidden;
+    overflow-y: visible;
   }
 
   .landing-page {
@@ -316,33 +329,33 @@
     position: absolute;
     z-index: 1;
     top: 5.2rem;
-    left: min(47vw, calc(50% + 1rem));
-    width: min(62vw, 56rem);
+    left: min(44vw, calc(50% - 0.5rem));
+    width: min(66vw, 60rem);
     aspect-ratio: 1;
-    opacity: 0.48;
+    opacity: 0.56;
     pointer-events: none;
     user-select: none;
     mix-blend-mode: lighten;
-    transform: translateX(-6%);
+    transform: translateX(-3%);
     filter:
       sepia(0.6)
       saturate(3.8)
       hue-rotate(62deg)
-      brightness(1.55)
-      drop-shadow(0 30px 90px rgba(158, 230, 173, 0.44));
+      brightness(1.68)
+      drop-shadow(0 34px 110px rgba(158, 230, 173, 0.52));
   }
 
   .hero-grid {
     position: absolute;
     z-index: 1;
     top: 5.2rem;
-    left: min(47vw, calc(50% + 1rem));
-    width: min(62vw, 56rem);
+    left: min(44vw, calc(50% - 0.5rem));
+    width: min(66vw, 60rem);
     aspect-ratio: 1;
     background:
-      linear-gradient(90deg, rgba(158, 230, 173, 0.16) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(158, 230, 173, 0.12) 1px, transparent 1px),
-      radial-gradient(circle at 36% 34%, rgba(158, 230, 173, 0.24), transparent 18rem);
+      linear-gradient(90deg, rgba(158, 230, 173, 0.22) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(158, 230, 173, 0.17) 1px, transparent 1px),
+      radial-gradient(circle at 36% 34%, rgba(158, 230, 173, 0.32), transparent 18rem);
     background-size: 4.25rem 4.25rem, 4.25rem 4.25rem, auto;
     mask-image: url("/icon.svg");
     mask-repeat: no-repeat;
@@ -352,8 +365,8 @@
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-position: center;
     -webkit-mask-size: contain;
-    opacity: 0.5;
-    transform: translateX(-6%);
+    opacity: 0.62;
+    transform: translateX(-3%);
     pointer-events: none;
   }
 
@@ -471,9 +484,20 @@
 
   .venue-row,
   .token-orbit,
-  .settlement-core {
+  .settlement-core,
+  .stack-label,
+  .stack-arrow {
     position: relative;
     z-index: 1;
+  }
+
+  .stack-label {
+    margin-bottom: 0.65rem;
+    color: #9ee6ad;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .venue-row {
@@ -495,7 +519,25 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
-    margin: 2.25rem 0 1.6rem;
+    margin: 0 0 0.8rem;
+  }
+
+  .stack-arrow {
+    display: grid;
+    place-items: center;
+    margin: 1.05rem 0;
+    color: hsl(var(--bc) / 0.56);
+    font-size: 0.78rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .stack-arrow span {
+    border: 1px solid rgba(158, 230, 173, 0.2);
+    border-radius: 999px;
+    padding: 0.45rem 0.75rem;
+    background: rgba(17, 18, 28, 0.48);
   }
 
   .token-card {
@@ -755,18 +797,18 @@
   @media (max-width: 767px) {
     .hero-mark {
       top: 6rem;
-      left: 52%;
+      left: 48%;
       width: 24rem;
-      opacity: 0.24;
-      transform: translateX(-12%);
+      opacity: 0.3;
+      transform: translateX(-10%);
     }
 
     .hero-grid {
       top: 6rem;
-      left: 52%;
+      left: 48%;
       width: 24rem;
-      opacity: 0.32;
-      transform: translateX(-12%);
+      opacity: 0.42;
+      transform: translateX(-10%);
     }
 
     .hero-copy h1 {
