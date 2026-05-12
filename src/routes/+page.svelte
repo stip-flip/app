@@ -69,11 +69,18 @@
           The perpetual protocol
         </div>
 
-        <h1>The settlement layer for perpetuals.</h1>
+        <h1>A base layer for perpetual markets.</h1>
 
         <p class="hero-subtitle">
-          S&F mints perpetual positions as fungible tokens, then coordinates prices, funding, collateral, and settlement at the protocol level. Markets can compete on execution; S&F remains the permissionless source of truth.
+          Markets compete on execution. Perp logic lives in the protocol.
         </p>
+
+        <div class="hero-principles" aria-label="Protocol principles">
+          <span>Open to everyone</span>
+          <span>No insiders</span>
+          <span>No admin keys</span>
+          <span>No backdoors</span>
+        </div>
 
         <div class="hero-actions">
           <a class="btn btn-primary btn-lg" href="/swap">
@@ -161,14 +168,14 @@
     <div class="split-intro">
       <div>
         <span class="section-kicker">The shift</span>
-        <h2>Perps should not be trapped inside venues.</h2>
+        <h2>DeFi perps are still too venue-native.</h2>
       </div>
       <div class="intro-copy">
         <p>
-          Most perpetual systems make the venue the center of the market. The venue owns the account model, execution path, oracle dependency, liquidation system, and listing surface.
+          Most DeFi perp systems still look like centralized exchanges with transparent accounting. The venue remains the center: it owns the account model, execution path, price-feed dependency, funding logic, liquidation system, and listing surface.
         </p>
         <p>
-          S&F moves the center of gravity to the position token. A market can disappear, compete, or route elsewhere without becoming the canonical source of the position.
+          S&F moves the center of gravity to the protocol. Price feeds, funding-rate discovery, position accounting, and settlement become open protocol layers. Markets can then compete on execution without becoming the source of truth.
         </p>
       </div>
     </div>
@@ -218,9 +225,9 @@
     <div class="comparison-layout">
       <div>
         <span class="section-kicker">Compared to perp venues</span>
-        <h2>S&F is infrastructure, not only a place to trade.</h2>
+        <h2>The first open protocol stack for perpetual markets.</h2>
         <p>
-          Hyperliquid, dYdX, GMX, and Synthetix-style systems can be strong venues or liquidity networks. S&F is aiming at the lower layer: tokenized perpetual settlement without a single executor, custodian, or price-feed operator in charge.
+          Hyperliquid, dYdX, GMX, and Synthetix-style systems can be strong venues or liquidity networks. But the market is still organized around a venue. S&F is aiming at the lower layer: a decentralized perp market where feeds, funding discovery, positions, and settlement can all live in the open protocol.
         </p>
       </div>
       <div class="comparison-table">
@@ -289,10 +296,13 @@
   .hero {
     isolation: isolate;
     background:
+      linear-gradient(rgba(158, 230, 173, 0.085) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(158, 230, 173, 0.085) 1px, transparent 1px),
       radial-gradient(circle at 18% 34%, rgba(158, 230, 173, 0.2), transparent 24rem),
       radial-gradient(circle at 72% 18%, rgba(158, 230, 173, 0.12), transparent 18rem),
       radial-gradient(circle at 88% 34%, rgba(147, 108, 255, 0.2), transparent 31rem),
       linear-gradient(118deg, rgba(12, 16, 22, 0.42), transparent 48%);
+    background-size: 44px 44px, 44px 44px, auto, auto, auto, auto;
   }
 
   .hero::before {
@@ -301,13 +311,11 @@
     z-index: 0;
     content: "";
     background:
-      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-    background-size: 5.25rem 5.25rem;
-    mask-image:
-      radial-gradient(circle at 76% 48%, rgba(0, 0, 0, 0.78), transparent 34rem),
-      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.48) 45%, rgba(0, 0, 0, 0.24) 100%);
-    opacity: 0.38;
+      linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 8.8rem 8.8rem;
+    mask-image: radial-gradient(circle at 64% 42%, black, transparent 74%);
+    opacity: 0.62;
     pointer-events: none;
   }
 
@@ -400,6 +408,28 @@
     color: hsl(var(--bc) / 0.74);
     font-size: clamp(1.05rem, 1.7vw, 1.35rem);
     line-height: 1.55;
+  }
+
+  .hero-principles {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    max-width: 52rem;
+    margin-top: 1.15rem;
+  }
+
+  .hero-principles span {
+    border: 1px solid rgba(158, 230, 173, 0.28);
+    border-radius: 999px;
+    padding: 0.55rem 0.75rem;
+    color: hsl(var(--bc) / 0.78);
+    background: rgba(17, 18, 28, 0.42);
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
   }
 
   .eyebrow,
