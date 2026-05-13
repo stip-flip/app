@@ -103,8 +103,8 @@
   <section class="visual-hero px-5 py-20 lg:px-12 lg:py-28">
     <div class="mx-auto max-w-7xl">
       <div class="visual-section-heading">
-        <span class="section-kicker">Venue-native to protocol-native</span>
-        <h2>Perps are still venue-native. S&F makes them protocol-native.</h2>
+        <span class="section-kicker">The missing primitive</span>
+        <h2>Perp positions should move like tokens, not account balances.</h2>
       </div>
 
       <div class="settlement-stage" aria-label="S&F settlement stack">
@@ -143,7 +143,7 @@
         <div class="settlement-core">
           <div>
             <span class="core-label">S&F settles</span>
-            <h2>Canonical settlement defines what every position token represents.</h2>
+            <h2>One ruleset defines what every position token is worth.</h2>
           </div>
           <ul>
             {#each settlement as item}
@@ -168,7 +168,7 @@
     <div class="split-intro">
       <div>
         <span class="section-kicker">The shift</span>
-        <h2>DeFi perps are still too venue-native.</h2>
+        <h2>Stop rebuilding exchanges. Start composing markets.</h2>
       </div>
       <div class="intro-copy">
         <p>
@@ -201,7 +201,7 @@
   <section class="mechanism-section mx-auto max-w-7xl px-5 py-24 lg:px-12">
     <div class="section-heading">
       <span class="section-kicker">How it works</span>
-      <h2>Settlement and execution are different jobs.</h2>
+      <h2>Minting changes supply. Trading moves ownership.</h2>
     </div>
 
     <div class="mechanism-visual">
@@ -225,7 +225,7 @@
     <div class="comparison-layout">
       <div>
         <span class="section-kicker">Compared to perp venues</span>
-        <h2>The first open protocol stack for perpetual markets.</h2>
+        <h2>A lower layer than the exchange.</h2>
         <p>
           Hyperliquid, dYdX, GMX, and Synthetix-style systems can be strong venues or liquidity networks. But the market is still organized around a venue. S&F is aiming at the lower layer: a decentralized perp market where feeds, funding discovery, positions, and settlement can all live in the open protocol.
         </p>
@@ -245,7 +245,7 @@
   <section class="mx-auto max-w-7xl px-5 py-24 lg:px-12">
     <div class="etc-panel">
       <span class="section-kicker">Why ETC</span>
-      <h2>Neutral collateral for a neutral settlement layer.</h2>
+      <h2>ETC keeps the collateral side simple.</h2>
       <p>
         If S&F is meant to be a common base for perpetual exposure, settlement should not depend on a venue chain, bridge, sequencer, or company-controlled collateral system. ETC is the app-wide settlement asset.
       </p>
@@ -255,8 +255,8 @@
   <section class="mx-auto max-w-7xl px-5 pb-28 pt-14 lg:px-12">
     <div class="final-cta">
       <div>
-        <span class="section-kicker">Build the market layer</span>
-        <h2>Create execution around tokenized perpetual exposure.</h2>
+        <span class="section-kicker">Build on top</span>
+        <h2>Bring your own venue, router, or market maker.</h2>
       </div>
       <div class="final-actions">
         <a class="btn btn-primary btn-lg" href="/swap">Launch App</a>
