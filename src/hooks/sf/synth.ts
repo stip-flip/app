@@ -90,20 +90,26 @@ export const synthInfoAsync = async (
 export const useSynthInfos = derived(
   [ethsdk, resolvedTransactions, gqlsdk, totalTraderTransactions],
   ([$ethsdk, $pt, $gqlsdk, $totalTraderTransactions], set) => {
-    $gqlsdk?.getSynths({}).then(async (res) => {
-      console.log("res.synths", res.synths);
-      const synthInfos = await Promise.all(
-        res.synths.map(async (p) => {
-          if (!p.id) return Promise.resolve({} as SynthInfo);
-          return {
-            ...(await synthInfoAsync(p.id)),
-            ticks: initializedTickAsync(p),
-            token: await infosAndBalanceAsync(p.id),
-          };
-        })
-      );
-      set(synthInfos);
-    });
+    $gqlsdk
+      ?.getSynths({})
+      .then(async (res) => {
+        console.log("res.synths", res.synths);
+        const synthInfos = await Promise.all(
+          res.synths.map(async (p) => {
+            if (!p.id) return Promise.resolve({} as SynthInfo);
+            return {
+              ...(await synthInfoAsync(p.id)),
+              ticks: initializedTickAsync(p),
+              token: await infosAndBalanceAsync(p.id),
+            };
+          })
+        );
+        set(synthInfos);
+      })
+      .catch((error) => {
+        console.warn("Unable to load synths from subgraph", error);
+        set([]);
+      });
   },
   [] as SynthInfo[]
 );

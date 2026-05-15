@@ -8,7 +8,7 @@
 </script>
 
 <ul
-  class="relative menu menu-md menu-horizontal bg-gradient rounded-full bg-opacity-50 p-0 shadow-sm shadow-base-content"
+  class="relative menu menu-md menu-horizontal app-nav rounded-full p-0"
   id="modes"
 >
   <!-- Navbar menu content here -->

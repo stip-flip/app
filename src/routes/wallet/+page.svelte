@@ -25,10 +25,16 @@
 </script>
 
 <div
-  class="px-8 lg:px-0 lg:w-1/2 w-full m-auto lg:pt-0 pt-20 lg:mt-40 flex justify-between items-center lg:relative fixed lg:backdrop-filter-none backdrop-blur-xl"
+  class="app-page-header px-8 lg:px-0 lg:w-1/2 w-full m-auto lg:pt-0 pt-20 lg:mt-40 lg:relative fixed"
   id="top"
 >
-  <h1 class="text-3xl">Wallet</h1>
+  <div class="py-4">
+    <p class="app-label">Position inventory</p>
+    <h1 class="text-3xl font-semibold">Wallet</h1>
+    <p class="app-muted mt-2 text-sm">
+      Track tokenized exposure, settlement claims, and balances in one place.
+    </p>
+  </div>
 </div>
 <div class="lg:h-auto lg:pt-0 container-height" id="container">
   {#if !claimExists && trades?.length == 0}
@@ -40,7 +46,7 @@
         <p class="text-lg mt-4">Your wallet is empty at the moment</p>
 
         <p class="text-lg">
-          Go <a href="swap" class="text-accent">swap</a> some tokens!
+          Use <a href="swap" class="text-primary">swap</a> to mint or trade position tokens.
         </p>
       </div>
     </div>

@@ -95,6 +95,10 @@ export const usePositionClaims = derived(
         );
         claims = claims.map((c) => c.filter((c) => !(c.burn && c.canceled)));
         set(claims);
+      })
+      .catch((error) => {
+        console.warn("Unable to load position claim pools from subgraph", error);
+        set([]);
       });
   },
   [] as PositionClaim[][]

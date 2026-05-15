@@ -112,6 +112,10 @@ export const useClaims = derived(
           synthAddresses.map((a) => asyncClaims(a, $signerAddress))
         );
         set(claims);
+      })
+      .catch((error) => {
+        console.warn("Unable to load claim pools from subgraph", error);
+        set([]);
       });
   },
   [] as Claim[][]

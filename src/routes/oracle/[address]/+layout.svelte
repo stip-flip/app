@@ -24,7 +24,7 @@
       <div
         class="btn btn-outline no-animation hover:text-inherit join-item bg-gradient flex-grow"
       >
-        Stakes
+        Settlement stake
       </div>
       <div
         class="btn btn-outline no-animation cursor-default hover:text-inherit join-item bg-gradient"
@@ -88,14 +88,14 @@
     >
   </div> -->
   <div
-    class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
+    class="lg:border lg:border-primary-focus rounded-lg lg:p-4 app-panel lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide"
   >
     <div class="pb-4">
-      To learn more on how to become a price provider
+      Price providers keep settlement state aligned with external markets.
       <a
         class="text-info font-bold"
         href="https://docs.stipflip.xyz/docs/developer/provide-data"
-        >visit this page</a
+        >Read the provider guide</a
       >
     </div>
     <div class="tabs tabs-boxed">

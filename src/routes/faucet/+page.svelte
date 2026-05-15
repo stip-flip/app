@@ -40,13 +40,17 @@
 </script>
 
 <div class="px-8 lg:px-0 lg:w-1/2 m-auto mt-20 lg:mt-40">
-  <h1 class="text-3xl">Faucet</h1>
+  <p class="app-label">Test settlement collateral</p>
+  <h1 class="text-3xl font-semibold">Mordor faucet</h1>
+  <p class="app-muted mt-2 text-sm">
+    Claim test ETC to try issuance, trading, and oracle flows on Mordor.
+  </p>
 </div>
-<div class="lg:border-2 rounded-lg p-4 bg-gradient lg:w-1/2 m-auto mt-4">
+<div class="lg:border rounded-lg p-4 app-panel lg:w-1/2 m-auto mt-4">
   <div class="form-control w-full">
     <label class="label">
       <span class="label-text font-semibold mx-2 text-lg"
-        >Claim your mordor ETC</span
+        >Claim Mordor ETC</span
       >
     </label>
     {#if $connected}

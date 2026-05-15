@@ -14,7 +14,7 @@
     <div
       tabindex="0"
       role="button"
-      class="text-primary border border-primary flex items-center mx-2 relative menu menu-md menu-horizontal bg-gradient rounded-full bg-opacity-50 lg:bg-gradient p-0"
+      class="text-primary flex items-center mx-2 relative menu menu-md menu-horizontal app-nav rounded-full p-0"
     >
       <Icon icon="mdi:help" class="text-xl m-2" />
       <p class="pr-4 text-l">Support</p>
