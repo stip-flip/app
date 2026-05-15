@@ -248,11 +248,21 @@
               </li>
               <li id="stake">
                 <a
-                  href={navigate("/oracle", url)}
+                  href={navigate("/oracles", url)}
                   class="rounded-full"
-                  class:text-primary={$page.route?.id?.startsWith("/oracle")}
-                  class:selected={$page.route?.id?.startsWith("/oracle")}
-                  >Oracle</a
+                  class:text-primary={$page.route?.id?.startsWith("/oracle") ||
+                    $page.route?.id?.startsWith("/oracles")}
+                  class:selected={$page.route?.id?.startsWith("/oracle") ||
+                    $page.route?.id?.startsWith("/oracles")}
+                  >Oracles</a
+                >
+              </li>
+              <li id="markets">
+                <a
+                  href={navigate("/markets", url)}
+                  class="rounded-full"
+                  class:text-primary={$page.route?.id?.startsWith("/markets")}
+                  class:selected={$page.route?.id?.startsWith("/markets")}>Markets</a
                 >
               </li>
               <li>
@@ -316,14 +326,6 @@
         <Icon icon="mdi:chart-line" class="text-3xl" />
         <span class="btm-nav-label text-xs">Earn</span>
       </a>
-      <a
-        class:text-primary={$page.route?.id?.startsWith("/oracle")}
-        href={navigate("/oracle", url)}
-        on:click|preventDefault={() => goto(navigate("/oracle", url))}
-      >
-        <Icon icon="mingcute:coin-2-line" class="text-3xl" />
-        <span class="btm-nav-label text-xs">Oracle</span>
-      </a>
     </div>
   </div>
   <div class="drawer-side z-20">
@@ -362,6 +364,11 @@
               <li>
                 <a href="/faucet" class="group">
                   <span>Faucet</span>
+                </a>
+              </li>
+              <li>
+                <a href="/markets" class="group">
+                  <span>Stats</span>
                 </a>
               </li>
             </ul>

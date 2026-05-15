@@ -9,19 +9,19 @@ export const gqlsdk: Readable<Sdk> = derived(
         switch ($chainId) {
             case 61:
                 const etc = new GraphQLClient(
-                    "https://ether-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf",
+                    "https://ether-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market",
                 );
                 set(getSdk(etc));
                 break;
             case 63:
                 const mordor = new GraphQLClient(
-                    "https://mordor-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf",
+                    "https://mordor-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market",
                 );
                 set(getSdk(mordor));
                 break;
             default:
                 const def = new GraphQLClient(
-                    "https://ether-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf",
+                    "https://ether-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market",
                 );
                 set(getSdk(def));
                 break;

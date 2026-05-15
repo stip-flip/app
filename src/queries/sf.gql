@@ -59,3 +59,188 @@ query getPositionClaims($where: PositionClaim_filter) {
     ...PositionClaimFragment
   }
 }
+
+fragment LatestMarketSnapshotFragment on MarketSnapshot {
+  id
+  timestamp
+  blockNumber
+  totalLiquidity
+  totalSupply
+  poolDebt
+  tick
+  price
+  enterVolume
+  exitVolume
+  swapLiquidityVolume
+  eventCount
+}
+
+fragment MarketRoundSnapshotFragment on MarketRoundSnapshot {
+  id
+  round
+  timestamp
+  blockNumber
+  totalLiquidity
+  totalSupply
+  poolDebt
+  tick
+  price
+  enterVolume
+  exitVolume
+  swapLiquidityVolume
+  eventCount
+}
+
+fragment MarketTradeEventFragment on MarketTradeEvent {
+  id
+  kind
+  round
+  amount
+  tick
+  hasTick
+  totalLiquidity
+  totalSupply
+  poolDebt
+  price
+  timestamp
+  blockNumber
+  transaction
+}
+
+fragment MarketSummaryFragment on Synth {
+  id
+  long
+  oracle
+  latestSnapshots: snapshots(first: 1, orderBy: timestamp, orderDirection: desc) {
+    ...LatestMarketSnapshotFragment
+  }
+}
+
+query getMarketSummaries($first: Int = 1000, $skip: Int = 0) {
+  synths(first: $first, skip: $skip) {
+    ...MarketSummaryFragment
+  }
+}
+
+query getMarketDetail($id: ID!) {
+  synth(id: $id) {
+    id
+    long
+    oracle
+    snapshots(first: 365, orderBy: timestamp, orderDirection: asc) {
+      ...LatestMarketSnapshotFragment
+    }
+    roundSnapshots(first: 1000, orderBy: round, orderDirection: asc) {
+      ...MarketRoundSnapshotFragment
+    }
+    tradeEvents(first: 50, orderBy: timestamp, orderDirection: desc) {
+      ...MarketTradeEventFragment
+    }
+  }
+}
+
+fragment OracleSummaryFragment on Oracle {
+  id
+  totalStake
+  totalMana
+  totalRewardsClaimed
+  totalSlashed
+  submissionCount
+  participantCount
+  lastRound
+  lastSubmissionTimestamp
+  latestSnapshots: snapshots(first: 1, orderBy: timestamp, orderDirection: desc) {
+    id
+    timestamp
+    totalStake
+    totalMana
+    totalRewardsClaimed
+    totalSlashed
+    submissionCount
+    participantCount
+    lastRound
+  }
+}
+
+fragment OracleSnapshotFragment on OracleSnapshot {
+  id
+  timestamp
+  blockNumber
+  totalStake
+  totalMana
+  totalRewardsClaimed
+  totalSlashed
+  submissionCount
+  participantCount
+  lastRound
+  lastSubmissionTimestamp
+  eventCount
+}
+
+fragment OracleParticipantFragment on OracleParticipant {
+  id
+  user
+  stake
+  mana
+  rewardsClaimed
+  submissionCount
+  slashed
+  lastSubmittedRound
+}
+
+query getOracleSummaries($first: Int = 1000, $skip: Int = 0) {
+  oracles(first: $first, skip: $skip, orderBy: totalStake, orderDirection: desc) {
+    ...OracleSummaryFragment
+  }
+}
+
+query getOracleSummary($id: ID!) {
+  oracle(id: $id) {
+    ...OracleSummaryFragment
+  }
+}
+
+query getOracleDetail($id: ID!) {
+  oracle(id: $id) {
+    ...OracleSummaryFragment
+    snapshots(first: 365, orderBy: timestamp, orderDirection: asc) {
+      ...OracleSnapshotFragment
+    }
+    participants(first: 100, orderBy: stake, orderDirection: desc) {
+      ...OracleParticipantFragment
+    }
+    stakeEvents(first: 30, orderBy: timestamp, orderDirection: desc) {
+      id
+      deposit
+      amount
+      user
+      totalStake
+      participantStake
+      participantMana
+      timestamp
+      transaction
+    }
+    rewardEvents(first: 30, orderBy: timestamp, orderDirection: desc) {
+      id
+      owner
+      recipient
+      amount
+      totalRewardsClaimed
+      participantRewardsClaimed
+      timestamp
+      transaction
+    }
+    slashEvents(first: 30, orderBy: timestamp, orderDirection: desc) {
+      id
+      owner
+      slasher
+      round
+      slot
+      amount
+      totalSlashed
+      participantSlashed
+      timestamp
+      transaction
+    }
+  }
+}

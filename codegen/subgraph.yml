@@ -1,4 +1,4 @@
-schema: https://mordor-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf
+schema: https://ether-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market
 documents: "./src/queries/**/*.gql"
 config:
     scalars:

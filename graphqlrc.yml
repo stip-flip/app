@@ -1,3 +1,3 @@
 schema:
-    - https://mordor-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf
+    - https://ether-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market
 documents: "./src/queries/**/*.{gql,js,ts,jsx,tsx}"
