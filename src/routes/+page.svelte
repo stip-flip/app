@@ -74,6 +74,31 @@
     name="description"
     content="Stip & Flip is the settlement layer for tokenized perpetual markets on ETC."
   />
+  <link rel="canonical" href="https://stipflip.xyz/" />
+  <meta property="og:title" content="Stip & Flip | Perpetual Settlement Layer" />
+  <meta
+    property="og:description"
+    content="Stip & Flip is the settlement layer for tokenized perpetual markets on ETC."
+  />
+  <meta property="og:url" content="https://stipflip.xyz/" />
+  <meta property="og:image" content="https://stipflip.xyz/og-preview.png" />
+  <meta
+    property="og:image:secure_url"
+    content="https://stipflip.xyz/og-preview.png"
+  />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta
+    property="og:image:alt"
+    content="Stip & Flip - perpetual markets that settle like tokens."
+  />
+  <meta name="twitter:title" content="Stip & Flip | Perpetual Settlement Layer" />
+  <meta
+    name="twitter:description"
+    content="Stip & Flip is the settlement layer for tokenized perpetual markets on ETC."
+  />
+  <meta name="twitter:image" content="https://stipflip.xyz/og-preview.png" />
 </svelte:head>
 
 <main class="landing-page min-h-screen overflow-x-hidden bg-protocol">
