@@ -44,7 +44,7 @@
 />
 
 <div
-  class="lg:border-2 rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:bg-gradient"
+  class="rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:app-panel"
 >
   <div
     class="p-4 lg:pt-0 lg:h-auto overflow-y-scroll overflow-x-hidden container-height"

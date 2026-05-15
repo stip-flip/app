@@ -39,7 +39,7 @@
 <div class="lg:h-auto lg:pt-0 container-height" id="container">
   {#if !claimExists && trades?.length == 0}
     <div
-      class="lg:w-1/2 m-auto mt-24 lg:mt-4 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient"
+      class="lg:w-1/2 m-auto mt-24 lg:mt-4 rounded-lg p-4 app-panel"
     >
       <div class="text-center">
         <Icon icon="octicon:inbox-24" class="text-5xl m-auto" />
@@ -54,11 +54,11 @@
 
   {#if trades?.length != 0}
     <div
-      class="lg:w-1/2 m-auto mt-4 lg:mt-4 lg:border-2 lg:border-primary lg:rounded-lg lg:p-4 lg:bg-gradient overflow-scroll"
+      class="lg:w-1/2 m-auto mt-4 lg:mt-4 lg:rounded-lg lg:p-4 app-panel overflow-scroll"
       style="max-height: 60vh"
     >
       <!-- <strong>Your wallet is empty at the moment</strong> -->
-      <table class="table w-full lg:bg-gradient lg:rounded-lg rounded-none">
+      <table class="table w-full lg:rounded-lg rounded-none">
         <thead>
           <tr>
             <th class="text-left">Token</th>
@@ -87,12 +87,12 @@
       <h1 class="lg:text-3xl text-xl">OTC Trades</h1>
     </div>
     <div
-      class="lg:w-1/2 m-auto mt-4 lg:mt-4 lg:border-2 lg:border-primary lg:rounded-lg lg:p-4 lg:bg-gradient"
+      class="lg:w-1/2 m-auto mt-4 lg:mt-4 lg:rounded-lg lg:p-4 app-panel"
     >
       <!-- <h2 class="text-2xl mb-4">OTC Trades</h2> -->
       {#each claims as claim, i}
         {#if claim.length}
-          <table class="table w-full lg:bg-gradient mb-4 rounded-none">
+          <table class="table w-full mb-4 rounded-none">
             <thead>
               <tr>
                 <th class="text-left lg:w-1/3">Token</th>

@@ -205,18 +205,18 @@
 />
 
 <div
-  class="lg:w-1/3 m-auto lg:mt-4 lg:mb-24 lg:border-2 lg:border-primary rounded-lg p-4 lg:bg-gradient lg:h-auto lg:pt-0 container-height"
+  class="lg:w-1/3 m-auto lg:mt-4 lg:mb-24 rounded-lg p-4 lg:h-auto lg:pt-0 container-height app-trade-card"
   id="container"
 >
   <div
-    class="w-full flex space-x-4 lg:mt-8 p-8 bg-slate-200 rounded-3xl shadow-lg"
+    class="w-full flex space-x-4 lg:mt-8 p-8 app-token-field"
   >
     <input
       bind:value={amountOut}
       type="text"
       inputmode="decimal"
       placeholder="0"
-      class="input input-ghost w-1/2 text-white text-2xl"
+      class="input input-ghost w-1/2 text-2xl"
       class:input-error={Number(amountOut) > balance0}
       on:validated={(v) => (amountOut = v.detail)}
       on:input={debOut}
@@ -268,20 +268,20 @@
       }}
     >
       <Icon
-        class="text-4xl text-primary bg-slate-200 -mt-2 cursor-pointer"
+        class="text-4xl text-primary bg-base-200 -mt-2 cursor-pointer"
         icon="mdi:swap-vertical"
       />
     </span>
   </div>
   <div
-    class="w-full flex space-x-4 mt-4 p-8 bg-slate-200 rounded-3xl relative shadow-lg"
+    class="w-full flex space-x-4 mt-4 p-8 app-token-field relative"
   >
     <input
       bind:value={amountIn}
       type="text"
       inputmode="decimal"
       placeholder="0"
-      class="input input-ghost w-1/2 text-white text-2xl"
+      class="input input-ghost w-1/2 text-2xl"
       on:validated={(v) => (amountIn = v.detail)}
       on:input={debIn}
       use:validator={{

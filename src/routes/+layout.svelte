@@ -161,7 +161,7 @@
   <input id="app-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col">
     <!-- Navbar -->
-    <div class="fixed w-full lg:p-4 z-10" id="navbar">
+    <div class="fixed w-full p-3 lg:p-4 z-10" id="navbar">
       <div class="justify-between navbar">
         {#if homepage}
           <div class="flex items-center w-content lg:mr-8"></div>
@@ -218,7 +218,7 @@
           </div>
           <div class="flex-none hidden lg:block">
             <ul
-              class="menu menu-md menu-horizontal app-nav rounded-full p-0"
+              class="menu menu-md menu-horizontal app-nav rounded-full p-1"
             >
               <!-- Navbar menu content here -->
               <li id="wallet">
@@ -339,7 +339,7 @@
       />
       <div class="px-8"><Theme /></div>
       <div class="h-4" />
-      <ul class="menu px-4 py-0 text-xl">
+      <ul class="menu px-4 py-0 text-xl app-drawer-menu">
         <li>
           <details id="disclosure-docs" open="true">
             <summary class="group font-bold"

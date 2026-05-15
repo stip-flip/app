@@ -41,6 +41,24 @@
     "Position-token balances",
   ];
 
+  const heroFlow = [
+    {
+      title: "Trade anywhere",
+      text: "Apps, AMMs, and market makers compete on execution.",
+      icon: "mdi:swap-horizontal",
+    },
+    {
+      title: "Hold tokens",
+      text: "Wallet balances represent portable long or short exposure.",
+      icon: "mdi:wallet-outline",
+    },
+    {
+      title: "Settle once",
+      text: "Oracle rounds and ETC collateral define canonical value.",
+      icon: "mdi:database-check-outline",
+    },
+  ];
+
   const comparisons = [
     ["Position", "Venue account state", "Wallet-held token"],
     ["Execution", "One venue", "Any market"],
@@ -58,43 +76,67 @@
   />
 </svelte:head>
 
-<main class="landing-page min-h-screen overflow-x-hidden bg-protocol text-base-content">
-  <section class="hero relative px-5 pb-16 pt-28 lg:px-12 lg:pb-20">
+<main class="landing-page min-h-screen overflow-x-hidden bg-protocol">
+  <section class="hero relative px-5 pb-16 pt-24 lg:px-12 lg:pb-20">
     <img class="hero-mark" src="/icon.svg" alt="" aria-hidden="true" />
     <div class="hero-grid" aria-hidden="true"></div>
-    <div class="mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-center">
-      <div class="hero-copy max-w-5xl">
+    <div class="hero-shell mx-auto min-h-[calc(100vh-6rem)] max-w-[1384px]">
+      <div class="hero-copy">
         <div class="eyebrow">
           <Icon icon="mdi:infinity" />
-          The perpetual protocol
+          The perpetual settlement layer
         </div>
 
-        <h1>A base layer for perpetual markets.</h1>
+        <h1>Perpetual markets that settle like tokens.</h1>
 
         <p class="hero-subtitle">
-          Markets compete on execution. Perp logic lives in the protocol.
+          S&F turns perp exposure into wallet-held position tokens. Trade can happen anywhere, while collateral, prices, funding, and settlement stay canonical.
         </p>
 
-        <div class="hero-principles" aria-label="Protocol principles">
-          <span>Open to everyone</span>
-          <span>No insiders</span>
-          <span>No admin keys</span>
-          <span>No backdoors</span>
-        </div>
-
         <div class="hero-actions">
-          <a class="btn btn-primary btn-lg" href="/swap">
+          <a class="sprinter-button primary" href="/swap">
             Launch App
             <Icon icon="mdi:arrow-right" />
           </a>
           <a
-            class="btn btn-outline btn-lg fine-border"
+            class="sprinter-button secondary"
             href="https://docs.stipflip.xyz/docs/general-overview/core-thesis"
             target="_blank"
             rel="noopener noreferrer"
           >
             Read Thesis
           </a>
+        </div>
+      </div>
+
+      <div class="hero-side" aria-label="Protocol flow">
+        <div class="flow-panel">
+          <div class="flow-panel-header">
+            <span>Execution is separate from settlement</span>
+          </div>
+
+          <div class="flow-lanes">
+            {#each heroFlow as step, index}
+              <div class="flow-step">
+                <div class="flow-icon">
+                  <Icon icon={step.icon} />
+                </div>
+                <div>
+                  <strong>{step.title}</strong>
+                  <p>{step.text}</p>
+                </div>
+              </div>
+              {#if index < heroFlow.length - 1}
+                <div class="flow-rail" aria-hidden="true"></div>
+              {/if}
+            {/each}
+          </div>
+
+          <div class="token-strip" aria-label="Example position tokens">
+            <span>S-BTC</span>
+            <span>F-ETH²</span>
+            <span>S-SOL³</span>
+          </div>
         </div>
       </div>
     </div>
@@ -156,12 +198,20 @@
   </section>
 
   <section class="ticker-band" aria-label="Protocol attributes">
-    <div>No company operator</div>
-    <div>Open oracle</div>
-    <div>No trader liquidation engine</div>
-    <div>Permissionless markets</div>
-    <div>Portable positions</div>
-    <div>ETC collateral</div>
+    <div class="ticker-track">
+      <span>No company operator</span>
+      <span>Open oracle</span>
+      <span>No trader liquidation engine</span>
+      <span>Permissionless markets</span>
+      <span>Portable positions</span>
+      <span>ETC collateral</span>
+      <span>No company operator</span>
+      <span>Open oracle</span>
+      <span>No trader liquidation engine</span>
+      <span>Permissionless markets</span>
+      <span>Portable positions</span>
+      <span>ETC collateral</span>
+    </div>
   </section>
 
   <section class="mx-auto max-w-7xl px-5 py-24 lg:px-12">
@@ -285,97 +335,95 @@
   .landing-page {
     width: 100%;
     max-width: 100vw;
+    color: #242424;
   }
 
   .bg-protocol {
-    background:
-      linear-gradient(115deg, hsl(var(--b3)) 0%, hsl(var(--b1)) 42%, #26383b 100%),
-      radial-gradient(circle at 12% 18%, hsl(var(--p) / 0.24), transparent 30rem);
+    background: #efefef;
   }
 
   .hero {
     isolation: isolate;
+    color: #242424;
     background:
-      linear-gradient(rgba(158, 230, 173, 0.085) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(158, 230, 173, 0.085) 1px, transparent 1px),
-      radial-gradient(circle at 18% 34%, rgba(158, 230, 173, 0.2), transparent 24rem),
-      radial-gradient(circle at 72% 18%, rgba(158, 230, 173, 0.12), transparent 18rem),
-      radial-gradient(circle at 88% 34%, rgba(147, 108, 255, 0.2), transparent 31rem),
-      linear-gradient(118deg, rgba(12, 16, 22, 0.42), transparent 48%);
-    background-size: 44px 44px, 44px 44px, auto, auto, auto, auto;
+      linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0)),
+      #efefef;
   }
 
   .hero::before {
     position: absolute;
-    inset: 0;
+    inset: auto 0 0;
     z-index: 0;
+    height: 58%;
     content: "";
     background:
-      linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-    background-size: 8.8rem 8.8rem;
-    mask-image: radial-gradient(circle at 64% 42%, black, transparent 74%);
-    opacity: 0.62;
+      linear-gradient(rgba(36, 36, 36, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36, 36, 36, 0.08) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: linear-gradient(to top, black, transparent);
+    opacity: 0.5;
     pointer-events: none;
   }
 
   .hero::after {
     position: absolute;
-    inset: auto -18rem -18rem auto;
+    inset: auto -10rem -18rem auto;
     z-index: 0;
-    width: 46rem;
-    height: 46rem;
+    width: 38rem;
+    height: 38rem;
     content: "";
-    border-radius: 999px;
     background:
-      radial-gradient(circle, rgba(158, 230, 173, 0.18), rgba(147, 108, 255, 0.08) 38%, transparent 68%);
-    filter: blur(12px);
+      linear-gradient(rgba(36, 36, 36, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36, 36, 36, 0.08) 1px, transparent 1px);
+    background-color: #c6d8e2;
+    background-size: 28px 28px;
+    border-radius: 24px;
+    rotate: 12deg;
+    opacity: 0.6;
     pointer-events: none;
   }
 
   .hero-mark {
     position: absolute;
     z-index: 1;
-    top: 5.2rem;
-    left: min(44vw, calc(50% - 0.5rem));
-    width: min(66vw, 60rem);
+    right: -10rem;
+    bottom: -8rem;
+    width: min(60vw, 48rem);
     aspect-ratio: 1;
-    opacity: 0.56;
+    opacity: 0.08;
     pointer-events: none;
     user-select: none;
-    mix-blend-mode: lighten;
-    transform: translateX(-3%);
-    filter:
-      sepia(0.6)
-      saturate(3.8)
-      hue-rotate(62deg)
-      brightness(1.68)
-      drop-shadow(0 34px 110px rgba(158, 230, 173, 0.52));
+    filter: grayscale(1) contrast(1.3);
   }
 
   .hero-grid {
     position: absolute;
     z-index: 1;
-    top: 5.2rem;
-    left: min(44vw, calc(50% - 0.5rem));
-    width: min(66vw, 60rem);
-    aspect-ratio: 1;
+    right: max(1.5rem, calc((100vw - 1384px) / 2));
+    bottom: 3rem;
+    width: min(42vw, 34rem);
+    height: min(42vw, 34rem);
     background:
-      linear-gradient(90deg, rgba(158, 230, 173, 0.22) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(158, 230, 173, 0.17) 1px, transparent 1px),
-      radial-gradient(circle at 36% 34%, rgba(158, 230, 173, 0.32), transparent 18rem);
-    background-size: 4.25rem 4.25rem, 4.25rem 4.25rem, auto;
-    mask-image: url("/icon.svg");
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: contain;
-    -webkit-mask-image: url("/icon.svg");
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    -webkit-mask-size: contain;
-    opacity: 0.62;
-    transform: translateX(-3%);
+      linear-gradient(90deg, rgba(36, 36, 36, 0.16) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(36, 36, 36, 0.14) 1px, transparent 1px),
+      radial-gradient(circle at 38% 36%, rgba(158, 230, 173, 0.55), transparent 18rem);
+    background-size: 2.4rem 2.4rem, 2.4rem 2.4rem, auto;
+    opacity: 0.52;
+    mask-image: radial-gradient(circle, black, transparent 72%);
     pointer-events: none;
+  }
+
+  .hero-shell {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+  }
+
+  .hero-copy {
+    max-width: 52rem;
   }
 
   .hero-copy h1,
@@ -387,49 +435,26 @@
   .final-cta h2 {
     font-weight: 650;
     letter-spacing: 0;
-    color: hsl(var(--bc));
+    color: inherit;
   }
 
   .hero-copy h1 {
     position: relative;
     z-index: 2;
-    max-width: 72rem;
-    font-size: clamp(3.55rem, 6.7vw, 7.1rem);
-    line-height: 0.92;
+    max-width: 50rem;
+    font-size: clamp(3.2rem, 7.2vw, 6.9rem);
+    line-height: 0.91;
     overflow-wrap: break-word;
-    text-shadow: 0 22px 80px rgba(0, 0, 0, 0.34);
   }
 
   .hero-subtitle {
     position: relative;
     z-index: 2;
-    max-width: 50rem;
-    margin-top: 1.25rem;
-    color: hsl(var(--bc) / 0.74);
-    font-size: clamp(1.05rem, 1.7vw, 1.35rem);
-    line-height: 1.55;
-  }
-
-  .hero-principles {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    max-width: 52rem;
-    margin-top: 1.15rem;
-  }
-
-  .hero-principles span {
-    border: 1px solid rgba(158, 230, 173, 0.28);
-    border-radius: 999px;
-    padding: 0.55rem 0.75rem;
-    color: hsl(var(--bc) / 0.78);
-    background: rgba(17, 18, 28, 0.42);
-    font-size: 0.86rem;
-    font-weight: 700;
-    line-height: 1;
-    white-space: nowrap;
+    max-width: 45rem;
+    margin-top: 1.35rem;
+    color: #6c6c6c;
+    font-size: clamp(1.02rem, 1.55vw, 1.25rem);
+    line-height: 1.5;
   }
 
   .eyebrow,
@@ -438,7 +463,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    color: #9ee6ad;
+    color: #4d805b;
     font-size: 0.78rem;
     font-weight: 750;
     letter-spacing: 0.08em;
@@ -449,15 +474,10 @@
     position: relative;
     z-index: 2;
     margin-bottom: 1.4rem;
-    border: 1px solid rgba(158, 230, 173, 0.42);
+    border: 1px solid rgba(36, 36, 36, 0.1);
     border-radius: 999px;
-    padding: 0.65rem 0.9rem;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
-      rgba(158, 230, 173, 0.1);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 16px 60px rgba(0, 0, 0, 0.16);
+    padding: 0.7rem 0.95rem;
+    background: rgba(255, 255, 255, 0.58);
   }
 
   .hero-actions,
@@ -470,10 +490,138 @@
     margin-top: 1.5rem;
   }
 
+  .sprinter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    padding: 0.86rem 1.2rem;
+    font-size: clamp(1rem, 1.2vw, 1.18rem);
+    font-weight: 750;
+    line-height: 1.15;
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+
+  .sprinter-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .sprinter-button.primary {
+    color: #efefef;
+    background: #4d805b;
+  }
+
+  .sprinter-button.secondary {
+    color: #efefef;
+    background: #242424;
+  }
+
+  .hero-side {
+    position: relative;
+    z-index: 2;
+  }
+
+  .flow-panel {
+    display: grid;
+    gap: 1.25rem;
+    border-radius: 24px;
+    padding: clamp(1.15rem, 2.5vw, 1.65rem);
+    color: #242424;
+    background: #e5e5e5;
+    box-shadow: 0 26px 80px rgba(36, 36, 36, 0.1);
+  }
+
+  .flow-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(36, 36, 36, 0.1);
+    padding-bottom: 1rem;
+  }
+
+  .flow-panel-header span {
+    max-width: 14rem;
+    color: #7a7a7a;
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+
+  .flow-lanes {
+    display: grid;
+  }
+
+  .flow-step {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.45);
+    padding: 1rem;
+  }
+
+  .flow-icon {
+    display: grid;
+    flex: none;
+    width: 2.6rem;
+    height: 2.6rem;
+    place-items: center;
+    border-radius: 12px;
+    color: #efefef;
+    background: #242424;
+  }
+
+  .flow-icon :global(svg) {
+    font-size: 1.35rem;
+  }
+
+  .flow-step strong {
+    display: block;
+    font-size: 1.1rem;
+    line-height: 1.15;
+  }
+
+  .flow-step p {
+    margin-top: 0.35rem;
+    color: #707070;
+    font-size: 0.94rem;
+    line-height: 1.4;
+  }
+
+  .flow-rail {
+    width: 2px;
+    height: 1.2rem;
+    margin-left: 2.25rem;
+    background: linear-gradient(#4d805b, rgba(77, 128, 91, 0.1));
+  }
+
+  .token-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+    border-top: 1px solid rgba(36, 36, 36, 0.1);
+    padding-top: 1rem;
+  }
+
+  .token-strip span {
+    border-radius: 999px;
+    padding: 0.65rem 0.55rem;
+    text-align: center;
+    color: #4d805b;
+    background: #9ee6ad;
+    font-weight: 800;
+    font-size: 0.9rem;
+  }
+
   .visual-hero {
+    color: #efefef;
     background:
-      radial-gradient(circle at 82% 42%, rgba(147, 108, 255, 0.16), transparent 30rem),
-      rgba(255, 255, 255, 0.015);
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      #242424;
+    background-size: 44px 44px, 44px 44px, auto;
   }
 
   .visual-section-heading {
@@ -494,8 +642,8 @@
     border-radius: 1.4rem;
     padding: clamp(1.1rem, 3vw, 2.5rem);
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-      rgba(20, 22, 34, 0.44);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
+      #2b2b2b;
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 38px 100px rgba(0, 0, 0, 0.22);
     overflow: hidden;
@@ -540,7 +688,7 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
     padding: 0.8rem 1rem;
-    color: hsl(var(--bc) / 0.74);
+    color: rgba(239, 239, 239, 0.72);
     background: rgba(255, 255, 255, 0.055);
     font-size: 0.92rem;
   }
@@ -556,7 +704,7 @@
     display: grid;
     place-items: center;
     margin: 1.05rem 0;
-    color: hsl(var(--bc) / 0.56);
+    color: rgba(239, 239, 239, 0.56);
     font-size: 0.78rem;
     font-weight: 750;
     letter-spacing: 0.08em;
@@ -572,10 +720,10 @@
 
   .token-card {
     min-height: 12rem;
-    border: 1px solid rgba(158, 230, 173, 0.24);
-    border-radius: 1rem;
+    border: 1px solid rgba(198, 216, 226, 0.22);
+    border-radius: 16px;
     padding: 1rem;
-    background: rgba(158, 230, 173, 0.08);
+    background: rgba(255, 255, 255, 0.055);
   }
 
   .token-card span {
@@ -587,12 +735,12 @@
   .token-card strong {
     display: block;
     margin-top: 0.45rem;
-    color: hsl(var(--bc) / 0.72);
+    color: rgba(239, 239, 239, 0.72);
   }
 
   .settlement-core {
     border: 1px solid rgba(255, 255, 255, 0.13);
-    border-radius: 1rem;
+    border-radius: 16px;
     padding: 1.15rem;
     background: rgba(17, 18, 28, 0.7);
   }
@@ -608,7 +756,7 @@
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 0.7rem;
     margin-top: 1.35rem;
-    color: hsl(var(--bc) / 0.7);
+    color: rgba(239, 239, 239, 0.7);
   }
 
   .settlement-core li {
@@ -623,18 +771,33 @@
   }
 
   .ticker-band {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(10rem, 1fr));
-    border-block: 1px solid rgba(255, 255, 255, 0.09);
+    border-block: 1px solid rgba(36, 36, 36, 0.1);
     overflow-x: auto;
-    background: rgba(255, 255, 255, 0.035);
+    background: #d8e5df;
   }
 
-  .ticker-band div {
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 1.1rem 1.25rem;
-    color: hsl(var(--bc) / 0.72);
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    gap: 3rem;
+    padding: 1.35rem 1.5rem;
+    animation: ticker-scroll 36s linear infinite;
+  }
+
+  .ticker-track span {
+    color: #255976;
+    font-weight: 750;
     white-space: nowrap;
+  }
+
+  @keyframes ticker-scroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
   }
 
   .split-intro,
@@ -657,7 +820,7 @@
   .intro-copy,
   .comparison-layout p,
   .etc-panel p {
-    color: hsl(var(--bc) / 0.72);
+    color: #6c6c6c;
     font-size: 1.08rem;
     line-height: 1.72;
   }
@@ -674,21 +837,23 @@
 
   .path-card {
     min-height: 15rem;
-    border: 1px solid rgba(255, 255, 255, 0.11);
-    border-radius: 1rem;
+    border: 1px solid rgba(36, 36, 36, 0.08);
+    border-radius: 24px;
     padding: 1.3rem;
-    background: rgba(255, 255, 255, 0.045);
-    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    color: #242424;
+    background: #e5e5e5;
+    overflow: hidden;
+    transition: transform 160ms ease, color 160ms ease, background 160ms ease;
   }
 
   .path-card:hover {
     transform: translateY(-4px);
-    border-color: rgba(158, 230, 173, 0.34);
-    background: rgba(158, 230, 173, 0.075);
+    color: #efefef;
+    background: #4d805b;
   }
 
   .path-card :global(svg) {
-    color: #9ee6ad;
+    color: #4d805b;
     font-size: 2rem;
   }
 
@@ -701,8 +866,13 @@
 
   .path-card p {
     margin-top: 0.7rem;
-    color: hsl(var(--bc) / 0.68);
+    color: #707070;
     line-height: 1.55;
+  }
+
+  .path-card:hover :global(svg),
+  .path-card:hover p {
+    color: rgba(239, 239, 239, 0.78);
   }
 
   .section-heading {
@@ -716,18 +886,19 @@
   }
 
   .mechanism-column {
-    border-radius: 1.15rem;
+    border-radius: 24px;
     padding: clamp(1.3rem, 3vw, 2.25rem);
-    background: rgba(255, 255, 255, 0.055);
-    border: 1px solid rgba(255, 255, 255, 0.11);
+    color: #242424;
+    background: #e5e5e5;
+    border: 1px solid rgba(36, 36, 36, 0.08);
   }
 
   .mechanism-column.market {
-    background: rgba(158, 230, 173, 0.08);
+    background: #d8e5df;
   }
 
   .mechanism-column span {
-    color: #9ee6ad;
+    color: #4d805b;
     font-weight: 750;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -742,26 +913,26 @@
 
   .mechanism-column p {
     margin-top: 1rem;
-    color: hsl(var(--bc) / 0.68);
+    color: #707070;
     line-height: 1.68;
   }
 
   .connector {
     display: grid;
     place-items: center;
-    color: #9ee6ad;
+    color: #4d805b;
     font-weight: 800;
   }
 
   .connector div {
-    border: 1px solid rgba(158, 230, 173, 0.32);
+    border: 1px solid rgba(77, 128, 91, 0.28);
     border-radius: 999px;
     padding: 0.8rem 1rem;
-    background: rgba(158, 230, 173, 0.08);
+    background: #d8e5df;
   }
 
   .comparison-table {
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 1px solid rgba(36, 36, 36, 0.1);
     margin-top: 3rem;
   }
 
@@ -769,27 +940,28 @@
     display: grid;
     grid-template-columns: 0.75fr 1fr 1fr;
     gap: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(36, 36, 36, 0.1);
     padding: 1rem 0;
-    color: hsl(var(--bc) / 0.68);
+    color: #707070;
   }
 
   .comparison-row span:first-child {
-    color: hsl(var(--bc));
+    color: #242424;
     font-weight: 700;
   }
 
   .comparison-row strong {
-    color: #9ee6ad;
+    color: #4d805b;
   }
 
   .etc-panel,
   .final-cta {
-    border-radius: 1.25rem;
-    border: 1px solid rgba(158, 230, 173, 0.2);
+    border-radius: 24px;
+    border: 1px solid rgba(36, 36, 36, 0.08);
     background:
-      radial-gradient(circle at 85% 15%, rgba(158, 230, 173, 0.16), transparent 25rem),
-      rgba(255, 255, 255, 0.045);
+      linear-gradient(135deg, rgba(216, 229, 223, 0.92), rgba(229, 229, 229, 0.94)),
+      #e5e5e5;
+    color: #242424;
     padding: clamp(1.4rem, 4vw, 3rem);
   }
 
@@ -825,31 +997,40 @@
   }
 
   @media (max-width: 767px) {
+    .hero-shell {
+      grid-template-columns: 1fr;
+      align-content: center;
+      gap: 2rem;
+    }
+
     .hero-mark {
-      top: 6rem;
-      left: 48%;
-      width: 24rem;
-      opacity: 0.3;
-      transform: translateX(-10%);
+      right: -9rem;
+      bottom: 8rem;
+      width: 28rem;
+      opacity: 0.06;
     }
 
     .hero-grid {
-      top: 6rem;
-      left: 48%;
+      right: -8rem;
+      bottom: 8rem;
       width: 24rem;
-      opacity: 0.42;
-      transform: translateX(-10%);
+      height: 24rem;
+      opacity: 0.32;
     }
 
     .hero-copy h1 {
-      font-size: clamp(2.85rem, 12.2vw, 3.55rem);
+      font-size: clamp(2.95rem, 12vw, 3.55rem);
     }
 
     .hero-actions {
       flex-direction: column;
     }
 
-    .hero-actions .btn {
+    .sprinter-button {
+      width: 100%;
+    }
+
+    .hero-side {
       width: 100%;
     }
 
@@ -864,8 +1045,8 @@
       grid-template-columns: 1fr;
     }
 
-    .ticker-band {
-      grid-template-columns: repeat(6, minmax(12rem, 1fr));
+    .ticker-track {
+      animation-duration: 44s;
     }
   }
 </style>

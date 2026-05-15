@@ -144,7 +144,7 @@
 />
 
 <div
-  class="lg:border-2 rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:bg-gradient"
+  class="rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:app-panel"
 >
   <div class="p-4 lg:h-auto lg:pt-0 container-height" id="container">
     <label class="label">

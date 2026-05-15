@@ -36,7 +36,7 @@
 </script>
 
 <div
-  class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
+  class="rounded-lg lg:p-4 app-panel lg:w-1/2 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
   id="container"
 >
   {#if !positionExist && !claimsExist}

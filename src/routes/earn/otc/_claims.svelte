@@ -32,7 +32,7 @@
   // $: timeleft = getTimeDifference(claim?.settlementTimestamp || 0, $timestamp);
 </script>
 
-<div class="overflow-x-auto lg:bg-gradient">
+<div class="overflow-x-auto">
   <table class="table w-full">
     <!-- head -->
     <thead>
