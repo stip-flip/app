@@ -20,7 +20,7 @@
         class="text-center lg:py-12 py-4 text-xl fine-border rounded-tr-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
         href="/earn"
       >
-        Deposit
+        Provide liquidity
       </a>
     </div>
     <div class="py-2 flex lg:space-x-4 space-x-2">
@@ -28,7 +28,7 @@
         class="text-center lg:py-12 py-4 text-xl fine-border rounded-bl-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"
         href="/oracle"
       >
-        Stake
+        Submit prices
       </a>
       <a
         class="text-center lg:py-12 py-4 text-xl fine-border rounded-br-full w-1/2 lg:h-auto h-16 hover:bg-white hover:bg-opacity-20 hover:border-primary hover:font-normal"

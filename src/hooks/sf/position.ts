@@ -85,6 +85,10 @@ export const usePositions = derived(
         );
         console.log(positions);
         set(positions);
+      })
+      .catch((error) => {
+        console.warn("Unable to load position pools from subgraph", error);
+        set([]);
       });
     // Promise.all(
     //   poolAddresses.map((a) => positionsAsync(a, account || $signerAddress))

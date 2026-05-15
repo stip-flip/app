@@ -161,7 +161,7 @@
   <input id="app-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col">
     <!-- Navbar -->
-    <div class="fixed w-full lg:p-4 z-10" id="navbar">
+    <div class="fixed w-full p-3 lg:p-4 z-10" id="navbar">
       <div class="justify-between navbar">
         {#if homepage}
           <div class="flex items-center w-content lg:mr-8"></div>
@@ -218,7 +218,7 @@
           </div>
           <div class="flex-none hidden lg:block">
             <ul
-              class="menu menu-md menu-horizontal bg-gradient rounded-full shadow-sm shadow-base-content bg-opacity-50 lg:bg-gradient p-0"
+              class="menu menu-md menu-horizontal app-nav rounded-full p-1"
             >
               <!-- Navbar menu content here -->
               <li id="wallet">
@@ -252,7 +252,7 @@
                   class="rounded-full"
                   class:text-primary={$page.route?.id?.startsWith("/oracle")}
                   class:selected={$page.route?.id?.startsWith("/oracle")}
-                  >Stake</a
+                  >Oracle</a
                 >
               </li>
               <li>
@@ -276,13 +276,13 @@
     </div>
     <div
       class={!homepage
-        ? "bg-2 lg:h-screen lg:root w-full overflow-scroll lg:pb-8 lg:overflow-auto mobile-height overflow-x-hidden"
+        ? "bg-2 lg:h-screen w-full overflow-scroll lg:pb-8 lg:overflow-auto mobile-height overflow-x-hidden"
         : "root h-screen bg"}
     >
       <slot />
     </div>
     <div
-      class="btm-nav lg:hidden bg-transparent h-24 pb-8 backdrop-blur-xl"
+      class="btm-nav lg:hidden app-nav h-24 pb-8 rounded-t-3xl"
       class:hidden={!!homepage}
       id="footer"
     >
@@ -322,7 +322,7 @@
         on:click|preventDefault={() => goto(navigate("/oracle", url))}
       >
         <Icon icon="mingcute:coin-2-line" class="text-3xl" />
-        <span class="btm-nav-label text-xs">Stake</span>
+        <span class="btm-nav-label text-xs">Oracle</span>
       </a>
     </div>
   </div>
@@ -333,13 +333,13 @@
       class="drawer-overlay"
       bind:this={overlay}
     />
-    <aside class="bg-opaque min-h-screen w-3/5 bg-opaque">
+    <aside class="bg-opaque min-h-screen w-3/5">
       <div
-        class="bg-opaque grid-row-2 sticky top-0 z-10 grid w-full gap-y-2 bg-opacity-90 px-2 py-3 backdrop-blur"
+        class="bg-opaque grid-row-2 sticky top-0 z-10 grid w-full gap-y-2 bg-opacity-90 px-2 py-3"
       />
       <div class="px-8"><Theme /></div>
       <div class="h-4" />
-      <ul class="menu px-4 py-0 text-xl">
+      <ul class="menu px-4 py-0 text-xl app-drawer-menu">
         <li>
           <details id="disclosure-docs" open="true">
             <summary class="group font-bold"

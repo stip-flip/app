@@ -27,7 +27,7 @@
       class="drawer-overlay"
     />
     <ul
-      class="menu p-4 lg:w-80 w-2/3 min-h-full bg-base-200 text-base-content z-20 bg-opaque"
+      class="menu p-4 lg:w-80 w-2/3 min-h-full text-base-content z-20 bg-opaque"
     >
       <!-- Sidebar content here -->
       <div class="lg:hidden flex justify-end">
@@ -53,7 +53,7 @@
             }}>Disconnect</button
           >
         </div>
-        <div class="divider my-8">Networks</div>
+        <div class="divider my-8 app-muted">Settlement networks</div>
 
         <button
           class="btn btn-outline px-4 flex space-x-2 items-center"
@@ -68,7 +68,7 @@
           <span>Ethereum Classic</span>
         </button>
 
-        <div class="divider my-8">Testnets</div>
+        <div class="divider my-8 app-muted">Test settlement networks</div>
 
         <button
           class="btn btn-outline px-4 flex space-x-2 items-center"

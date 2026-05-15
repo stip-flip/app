@@ -84,12 +84,18 @@ export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
 export const usePoolInfos = derived(
   [ethsdk, resolvedTransactions, gqlsdk],
   ([$ethsdk, $resolvedTransactions, $gqlsdk], set) => {
-    $gqlsdk?.getPools().then(async (res) => {
-      const pools = await Promise.all(
-        res.pools.map((p: PoolFragment) => poolInfoAsync(p))
-      );
-      set(pools);
-    });
+    $gqlsdk
+      ?.getPools()
+      .then(async (res) => {
+        const pools = await Promise.all(
+          res.pools.map((p: PoolFragment) => poolInfoAsync(p))
+        );
+        set(pools);
+      })
+      .catch((error) => {
+        console.warn("Unable to load market pools from subgraph", error);
+        set([]);
+      });
   },
   [] as PoolInfo[]
 );

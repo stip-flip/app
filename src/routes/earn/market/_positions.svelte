@@ -25,7 +25,7 @@
 
 <Modal {pool} {selectedPosition} bind:open />
 <label for={pool.address} bind:this={label}></label>
-<div class="overflow-x-auto lg:bg-gradient lg:mt-0 -mt-6 lg:mb-0 mb-4">
+<div class="overflow-x-auto lg:mt-0 -mt-6 lg:mb-0 mb-4">
   <table class="table w-full">
     <!-- head -->
     <thead>

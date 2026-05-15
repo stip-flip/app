@@ -41,7 +41,7 @@
   <div class="m-auto lg:flex lg:gap-4 lg:w-1/2 w-full lg:px-0 px-4">
     {#each ORACLES as o, i}
       <div
-        class="border border-primary rounded-xl p-4 lg:w-1/3 w-full bg-gradient lg:mb-0 mb-4"
+        class="border border-primary rounded-xl p-4 lg:w-1/3 w-full app-panel lg:mb-0 mb-4"
       >
         <h1 class="text-xl font-bold pb-4 flex justify-between">
           {ORACLES_NAMES[i]}
@@ -53,21 +53,21 @@
         </h1>
 
         <div class="flex justify-between py-2">
-          <p>Stakes:</p>
+          <p>Settlement stake:</p>
           <p class="flex">
             <Icon icon="mdi:ethereum" class="text-green-600 text-2xl" />
             {commify(formatEther($oracleInfo[i]?.totalStakes || "0"), 2)}
           </p>
         </div>
         <div class="flex justify-between">
-          <p>MANA Minted:</p>
+          <p>MANA minted:</p>
           <p class="flex">
             {commify(formatEther($oracleInfo[i]?.totalMana || "0"), 2)}
             <!-- <Icon icon="mdi:ethereum" class="text-green-600 text-2xl" /> -->
           </p>
         </div>
         <div class="flex justify-between py-2">
-          <p>Oracle Operators:</p>
+          <p>Price operators:</p>
           <p class="flex">
             {OPERATORS[i]}
             <!-- <Icon icon="mdi:ethereum" class="text-green-600 text-2xl" /> -->
@@ -82,7 +82,7 @@
             >
           {:else}
             <a class="btn btn-outline w-1/2" href="/oracle/{ORACLES[i]}/deposit"
-              >Stake</a
+              >Join oracle</a
             >
           {/if}
         </div>

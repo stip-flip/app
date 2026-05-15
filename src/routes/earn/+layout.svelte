@@ -15,18 +15,24 @@
 </script>
 
 <div
-  class="px-2 lg:px-0 lg:w-1/2 w-full m-auto lg:pt-0 pt-14 lg:mb-4 lg:mt-40 lg:relative fixed lg:backdrop-filter-none backdrop-blur-xl"
+  class="app-page-header px-2 lg:px-0 lg:w-1/2 w-full m-auto lg:pt-0 pt-14 lg:mb-4 lg:mt-40 lg:relative fixed"
   id="top"
 >
   <h1
-    class="text-3xl p-4 lg:px-6 pl-6 mt-2 flex justify-between items-center w-full"
+    class="p-4 lg:px-6 pl-6 mt-2 flex justify-between items-center w-full"
     class:hidden={$page.url.pathname.includes("add")}
   >
-    Earn
+    <span>
+      <span class="app-label block">Liquidity backing</span>
+      <span class="text-3xl font-semibold block">Back tokenized exposure</span>
+      <span class="app-muted mt-2 block text-sm">
+        Provide collateral depth for positions that can trade across venues.
+      </span>
+    </span>
     <a
       class="btn btn-primary lg:btn-md btn-sm"
       id="new-position"
-      href={navigate("/earn/add", url)}>+ New Position</a
+      href={navigate("/earn/add", url)}>New position</a
     >
   </h1>
   {#if !add}
@@ -52,7 +58,7 @@
           <div
             class="btn btn-outline lg:btn-sm btn-xs no-animation cursor-default hover:text-inherit join-item bg-gradient lg:flex-grow"
           >
-            APY
+            Protocol yield
           </div>
           <div
             class="btn btn-outline lg:btn-sm btn-xs no-animation cursor-default hover:text-inherit join-item bg-gradient"

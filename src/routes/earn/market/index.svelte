@@ -20,7 +20,7 @@
 
 {#if !positionExist}
   <div
-    class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
+    class="rounded-lg lg:p-4 app-panel lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
     id="container"
   >
     <div class="text-center lg:mt-0 mt-24 px-4">
@@ -32,7 +32,7 @@
   </div>
 {:else}
   <div
-    class="lg:border-2 lg:border-primary-focus rounded-lg lg:p-4 lg:bg-gradient bg-opacity-80 lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
+    class="rounded-lg lg:p-4 app-panel lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
     id="container"
   >
     {#each $poolInfos as pool}
