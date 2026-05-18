@@ -81,7 +81,6 @@
             General view of every oracle securing market settlement, with staking actions in one place.
           </p>
         </div>
-        <a class="btn btn-outline rounded-full" href="/markets">View markets</a>
       </div>
   </div>
 </header>
