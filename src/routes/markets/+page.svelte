@@ -1,7 +1,9 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
+  import { formatUnits } from "ethers/lib/utils";
   import { onDestroy, onMount } from "svelte";
+  import { get } from "svelte/store";
   import StatCard from "src/components/stat-card.svelte";
+  import { extractERC20Info, type TokenInfo } from "src/hooks/erc20";
   import type { MarketSummaryFragmentFragment } from "src/hooks/subgraph";
   import { updateVc } from "src/lib";
   import {
@@ -12,19 +14,75 @@
     shortAddress,
     volumeTotal,
   } from "src/lib/stats";
-  import { gqlsdk } from "src/stores";
+  import { gqlsdk, sdk } from "src/stores";
 
-  let markets: MarketSummaryFragmentFragment[] = [];
+  type MarketSummary = MarketSummaryFragmentFragment & {
+    settlementPrice?: string;
+    settlementTick?: number;
+    circulatingSupply?: number;
+    token?: TokenInfo;
+  };
+
+  let markets: MarketSummary[] = [];
   let loading = true;
   let error = "";
 
+  async function getSettlementState(id: string) {
+    const ethsdk = get(sdk);
+    const pool = ethsdk.POOL.attach(id);
+    const [slot1, oracleAddress, oracleSlot, long, leverage, totalSupply] = await Promise.all([
+      pool.slot1(),
+      pool.oracle(),
+      pool.oracleSlot(),
+      pool.long(),
+      pool.leverage(),
+      pool.totalSupply(),
+    ]);
+    const oracle = ethsdk.ORACLE.attach(oracleAddress);
+    const [basePrice, decimals] = await Promise.all([
+      oracle["lastPrice(uint8)"](oracleSlot),
+      oracle.getDecimals(oracleSlot),
+    ]);
+
+    const exponent = Number(leverage) === 1 ? "²" : Number(leverage) === 2 ? "³" : "";
+    const displayPrice = `${long ? "" : "1 / "}${formatPrice(
+      Number(formatUnits(basePrice, decimals))
+    )}${exponent}`;
+
+    return {
+      settlementPrice: displayPrice,
+      settlementTick: Number(slot1.tick),
+      circulatingSupply: Number(formatUnits(totalSupply, 18)),
+    };
+  }
+
   const unsubscribe = gqlsdk.subscribe(($gqlsdk) => {
+    if (!$gqlsdk) return;
+
     loading = true;
     error = "";
     $gqlsdk
       ?.getMarketSummaries({ first: 1000 })
-      .then((res) => {
-        markets = [...res.synths].sort((a, b) => {
+      .then(async (res) => {
+        const marketsWithMetadata = await Promise.all(
+          res.synths.map(async (market) => {
+            const [token, settlementState] = await Promise.all([
+              extractERC20Info(market.id),
+              getSettlementState(market.id).catch((err) => {
+                console.warn("Unable to load market settlement state", market.id, err);
+                return {};
+              }),
+            ]);
+
+            return {
+              ...market,
+              ...settlementState,
+              token,
+            };
+          })
+        );
+
+        markets = marketsWithMetadata.sort((a, b) => {
           const aSnapshot = a.latestSnapshots[0];
           const bSnapshot = b.latestSnapshots[0];
           const aScore = etherValue(aSnapshot?.totalLiquidity) + volumeTotal(aSnapshot);
@@ -43,6 +101,31 @@
 
   onDestroy(unsubscribe);
   onMount(updateVc);
+
+  function openMarket(id: string) {
+    window.location.href = `/markets/${id}`;
+  }
+
+  function openMarketFromKeyboard(event: KeyboardEvent, id: string) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openMarket(id);
+    }
+  }
+
+  function compactOptional(value?: number | null, decimals = 2) {
+    return value === undefined || value === null ? "pending" : compact(value, decimals);
+  }
+
+  function formatPrice(value?: number | null) {
+    if (value === undefined || value === null || !Number.isFinite(value)) return "pending";
+    if (value !== 0 && Math.abs(value) < 0.01) {
+      return Intl.NumberFormat("en", {
+        maximumSignificantDigits: 4,
+      }).format(value);
+    }
+    return compact(value);
+  }
 
   $: totalLiquidity = markets.reduce(
     (sum, market) => sum + etherValue(market.latestSnapshots[0]?.totalLiquidity),
@@ -71,10 +154,6 @@
             Tokenized perpetual exposure ordered by current liquidity and indexed volume.
           </p>
         </div>
-        <a class="btn btn-outline rounded-full" href="/oracles">
-          <Icon icon="mdi:database-eye" />
-          Oracle health
-        </a>
       </div>
   </div>
 </header>
@@ -102,9 +181,10 @@
                 <th>Market</th>
                 <th>Side</th>
                 <th>Liquidity</th>
-                <th>Supply</th>
+                <th>Circulating supply</th>
                 <th>Volume</th>
-                <th>Price</th>
+                <th>Settlement price</th>
+                <th>Settlement tick</th>
                 <th>Oracle</th>
                 <th>Updated</th>
               </tr>
@@ -112,19 +192,40 @@
             <tbody>
               {#each markets as market (market.id)}
                 {@const snapshot = market.latestSnapshots[0]}
-                <tr class="hover">
+                <tr
+                  class="hover cursor-pointer"
+                  role="link"
+                  tabindex="0"
+                  on:click={() => openMarket(market.id)}
+                  on:keydown={(event) => openMarketFromKeyboard(event, market.id)}
+                >
                   <td>
-                    <a class="font-mono font-bold text-primary" href={`/markets/${market.id}`}>
-                      {shortAddress(market.id)}
-                    </a>
+                    <div class="flex flex-col gap-1">
+                      <a
+                        class="font-bold text-primary"
+                        href={`/markets/${market.id}`}
+                        on:click|stopPropagation
+                      >
+                        {market.token?.symbol || shortAddress(market.id)}
+                      </a>
+                      <span class="text-sm">{market.token?.name || shortAddress(market.id, 10)}</span>
+                      {#if market.token?.description}
+                        <span class="app-muted max-w-xs text-xs">{market.token.description}</span>
+                      {/if}
+                    </div>
                   </td>
                   <td>{market.long ? "Long" : "Short"}</td>
                   <td>{compactEther(snapshot?.totalLiquidity)} ETC</td>
-                  <td>{compactEther(snapshot?.totalSupply)}</td>
+                  <td>{compactOptional(market.circulatingSupply)}</td>
                   <td>{compact(volumeTotal(snapshot))} ETC</td>
-                  <td>{compact(snapshot?.price)}</td>
+                  <td>{market.settlementPrice || "pending"}</td>
+                  <td>{compactOptional(market.settlementTick, 0)}</td>
                   <td>
-                    <a class="font-mono text-primary" href={`/oracles/${market.oracle}`}>
+                    <a
+                      class="font-mono text-primary"
+                      href={`/oracles/${market.oracle}`}
+                      on:click|stopPropagation
+                    >
                       {shortAddress(String(market.oracle))}
                     </a>
                   </td>

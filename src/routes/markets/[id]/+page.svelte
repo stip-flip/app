@@ -1,10 +1,14 @@
 <script lang="ts">
   import { page } from "$app/stores";
+  import { formatUnits } from "ethers/lib/utils";
   import { onDestroy, onMount } from "svelte";
-  import Sparkline from "src/components/sparkline.svelte";
+  import { get } from "svelte/store";
   import StatCard from "src/components/stat-card.svelte";
-  import type { GetMarketDetailQuery, OracleSummaryFragmentFragment } from "src/hooks/subgraph";
+  import TimeSeriesChart from "src/components/time-series-chart.svelte";
+  import { extractERC20Info, type TokenInfo } from "src/hooks/erc20";
+  import type { GetMarketDetailQuery } from "src/hooks/subgraph";
   import { updateVc } from "src/lib";
+  import { navigate } from "src/lib/path";
   import {
     compact,
     compactEther,
@@ -13,26 +17,83 @@
     shortAddress,
     volumeTotal,
   } from "src/lib/stats";
-  import { gqlsdk } from "src/stores";
+  import { gqlsdk, sdk } from "src/stores";
 
   let market: GetMarketDetailQuery["synth"] = null;
-  let oracle: OracleSummaryFragmentFragment | null = null;
+  let token: TokenInfo | null = null;
+  let settlementPrice: string | null = null;
+  let settlementTick: number | null = null;
+  let circulatingSupply: number | null = null;
   let loading = true;
   let error = "";
+  let selectedChartMetric = "liquidity";
+
+  const marketChartMetrics = [
+    { key: "liquidity", label: "Liquidity", unit: "ETC", color: "rgb(var(--sf-green))" },
+    { key: "supply", label: "Supply", color: "rgb(96 165 250)" },
+    { key: "price", label: "Settlement price", color: "rgb(250 204 21)" },
+    { key: "poolDebt", label: "Pool debt", unit: "ETC", color: "rgb(248 113 113)" },
+    { key: "volume", label: "Volume", unit: "ETC", color: "rgb(244 114 182)" },
+    { key: "tick", label: "Tick", decimals: 0, color: "rgb(45 212 191)" },
+    { key: "events", label: "Events", decimals: 0, color: "rgb(192 132 252)" },
+  ];
+
+  async function getSettlementState(id: string) {
+    const ethsdk = get(sdk);
+    const pool = ethsdk.POOL.attach(id);
+    const [slot1, oracleAddress, oracleSlot, long, leverage, totalSupply] = await Promise.all([
+      pool.slot1(),
+      pool.oracle(),
+      pool.oracleSlot(),
+      pool.long(),
+      pool.leverage(),
+      pool.totalSupply(),
+    ]);
+    const oracle = ethsdk.ORACLE.attach(oracleAddress);
+    const [basePrice, decimals] = await Promise.all([
+      oracle["lastPrice(uint8)"](oracleSlot),
+      oracle.getDecimals(oracleSlot),
+    ]);
+
+    const exponent = Number(leverage) === 1 ? "²" : Number(leverage) === 2 ? "³" : "";
+    const displayPrice = `${long ? "" : "1 / "}${formatPrice(
+      Number(formatUnits(basePrice, decimals))
+    )}${exponent}`;
+
+    return {
+      price: displayPrice,
+      tick: Number(slot1.tick),
+      circulatingSupply: Number(formatUnits(totalSupply, 18)),
+    };
+  }
 
   const unsubscribe = gqlsdk.subscribe(($gqlsdk) => {
+    if (!$gqlsdk) return;
+
     const id = $page.params.id;
     loading = true;
     error = "";
+    token = null;
+    settlementPrice = null;
+    settlementTick = null;
+    circulatingSupply = null;
     $gqlsdk
       ?.getMarketDetail({ id })
       .then(async (marketRes) => {
-        const oracleId = marketRes.synth?.oracle ? String(marketRes.synth.oracle) : "";
-        const oracleRes = oracleId
-          ? await $gqlsdk.getOracleSummary({ id: oracleId })
-          : { oracle: null };
+        const [tokenInfo, settlementState] = await Promise.all([
+          marketRes.synth ? extractERC20Info(marketRes.synth.id) : null,
+          marketRes.synth
+            ? getSettlementState(marketRes.synth.id).catch((err) => {
+                console.warn("Unable to load market settlement state", marketRes.synth?.id, err);
+                return null;
+              })
+            : null,
+        ]);
         market = marketRes?.synth || null;
-        oracle = oracleRes?.oracle || null;
+        token = tokenInfo;
+        settlementPrice = settlementState?.price ?? null;
+        settlementTick = settlementState?.tick ?? null;
+        circulatingSupply = settlementState?.circulatingSupply ?? null;
       })
       .catch((err) => {
         console.warn("Unable to load market detail", err);
@@ -47,15 +108,37 @@
   onMount(updateVc);
 
   $: latest = market?.snapshots?.[market.snapshots.length - 1];
-  $: liquiditySeries = market?.snapshots.map((snapshot) => etherValue(snapshot.totalLiquidity)) || [];
-  $: supplySeries = market?.snapshots.map((snapshot) => etherValue(snapshot.totalSupply)) || [];
-  $: priceSeries = market?.snapshots.map((snapshot) => Number(snapshot.price || 0)) || [];
+  $: marketChartPoints =
+    market?.snapshots.map((snapshot) => ({
+      timestamp: Number(snapshot.timestamp || 0),
+      liquidity: etherValue(snapshot.totalLiquidity),
+      supply: etherValue(snapshot.totalSupply),
+      price: Number(snapshot.price || 0),
+      poolDebt: etherValue(snapshot.poolDebt),
+      volume: volumeTotal(snapshot),
+      tick: Number(snapshot.tick || 0),
+      events: Number(snapshot.eventCount || 0),
+    })) || [];
   $: totalRoundVolume =
     market?.roundSnapshots.reduce((sum, snapshot) => sum + volumeTotal(snapshot), 0) || 0;
+
+  function compactOptional(value?: number | null, decimals = 2) {
+    return value === undefined || value === null ? "pending" : compact(value, decimals);
+  }
+
+  function formatPrice(value?: number | null) {
+    if (value === undefined || value === null || !Number.isFinite(value)) return "pending";
+    if (value !== 0 && Math.abs(value) < 0.01) {
+      return Intl.NumberFormat("en", {
+        maximumSignificantDigits: 4,
+      }).format(value);
+    }
+    return compact(value);
+  }
 </script>
 
 <svelte:head>
-  <title>{shortAddress($page.params.id)} Market | Stip & Flip</title>
+  <title>{token?.symbol || shortAddress($page.params.id)} Market | Stip & Flip</title>
 </svelte:head>
 
 <header
@@ -63,13 +146,40 @@
   id="top"
 >
   <div class="py-4">
+      <a
+        class="app-muted mb-3 inline-flex items-center gap-2 text-sm font-semibold hover:text-white"
+        href={navigate("/markets", $page.url)}
+      >
+        <span aria-hidden="true">←</span>
+        <span>Back</span>
+      </a>
       <div class="app-label">Market detail</div>
       <div class="mt-2 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
-          <h1 class="font-mono text-2xl font-bold lg:text-4xl">{shortAddress($page.params.id, 10)}</h1>
-          <p class="app-muted mt-2">Historical liquidity, supply, volume, and oracle strength.</p>
+          <h1 class="text-2xl font-bold lg:text-4xl">{token?.symbol || shortAddress($page.params.id, 10)}</h1>
+          <p class="app-muted mt-2">
+            {token?.description || token?.name || "Historical liquidity, supply, volume, and oracle strength."}
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-sm app-muted">
+            {#if token?.name}
+              <span>Market · {token.name}</span>
+              <span aria-hidden="true">·</span>
+              <span>{shortAddress($page.params.id, 10)}</span>
+            {:else}
+              <span>Market · {shortAddress($page.params.id, 10)}</span>
+            {/if}
+            {#if market?.oracle}
+              <span aria-hidden="true">·</span>
+              <span>Oracle ·</span>
+              <a
+                class="text-white underline underline-offset-4 hover:text-primary"
+                href={navigate(`/oracles/${market.oracle}`, $page.url)}
+              >
+                {shortAddress(String(market.oracle), 10)}
+              </a>
+            {/if}
+          </div>
         </div>
-        <a class="btn btn-outline rounded-full" href="/markets">All markets</a>
       </div>
   </div>
 </header>
@@ -83,45 +193,20 @@
     {:else if !market}
       <section class="app-panel rounded-lg p-8 app-muted">Market not found in the indexed schema.</section>
     {:else}
-      <section class="grid gap-3 md:grid-cols-4">
+      <section class="grid gap-3 md:grid-cols-5">
         <StatCard label="Liquidity" value={`${compactEther(latest?.totalLiquidity)} ETC`} detail="Latest snapshot" />
-        <StatCard label="Circulation" value={compactEther(latest?.totalSupply)} detail="Position tokens" />
+        <StatCard label="Circulating supply" value={compactOptional(circulatingSupply)} detail="Position tokens" />
         <StatCard label="Round volume" value={`${compact(totalRoundVolume)} ETC`} detail="Indexed round history" />
-        <StatCard label="Price" value={compact(latest?.price)} detail={`Tick ${latest?.tick || 0}`} />
+        <StatCard label="Settlement price" value={settlementPrice || "pending"} detail="Last settlement price" />
+        <StatCard label="Settlement tick" value={compactOptional(settlementTick, 0)} detail="Last settlement tick" />
       </section>
 
-      <section class="grid gap-4 lg:grid-cols-3">
-        <div class="app-panel rounded-lg p-4">
-          <div class="app-label">Liquidity over time</div>
-          <Sparkline values={liquiditySeries} label="Market liquidity over time" />
-        </div>
-        <div class="app-panel rounded-lg p-4">
-          <div class="app-label">Tokens in circulation</div>
-          <Sparkline values={supplySeries} label="Market supply over time" />
-        </div>
-        <div class="app-panel rounded-lg p-4">
-          <div class="app-label">Price path</div>
-          <Sparkline values={priceSeries} label="Market price over time" />
-        </div>
-      </section>
-
-      <section class="app-panel rounded-lg p-4">
-        <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-          <div>
-            <div class="app-label">Oracle strength</div>
-            <h2 class="mt-1 text-xl font-bold">
-              {oracle ? shortAddress(oracle.id, 10) : shortAddress(String(market.oracle), 10)}
-            </h2>
-          </div>
-          <a class="btn btn-primary rounded-full" href={`/oracles/${market.oracle}`}>Open oracle</a>
-        </div>
-        <div class="mt-4 grid gap-3 md:grid-cols-4">
-          <StatCard label="ETC staked" value={`${compactEther(oracle?.totalStake)} ETC`} detail="Settlement backing" />
-          <StatCard label="Stakers" value={compact(oracle?.participantCount, 0)} detail="Participants" />
-          <StatCard label="MANA" value={compactEther(oracle?.totalMana)} detail="Minted by oracle" />
-          <StatCard label="Rewards" value={`${compactEther(oracle?.totalRewardsClaimed)} ETC`} detail="Claimed rewards" />
-        </div>
-      </section>
+      <TimeSeriesChart
+        title="Market history"
+        points={marketChartPoints}
+        metrics={marketChartMetrics}
+        bind:selected={selectedChartMetric}
+      />
 
       <section class="grid gap-4 lg:grid-cols-2">
         <div class="app-panel overflow-hidden rounded-lg">
