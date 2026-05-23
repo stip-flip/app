@@ -154,6 +154,9 @@
             Tokenized perpetual exposure ordered by current liquidity and indexed volume.
           </p>
         </div>
+        <a class="btn btn-primary rounded-full" href="/markets/create">
+          Create market
+        </a>
       </div>
   </div>
 </header>

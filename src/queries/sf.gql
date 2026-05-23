@@ -1,6 +1,7 @@
 fragment SynthFragment on Synth {
   id
   long
+  oracle
   ticks {
     id
     index

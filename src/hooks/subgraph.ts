@@ -3337,14 +3337,14 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type SynthFragmentFragment = { __typename?: 'Synth', id: string, long: boolean, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> };
+export type SynthFragmentFragment = { __typename?: 'Synth', id: string, long: boolean, oracle: any, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> };
 
 export type GetSynthsQueryVariables = Exact<{
   where?: InputMaybe<Synth_Filter>;
 }>;
 
 
-export type GetSynthsQuery = { __typename?: 'Query', synths: Array<{ __typename?: 'Synth', id: string, long: boolean, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> }> };
+export type GetSynthsQuery = { __typename?: 'Query', synths: Array<{ __typename?: 'Synth', id: string, long: boolean, oracle: any, ticks: Array<{ __typename?: 'Tick', id: string, index: number, liquidity: number }> }> };
 
 export type PositionFragmentFragment = { __typename?: 'Position', id: string, owner: any, tick: number, shares: number };
 
@@ -3446,6 +3446,7 @@ export const SynthFragmentFragmentDoc = gql`
     fragment SynthFragment on Synth {
   id
   long
+  oracle
   ticks {
     id
     index

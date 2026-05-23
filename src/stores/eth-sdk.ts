@@ -59,12 +59,12 @@ export const marketIds = {
 export const provider: Readable<MulticallProvider> = derived(
   chainId,
   ($chainId, set) => {
-    switch ($chainId) {
+    switch (Number($chainId)) {
       case 63:
-        set(provider_($chainId));
+        set(provider_(63));
         break;
       case 61:
-        set(provider_($chainId));
+        set(provider_(61));
         break;
       default:
         set(provider_(63));
@@ -76,15 +76,15 @@ export const provider: Readable<MulticallProvider> = derived(
 export const sdk: Readable<MordorSdk> = derived(
   [signer, chainId],
   ([$signer, $chainId], set) => {
-    switch ($chainId) {
+    switch (Number($chainId)) {
       case 63:
-        set(getMordorSdk(provider_($chainId)));
+        set(getMordorSdk(provider_(63)));
         break;
       case 61:
-        set(getEtherSdk(provider_($chainId)));
+        set(getEtherSdk(provider_(61)));
         break;
       default:
-        set(getEtherSdk(provider_(61)));
+        set(getMordorSdk(provider_(63)));
         break;
     }
   },

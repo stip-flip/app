@@ -3,28 +3,26 @@ import { GraphQLClient } from "graphql-request";
 import { derived, type Readable } from "svelte/store";
 import { chainId, signer } from "svelte-ethers-store";
 
+const etc = new GraphQLClient(
+    "https://ether-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market",
+);
+
+const mordor = new GraphQLClient(
+    "https://mordor-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market",
+);
+
 export const gqlsdk: Readable<Sdk> = derived(
     [signer, chainId],
     ([$signer, $chainId], set) => {
-        switch ($chainId) {
+        switch (Number($chainId)) {
             case 61:
-                const etc = new GraphQLClient(
-                    "https://ether-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market",
-                );
                 set(getSdk(etc));
                 break;
             case 63:
-                const mordor = new GraphQLClient(
-                    "https://mordor-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market",
-                );
                 set(getSdk(mordor));
                 break;
             default:
-                const def = new GraphQLClient(
-                    "https://ether-graphiql.stipflip.xyz/subgraphs/name/sotachi/sf-market",
-                );
-                set(getSdk(def));
-                break;
+                set(getSdk(mordor));
                 break;
         }
     },

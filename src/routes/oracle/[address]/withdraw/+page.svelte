@@ -1,4 +1,5 @@
 <script>
+  import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
   import { formatEther, parseEther } from "ethers/lib/utils";
   import { validator } from "src/actions/big-number-input";
@@ -13,7 +14,9 @@
 
   let message = "";
 
-  $: oracleInfo = useOracleInfo($signerAddress, $sdk.ORACLE.address);
+  $: oracleAddress = $page.params.address;
+  $: oracleContract = $sdk?.ORACLE?.attach(oracleAddress);
+  $: oracleInfo = useOracleInfo($signerAddress, oracleAddress);
 
   $: isUnderWater =
     Number(formatEther($oracleInfo?.stakes || "0")) - Number(withdraw) <
@@ -25,8 +28,10 @@
         Number(formatEther($oracleInfo?.stakes || "0"))
     : 0;
 
-  onMount(() =>
-    $sdk.ORACLE.connect($signer)
+  onMount(() => {
+    if (!oracleContract) return;
+
+    oracleContract.connect($signer)
       .callStatic.withdraw(parseEther("0.0000000001"), $signerAddress)
       .then(console.log)
       .catch((err) => {
@@ -36,8 +41,8 @@
         } else {
           message = "Withdrawal are locked until the 20th of June 2024";
         }
-      })
-  );
+      });
+  });
 </script>
 
 <label class="input-group w-full mt-2">
@@ -80,14 +85,12 @@
     class:w-full={!!message}
     disabled={withdraw == "" || !!message}
     on:click={(_) => {
+      if (!oracleContract) return;
       if (Number(withdraw) > Number(formatEther($oracleInfo?.stakes || "0")))
         return;
       broadcastTransaction(
         "Decreasing oracle stakes",
-        $sdk.ORACLE.connect($signer).withdraw(
-          parseEther(withdraw),
-          $signerAddress
-        )
+        oracleContract.connect($signer).withdraw(parseEther(withdraw), $signerAddress)
       );
     }}
     on:validated={(v) => (withdraw = v.detail)}

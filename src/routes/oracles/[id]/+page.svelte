@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { formatUnits } from "ethers/lib/utils";
+  import { SimplePool } from "nostr-tools/pool";
   import { onDestroy, onMount } from "svelte";
   import StatCard from "src/components/stat-card.svelte";
   import TimeSeriesChart from "src/components/time-series-chart.svelte";
@@ -21,7 +22,24 @@
     description: string;
     frequency: number | null;
     currentRound: string;
+    lastRound: string;
+    totalMana: string;
     prices: OraclePriceSlot[];
+  };
+
+  type OracleSlotDefinition = {
+    index: number;
+    label: string;
+    formula?: string;
+    decimals?: number;
+  };
+
+  type NostrMethodologyEvent = {
+    id: string;
+    pubkey: string;
+    kind: number;
+    tags: string[][];
+    content: string;
   };
 
   type OracleMarket = SynthFragmentFragment & {
@@ -36,8 +54,18 @@
   let loading = true;
   let error = "";
   let oracleRequest = 0;
+  let slotDefinitions: Record<number, OracleSlotDefinition> = {};
+  let methodologyLoading = false;
+  let methodologyError = "";
   let currentSdk: any = null;
   let selectedChartMetric = "stake";
+  const specEventKind = 30312;
+  const nostrRelays = [
+    "wss://relay.nuts.cash",
+    "wss://relay.damus.io",
+    "wss://nos.lol",
+    "wss://relay.nostr.band",
+  ];
 
   const oracleChartMetrics = [
     { key: "stake", label: "ETC staked", unit: "ETC", color: "rgb(var(--sf-green))" },
@@ -75,6 +103,64 @@
     return compact(indexedRound || 0, 0);
   };
 
+  const parseMethodologyPointer = (description: string) => {
+    const pubkey = description.match(/^Spec author:\s*([0-9a-f]{64})$/im)?.[1];
+    const d = description.match(/^Spec d:\s*(.+)$/im)?.[1]?.trim();
+    const specHash = description.match(/^Spec hash:\s*(0x[0-9a-f]{64})$/im)?.[1];
+    if (!pubkey || !d || !specHash) return null;
+    return { pubkey, d, specHash };
+  };
+
+  const eventHasDTag = (event: NostrMethodologyEvent, d: string) => event.tags.some((tag) => tag[0] === "d" && tag[1] === d);
+
+  const slotDefinitionLabel = (slot: number) => slotDefinitions[slot]?.label || `Slot ${slot}`;
+  const hasResolvedSlotLabel = (slot: number) => Boolean(slotDefinitions[slot]?.label && slotDefinitions[slot].label !== `Slot ${slot}`);
+
+  const loadSlotDefinitions = async (description: string, request: number) => {
+    const pointer = parseMethodologyPointer(description);
+    slotDefinitions = {};
+    methodologyError = "";
+    if (!pointer) return;
+
+    methodologyLoading = true;
+    const filters = { kinds: [specEventKind], authors: [pointer.pubkey], "#d": [pointer.d] };
+    const relayFetches = nostrRelays.map(async (relay) => {
+      const pool = new SimplePool();
+      try {
+        const event = (await pool.get([relay], filters, { maxWait: 4000 })) as NostrMethodologyEvent | null;
+        if (!event) throw new Error(`No methodology event returned from ${relay}.`);
+        if (event.kind !== specEventKind || event.pubkey !== pointer.pubkey || !eventHasDTag(event, pointer.d)) {
+          throw new Error(`Methodology coordinate mismatch from ${relay}.`);
+        }
+        const content = JSON.parse(event.content) as {
+          methodology?: { hash?: string };
+          spec?: { slots?: OracleSlotDefinition[] };
+        };
+        if (content.methodology?.hash !== pointer.specHash) throw new Error(`Methodology hash mismatch from ${relay}.`);
+        return content.spec?.slots || [];
+      } finally {
+        pool.close([relay]);
+      }
+    });
+
+    try {
+      const slots = await Promise.any(relayFetches);
+      if (request !== oracleRequest) return;
+      slotDefinitions = Object.fromEntries(
+        slots
+          .filter((slot) => Number.isInteger(slot.index) && slot.label)
+          .map((slot) => [slot.index, slot])
+      );
+    } catch (err) {
+      if (request === oracleRequest) {
+        console.warn("Unable to load oracle methodology", err);
+        methodologyError = "Unable to load Nostr methodology labels.";
+      }
+    } finally {
+      if (request === oracleRequest) methodologyLoading = false;
+    }
+  };
+
   const loadOracleContractInfo = async (oracleAddress: string) => {
     const request = ++oracleRequest;
     contractLoading = true;
@@ -85,10 +171,12 @@
       if (!currentSdk) throw new Error("SDK is not ready");
 
       const oracleContract = currentSdk.ORACLE.attach(oracleAddress);
-      const [description, frequency, currentRound] = await Promise.all([
+      const [description, frequency, currentRound, lastRound, totalMana] = await Promise.all([
         oracleContract.description().catch(() => ""),
         oracleContract.frequency().catch(() => null),
         oracleContract.getCurrentRound().catch(() => null),
+        oracleContract.getLastRound(false).catch(() => null),
+        oracleContract.totalMana().catch(() => null),
       ]);
 
       const prices = (
@@ -120,8 +208,11 @@
         description,
         frequency: frequency === null ? null : Number(frequency),
         currentRound: currentRound?.toString?.() || "",
+        lastRound: lastRound?.toString?.() || "",
+        totalMana: totalMana?.toString?.() || "",
         prices,
       };
+      loadSlotDefinitions(description, request);
     } catch (err) {
       console.warn("Unable to load oracle contract data", err);
       if (request === oracleRequest) {
@@ -239,14 +330,22 @@
       <section class="grid gap-3 md:grid-cols-4">
         <StatCard label="ETC staked" value={`${compactEther(oracle.totalStake)} ETC`} detail="Current stake" />
         <StatCard label="Stakers" value={compact(oracle.participantCount, 0)} detail="Participants" />
-        <StatCard label="MANA" value={compactEther(oracle.totalMana)} detail="Minted" />
+        <StatCard
+          label="MANA"
+          value={compactEther(contractInfo?.totalMana || oracle.totalMana)}
+          detail={contractInfo?.totalMana ? "Live contract value" : "Minted"}
+        />
         <StatCard label="Rewards" value={`${compactEther(oracle.totalRewardsClaimed)} ETC`} detail="Claimed" />
       </section>
 
       <section class="grid gap-3 md:grid-cols-4">
         <StatCard label="Slashed" value={`${compactEther(oracle.totalSlashed)} ETC`} detail="Total slashed" />
         <StatCard label="Submissions" value={compact(oracle.submissionCount, 0)} detail="Price submissions" />
-        <StatCard label="Last round" value={compact(oracle.lastRound, 0)} detail="Latest indexed round" />
+        <StatCard
+          label="Last round"
+          value={compact(Number(contractInfo?.lastRound || 0) || oracle.lastRound, 0)}
+          detail={Number(contractInfo?.lastRound || 0) > 0 ? "Live contract round" : "Latest indexed round"}
+        />
         <StatCard label="Last update" value={formatDate(oracle.lastSubmissionTimestamp)} detail="Submission timestamp" />
       </section>
 
@@ -308,6 +407,11 @@
                 its own <span class="font-mono">getDecimals(slot)</span> value. This page displays every
                 active price slot with a non-zero latest price.
               </p>
+              {#if methodologyLoading}
+                <p class="app-muted mt-3 text-sm">Resolving slot labels from Nostr methodology...</p>
+              {:else if methodologyError}
+                <p class="mt-3 text-sm text-warning">{methodologyError}</p>
+              {/if}
             {/if}
           </div>
 
@@ -331,6 +435,12 @@
               {#each contractInfo.prices as price (price.slot)}
                 <div class="rounded-lg border border-white/10 bg-white/[0.03] p-4">
                   <div class="app-label">Slot {price.slot}</div>
+                  {#if slotDefinitions[price.slot]?.formula}
+                    <div class="app-muted mt-1 font-mono text-xs">{slotDefinitions[price.slot].formula}</div>
+                  {/if}
+                  {#if hasResolvedSlotLabel(price.slot)}
+                    <div class="mt-2 text-lg font-bold">{slotDefinitionLabel(price.slot)}</div>
+                  {/if}
                   <div class="mt-2 break-words font-mono text-2xl font-bold">{price.price}</div>
                   <div class="app-muted mt-2 text-sm">{price.decimals} decimals</div>
                 </div>

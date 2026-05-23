@@ -1,67 +1,97 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { onDestroy, onMount } from "svelte";
+  import { get } from "svelte/store";
   import StatCard from "src/components/stat-card.svelte";
   import type { OracleSummaryFragmentFragment } from "src/hooks/subgraph";
   import { updateVc } from "src/lib";
   import { compact, compactEther, etherValue, formatDate, shortAddress } from "src/lib/stats";
   import { gqlsdk, sdk } from "src/stores";
 
-  let oracles: OracleSummaryFragmentFragment[] = [];
+  type OracleSummary = OracleSummaryFragmentFragment & {
+    name?: string;
+  };
+
+  let oracles: OracleSummary[] = [];
   let loading = true;
   let error = "";
+  let oracleLoadId = 0;
+
+  async function getOracleMetadata(id: string) {
+    const ethsdk = get(sdk);
+    if (!ethsdk) return {};
+
+    const oracle = ethsdk.ORACLE.attach(id);
+    const description = await oracle.description().catch(() => "");
+
+    return {
+      name: oracleListName(description),
+    };
+  }
+
+  function oracleListName(description: string) {
+    const firstLine = description
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .find(Boolean);
+    const name = firstLine?.startsWith("Oracle:") ? firstLine.slice("Oracle:".length).trim() : firstLine;
+
+    if (!name) return undefined;
+    return name.length > 64 ? `${name.slice(0, 61)}...` : name;
+  }
 
   const unsubscribe = gqlsdk.subscribe(($gqlsdk) => {
+    const loadId = ++oracleLoadId;
     loading = true;
     error = "";
+    oracles = [];
     $gqlsdk
       ?.getOracleSummaries({ first: 1000 })
-      .then((res) => {
-        oracles = res.oracles;
+      .then(async (res) => {
+        const nextOracles = await Promise.all(
+          res.oracles.map(async (oracle) => ({
+            ...oracle,
+            ...(await getOracleMetadata(oracle.id).catch((err) => {
+              console.warn("Unable to load oracle metadata", oracle.id, err);
+              return {};
+            })),
+          }))
+        );
+        if (loadId === oracleLoadId) {
+          oracles = nextOracles;
+        }
       })
       .catch((err) => {
+        if (loadId !== oracleLoadId) return;
         console.warn("Unable to load oracle summaries", err);
         error = "Unable to load indexed oracle data.";
       })
       .finally(() => {
-        loading = false;
+        if (loadId === oracleLoadId) {
+          loading = false;
+        }
       });
   });
 
   onDestroy(unsubscribe);
   onMount(updateVc);
 
-  $: fallbackOracle = $sdk?.ORACLE?.address
-    ? {
-        id: $sdk.ORACLE.address,
-        name: "Crypto",
-        totalStake: 0,
-        totalMana: 0,
-        totalRewardsClaimed: 0,
-        totalSlashed: 0,
-        submissionCount: 0,
-        participantCount: 0,
-        lastRound: 0,
-        lastSubmissionTimestamp: 0,
-        latestSnapshots: [],
-        fallback: true,
-      }
-    : null;
-
-  $: displayedOracles = fallbackOracle
-    ? [
-        ...oracles,
-        ...(oracles.some(
-          (oracle) => oracle.id.toLowerCase() === fallbackOracle.id.toLowerCase()
-        )
-          ? []
-          : [fallbackOracle]),
-      ]
-    : oracles;
+  $: displayedOracles = oracles;
 
   $: totalStake = displayedOracles.reduce((sum, oracle) => sum + etherValue(oracle.totalStake), 0);
   $: totalMana = displayedOracles.reduce((sum, oracle) => sum + etherValue(oracle.totalMana), 0);
   $: totalParticipants = displayedOracles.reduce((sum, oracle) => sum + Number(oracle.participantCount || 0), 0);
+
+  function openOracle(id: string) {
+    window.location.href = `/oracles/${id}`;
+  }
+
+  function openOracleFromKeyboard(event: KeyboardEvent, id: string) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openOracle(id);
+    }
+  }
 </script>
 
 <svelte:head>
@@ -81,6 +111,9 @@
             General view of every oracle securing market settlement, with staking actions in one place.
           </p>
         </div>
+        <a class="btn btn-primary rounded-full" href="/oracles/create">
+          Create oracle
+        </a>
       </div>
   </div>
 </header>
@@ -120,19 +153,22 @@
             </thead>
             <tbody>
               {#each displayedOracles as oracle (oracle.id)}
-                <tr class="hover">
+                <tr
+                  class="hover cursor-pointer"
+                  role="link"
+                  tabindex="0"
+                  on:click={() => openOracle(oracle.id)}
+                  on:keydown={(event) => openOracleFromKeyboard(event, oracle.id)}
+                >
                   <td>
                     <a
                       class="font-mono font-bold text-primary"
-                      href={oracle.fallback ? `/oracle/${oracle.id}/deposit` : `/oracles/${oracle.id}`}
+                      href={`/oracles/${oracle.id}`}
+                      on:click|stopPropagation
                     >
                       {oracle.name || shortAddress(oracle.id)}
                     </a>
-                    {#if oracle.fallback}
-                      <div class="app-muted text-xs font-normal">Indexing pending</div>
-                    {:else}
-                      <div class="app-muted text-xs font-mono">{shortAddress(oracle.id)}</div>
-                    {/if}
+                    <div class="app-muted text-xs font-mono">{shortAddress(oracle.id)}</div>
                   </td>
                   <td>{compactEther(oracle.totalStake)} ETC</td>
                   <td>{compact(oracle.participantCount, 0)}</td>
@@ -144,11 +180,11 @@
                   <td>{formatDate(oracle.lastSubmissionTimestamp)}</td>
                   <td>
                     <div class="flex min-w-44 gap-2">
-                      <a class="btn btn-primary btn-sm rounded-full" href={`/oracle/${oracle.id}/deposit`}>
+                      <a class="btn btn-primary btn-sm rounded-full" href={`/oracle/${oracle.id}/deposit`} on:click|stopPropagation>
                         <Icon icon="mdi:arrow-down-circle-outline" />
                         Stake
                       </a>
-                      <a class="btn btn-outline btn-sm rounded-full" href={`/oracle/${oracle.id}/withdraw`}>
+                      <a class="btn btn-outline btn-sm rounded-full" href={`/oracle/${oracle.id}/withdraw`} on:click|stopPropagation>
                         Withdraw
                       </a>
                     </div>

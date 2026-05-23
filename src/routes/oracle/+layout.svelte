@@ -1,10 +1,11 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
-  import CoinIcon from "src/components/coin-icon.svelte";
   import { ORACLES_NAMES } from "src/hooks/sf/oracle";
+  import { navigate } from "src/lib/path";
+  import { shortAddress } from "src/lib/stats";
 
-  $: console.log($page.params.address);
+  $: oracleTitle = ORACLES_NAMES[$page.params.address] || shortAddress($page.params.address, 10);
 </script>
 
 <div
@@ -13,11 +14,14 @@
 >
   {#if $page.params.address}
     <!-- <CoinIcon symbol="ETC" /> -->
-    <h1 class="text-3xl p-4 lg:px-6 pl-6 mt-2 flex items-center w-full gap-4 font-semibold">
-      <a href="/oracle" class=""
-        ><Icon icon="ph-arrow-left-bold" class="text-2xl" /></a
-      >
-      {ORACLES_NAMES[$page.params.address]}
+    <h1 class="p-4 lg:px-6 pl-6 mt-2 flex items-center w-full gap-4">
+      <a href={navigate("/oracles", $page.url)} class="btn btn-ghost btn-square rounded-full" aria-label="Back to oracles">
+        <Icon icon="ph-arrow-left-bold" class="text-2xl" />
+      </a>
+      <span class="min-w-0">
+        <span class="app-label block">Oracle stake</span>
+        <span class="block truncate font-mono text-2xl font-semibold lg:text-3xl">{oracleTitle}</span>
+      </span>
     </h1>
   {:else}
     <h1
