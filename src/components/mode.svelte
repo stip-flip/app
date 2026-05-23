@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  $: url = new URL($page.url);
+  import { appMode, type AppMode } from "src/stores";
 
-  $: mode = url.searchParams.get("mode") || "market";
+  $: mode = $appMode;
 
-  $: console.log(mode);
+  function setMode(mode: AppMode) {
+    appMode.set(mode);
+  }
 </script>
 
 <ul
@@ -17,22 +18,24 @@
     class:!left-0={mode == "market"}
   ></div>
   <li id="market-mode">
-    <a
-      href={url.pathname + `/?mode=market`}
+    <button
+      type="button"
+      on:click={() => setMode("market")}
       class="rounded-full w-20 text-center block"
       class:text-primary={mode == "market"}
     >
       Market
-    </a>
+    </button>
   </li>
   <li id="otc-mode">
-    <a
-      href={url.pathname + `/?mode=otc`}
+    <button
+      type="button"
+      on:click={() => setMode("otc")}
       class="rounded-full w-20 text-center block"
       class:text-primary={mode == "otc"}
     >
       OTC
-    </a>
+    </button>
   </li>
 </ul>
 

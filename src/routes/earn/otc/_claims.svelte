@@ -16,7 +16,7 @@
   let selectedPosition: any;
 
   function getTimeDifference(settlement: number, givenTime: number) {
-    let differenceInSeconds = Math.abs(settlement - givenTime);
+    let differenceInSeconds = Math.max(0, settlement - givenTime);
     // console.log(now, givenTime, differenceInSeconds);
     const hours = Math.floor(differenceInSeconds / 3600);
     differenceInSeconds %= 3600;

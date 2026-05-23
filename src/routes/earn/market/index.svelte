@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
   import CoinIcon from "src/components/coin-icon.svelte";
   import { usePoolInfos } from "src/hooks/uniswap/pool";
@@ -8,62 +7,74 @@
   import { onMount } from "svelte";
   import Positions from "./_positions.svelte";
 
-  $: poolInfos = usePoolInfos;
+  const poolInfos = usePoolInfos;
 
-  $: positionInfos = useUniPositions;
+  const positionInfos = useUniPositions;
 
   $: positionExist = !!$positionInfos.length;
 
-  $: console.log($positionInfos, $poolInfos);
   onMount(updateVc);
 </script>
 
 {#if !positionExist}
   <div
-    class="rounded-lg lg:p-4 app-panel lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
+    class="lg:h-auto lg:pt-0 container-height"
     id="container"
   >
-    <div class="text-center lg:mt-0 mt-24 px-4">
-      <Icon icon="octicon:inbox-24" class="text-5xl m-auto" />
-      <p class="text-lg mt-4">
-        Your active liquidity positions will appear here
-      </p>
+    <div class="mx-auto max-w-7xl px-4 lg:px-0">
+      <section class="app-panel rounded-lg p-8">
+        <div class="app-label">No secondary liquidity</div>
+        <div class="mt-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 class="text-2xl font-bold">Back position-token markets</h2>
+            <p class="app-muted mt-2 max-w-2xl">
+              Market liquidity makes issued exposure easier to trade without waiting for protocol settlement.
+            </p>
+          </div>
+          <Icon icon="octicon:inbox-24" class="text-4xl text-primary" />
+        </div>
+      </section>
     </div>
   </div>
 {:else}
   <div
-    class="rounded-lg lg:p-4 app-panel lg:w-1/2 mt-4 m-auto overflow-scroll scrollbar-hide lg:h-auto container-height"
+    class="lg:h-auto lg:pt-0 container-height"
     id="container"
   >
-    {#each $poolInfos as pool}
-      <!-- <br class="odd:first:hidden lg:hidden mb-0" /> -->
-      {#if $positionInfos.some((p) => p.token0 + p.token1 == (pool.token0?.info?.address || "") + (pool.token1?.info?.address || ""))}
-        <div class="lg:divider odd:first:hidden hidden mb-0"></div>
-        <h1 class="lg:p-2 px-2 lg:py-4 flex justify-between">
-          <strong class="flex space-x-2 items-center"
-            ><CoinIcon symbol={pool?.synth?.info?.symbol || ""} /><span
-              >{pool?.synth?.info?.name}</span
-            ><span class="pr-2"> = </span>
-            {commify(pool.price)}
-            <span class="flex items-center">
-              <span>ETC</span>
-              <Icon
-                class="inline text-2xl text-green-600"
-                icon="mdi:ethereum"
-              />
-            </span>
-          </strong>
-        </h1>
-        <Positions
-          {pool}
-          positions={$positionInfos.filter(
-            (p) =>
-              p.token0 + p.token1 ==
-              (pool.token0?.info?.address || "") +
-                (pool.token1?.info?.address || "")
-          )}
-        />
-      {/if}
-    {/each}
+    <div class="mx-auto max-w-7xl space-y-4 px-4 lg:px-0">
+      <section class="app-panel overflow-hidden rounded-lg">
+        <div class="border-b border-white/10 p-4">
+          <div class="app-label">Secondary liquidity</div>
+          <h2 class="mt-1 text-xl font-bold">Active market positions</h2>
+        </div>
+        <div class="p-4">
+          {#each $poolInfos as pool (pool.id)}
+            {#if $positionInfos.some((p) => p.token0 + p.token1 == (pool.token0?.info?.address || "") + (pool.token1?.info?.address || ""))}
+              <div class="border-b border-white/10 py-4 last:border-b-0 first:pt-0">
+                <h1 class="flex flex-col justify-between gap-2 lg:flex-row lg:items-center">
+                  <strong class="flex flex-wrap items-center gap-2">
+                    <CoinIcon symbol={pool?.synth?.info?.symbol || ""} />
+                    <span>{pool?.synth?.info?.name}</span>
+                  </strong>
+                  <span class="app-muted flex items-center gap-1 text-sm">
+                    <span>{commify(pool.price)} ETC</span>
+                    <Icon class="text-xl text-primary" icon="mdi:ethereum" />
+                  </span>
+                </h1>
+                <Positions
+                  {pool}
+                  positions={$positionInfos.filter(
+                    (p) =>
+                      p.token0 + p.token1 ==
+                      (pool.token0?.info?.address || "") +
+                        (pool.token1?.info?.address || "")
+                  )}
+                />
+              </div>
+            {/if}
+          {/each}
+        </div>
+      </section>
+    </div>
   </div>
 {/if}

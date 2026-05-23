@@ -7,42 +7,37 @@ import { derived, get, writable } from "svelte/store";
 export const transactions = derived(
   [chainId, provider, signerAddress],
   ([$chainId, $provider, $signerAddress], set) => {
+    if (!$provider) return;
+
+    function resolvePending(hash: string, status: number) {
+      resolveTransaction(hash, status);
+    }
+
     function handleFilter() {
-      const lastPending =
-        get(pendingTransactions).length &&
-        get(pendingTransactions)[get(pendingTransactions).length - 1];
-      if (lastPending) {
+      get(pendingTransactions).forEach((pendingTransaction) => {
+        if (pendingTransaction.status !== undefined) return;
+
         $provider
-          .getTransactionReceipt(lastPending.hash)
-          .then((res) => {
-            console.log("transaction RES\n", res);
-            if (res.confirmations > 0) {
-              resolvedTransactions.set([
-                ...(get(resolvedTransactions) || []),
-                { ...lastPending, status: res.status },
-              ]);
-              pendingTransactions.set([
-                ...get(pendingTransactions).filter(
-                  (pt) => pt.hash != lastPending.hash
-                ),
-                { ...lastPending, status: res.status },
-              ]);
-              setTimeout(() => {
-                pendingTransactions.set(
-                  get(pendingTransactions).filter(
-                    (pt) => pt.hash != lastPending.hash
-                  )
-                );
-              }, 5000);
-            }
+          .getTransactionReceipt(pendingTransaction.hash)
+          .then((receipt) => {
+            if (!receipt || receipt.confirmations <= 0) return;
+
+            console.log("transaction RES\n", receipt);
+            resolvePending(pendingTransaction.hash, receipt.status || 0);
           })
           .catch((err) => {
             console.log("transaction failed\n", err);
           });
-      }
+      });
       // provider($chainId as Network).getTransactionCount($signerAddress);
     }
+
     $provider?.addListener("block", handleFilter);
+    handleFilter();
+
+    return () => {
+      $provider?.removeListener("block", handleFilter);
+    };
   },
   0
 );
@@ -54,6 +49,25 @@ export const pendingTransactions = writable<
 export const resolvedTransactions = writable<
   { hash: string; label: string; status?: number; resolved?: string }[]
 >([]);
+
+export function resolveTransaction(hash: string, status: number) {
+  const pending = get(pendingTransactions);
+  const transaction = pending.find((pt) => pt.hash == hash);
+  if (!transaction) return;
+
+  resolvedTransactions.set([
+    ...(get(resolvedTransactions) || []),
+    { ...transaction, status },
+  ]);
+  pendingTransactions.set(
+    pending.map((pt) => (pt.hash == hash ? { ...pt, status } : pt))
+  );
+  setTimeout(() => {
+    pendingTransactions.set(
+      get(pendingTransactions).filter((pt) => pt.hash != hash)
+    );
+  }, 5000);
+}
 
 export const broadcastTransaction = (
   label: string,

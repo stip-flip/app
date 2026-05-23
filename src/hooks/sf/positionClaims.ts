@@ -47,14 +47,22 @@ const asyncClaims = async (
   return await Promise.all(
     claimQuery.positionClaims
       .map(async (c) => {
-        const [initialized, frequency, roundDuration, lastRound, nextPrice] =
+        const [initialized, frequency, roundDuration, delay, lastRound, nextPrice] =
           await Promise.all([
             oracle.initialized(),
             oracle.frequency(),
             oracle.roundDuration(),
+            oracle.delay(),
             oracle.getLastRound(true),
             oracle.nextPrice(c.round, slot).catch((e) => parseEther("0")),
           ]);
+        const now = Math.floor(Date.now() / 1000);
+        const initializedTimestamp = initialized.toNumber();
+        const elapsed = Math.max(0, now - initializedTimestamp);
+        const currentRound = Math.floor(elapsed / frequency);
+        const nextRoundStartsAt =
+          initializedTimestamp + (currentRound + 1) * frequency;
+
         return {
           id: c.id,
           amount: c.amount,
@@ -70,9 +78,7 @@ const asyncClaims = async (
           tick: c.tick,
           settlementTimestamp:
             lastRound.toNumber() <= Number(c.round)
-              ? initialized.toNumber() +
-                (Number(c.round) + 1) * frequency +
-                roundDuration
+              ? nextRoundStartsAt + roundDuration + delay
               : 0,
         };
       })

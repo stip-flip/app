@@ -12,7 +12,7 @@ const WETC9 = "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a";
 
 const ERRORS = {
   liquidities: `Not enough liquidities in the Uniswap pool`,
-  void: "This uniswap pool does not exist, <a class='font-bold underline' href='/earn/add?mode=market'>create it</a> first",
+  void: "This uniswap pool does not exist, <a class='font-bold underline' href='/earn/add'>create it</a> first",
 };
 // as synth token0 is expected to be the synth token, token1 is the base token (ETC)
 // we fist check if the ratio asked is reversed

@@ -1,13 +1,9 @@
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { appMode } from "src/stores";
   import Market from "../market/add/index.svelte";
   import OTC from "../otc/add/index.svelte";
 
-  $: url = new URL($page.url);
-
-  $: mode = url.searchParams.get("mode") || "market";
-
-  $: console.log(mode);
+  $: mode = $appMode;
 </script>
 
 {#if mode == "otc"}
