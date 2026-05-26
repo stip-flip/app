@@ -91,6 +91,8 @@
   let deployedAddress = "";
   let deployTxHash = "";
   let contractLoadRequest = 0;
+  let loadedOracleContractKey = "";
+  let loadingOracleContractKey = "";
   let existingMarketAddress = "";
   let existingMarketLoading = false;
   let existingMarketError = "";
@@ -132,7 +134,7 @@
     error = "";
     Promise.all([$gqlsdk.getOracleSummaries({ first: 1000 }), $gqlsdk.getSynths({})])
       .then(([oracleRes, synthRes]) => {
-        oracles = oracleRes.oracles || [];
+        oracles = mergeOracleSummaries(oracleRes.oracles || []);
         existingMarkets = synthRes.synths || [];
         if (!selectedOracleId && oracles[0]) selectedOracleId = oracles[0].id;
         loadOracleContracts();
@@ -195,6 +197,30 @@
     existingMarketError = "";
   }
 
+  function mergeOracleSummaries(nextOracles: OracleSummary[]) {
+    return nextOracles.map((oracle) => {
+      const existing = oracles.find((current) => current.id === oracle.id);
+      if (!existing) return oracle;
+
+      return {
+        ...oracle,
+        description: existing.description,
+        frequency: existing.frequency,
+        currentRound: existing.currentRound,
+        liveLastRound: existing.liveLastRound,
+        slots: existing.slots,
+        loadingContract: existing.loadingContract,
+        contractError: existing.contractError,
+      };
+    });
+  }
+
+  function oracleContractLoadKey() {
+    if (!sdkReady?.ORACLE || !oracles.length) return "";
+    const oracleIds = oracles.map((oracle) => oracle.id.toLowerCase()).sort().join(",");
+    return `${sdkReady.ORACLE.address || "oracle"}:${oracleIds}`;
+  }
+
   function selectMarketSide(long: boolean) {
     selectedLong = long;
     resetMarketForm();
@@ -216,7 +242,11 @@
   async function loadOracleContracts() {
     if (!sdkReady?.ORACLE || !oracles.length) return;
 
+    const loadKey = oracleContractLoadKey();
+    if (!loadKey || loadKey === loadedOracleContractKey || loadKey === loadingOracleContractKey) return;
+
     const request = ++contractLoadRequest;
+    loadingOracleContractKey = loadKey;
     oracles = oracles.map((oracle) => ({ ...oracle, loadingContract: true, contractError: "" }));
 
     const nextOracles = await Promise.all(
@@ -262,6 +292,8 @@
     if (request !== contractLoadRequest) return;
 
     oracles = nextOracles;
+    loadedOracleContractKey = loadKey;
+    loadingOracleContractKey = "";
     if (!selectedOracleId && oracles[0]) selectedOracleId = oracles[0].id;
     if (selectedOracle?.slots?.length && !selectedSlot) selectedSlotIndex = selectedOracle.slots[0].index;
   }
