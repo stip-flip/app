@@ -110,24 +110,22 @@ type PositionStats = {
 export const usePositionsStats: Readable<PositionStats> = derived(
   [usePositions],
   ([$positions], set) => {
+    let weightedActiveTick = 0;
+    let activeLiquidityTotal = 0;
+
     const stats = Object.values($positions).reduce(
       (acc, cur) => {
         Object.values(cur).forEach((p) => {
-          console.log(p.liquidityActive);
-          acc.APY = acc.totalDeposited
-            .mul(acc.APY)
-            .add(
-              p.liquidity
-                .mul((Number(p.liquidityActive) * 1e9).toFixed(0))
-                .mul(p.activeTick)
-                .div(1e9)
-            )
-            .div(acc.totalDeposited.add(p.liquidity))
-            .toNumber();
-          acc.totalDeposited = acc.totalDeposited.add(p.liquidity);
-          acc.totalActivated = acc.totalActivated.add(
-            p.liquidity.mul((Number(p.liquidityActive) * 1e9).toFixed(0))
+          const activeLiquidity = p.liquidity.mul(
+            (Number(p.liquidityActive) * 1e9).toFixed(0)
           );
+          const activeLiquidityAmount = Number(formatUnits(activeLiquidity, 27));
+
+          weightedActiveTick += activeLiquidityAmount * p.activeTick;
+          activeLiquidityTotal += activeLiquidityAmount;
+
+          acc.totalDeposited = acc.totalDeposited.add(p.liquidity);
+          acc.totalActivated = acc.totalActivated.add(activeLiquidity);
           acc.pnl = acc.pnl.add(p.pnl);
         });
         return acc;
@@ -139,6 +137,7 @@ export const usePositionsStats: Readable<PositionStats> = derived(
         totalDeposited: BigNumber.from(0),
       } as PositionStats
     );
+    stats.APY = activeLiquidityTotal ? weightedActiveTick / activeLiquidityTotal : 0;
     set(stats);
   }
 );
