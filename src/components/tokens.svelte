@@ -2,6 +2,7 @@
   import { commify } from "src/lib";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import Icon from "@iconify/svelte";
+  import { closeOnEscape, portal } from "src/actions/modal";
 
   export let id: string;
   export let title: string;
@@ -13,12 +14,13 @@
     a.balance > b.balance ? -1 : 1
   );
 
-  let checkbox: HTMLInputElement;
+  let open = false;
 </script>
 
-<input type="checkbox" {id} class="modal-toggle" bind:this={checkbox} />
-<label for={id} class="modal modal-open cursor-pointer">
-  <label class="modal-box relative" for="">
+<input type="checkbox" {id} class="modal-toggle" bind:checked={open} />
+{#if open}
+<div use:portal use:closeOnEscape={() => (open = false)} class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-6" role="dialog" aria-modal="true" on:click={() => (open = false)}>
+  <div class="modal-box relative" on:click|stopPropagation>
     <div class="flex justify-around">
       <h3 class="text-lg font-bold px-4 cursor-pointer">Token 1</h3>
       <h3 class="text-lg px-4 font-light text-gray-300 cursor-pointer">
@@ -42,8 +44,7 @@
             class="flex p-2 cursor-pointer hover:bg-slate-300 hover:text-primary-content"
             on:click={(_) => {
               selectedToken = token;
-              console.log(checkbox);
-              checkbox.click();
+              open = false;
             }}
           >
             <strong>
@@ -56,5 +57,6 @@
         {/each}
       </ul>
     </div>
-  </label>
-</label>
+  </div>
+</div>
+{/if}

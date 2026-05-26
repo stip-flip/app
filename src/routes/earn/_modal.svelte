@@ -3,6 +3,8 @@
   import CoinIcon from "src/components/coin-icon.svelte";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { commify } from "src/lib";
+  import { closeOnEscape, portal } from "src/actions/modal";
+  import { onMount } from "svelte";
   import { slide } from "svelte/transition";
   import Menu from "src/routes/swap/components/_menu.svelte";
   import { Drawer } from "vaul-svelte";
@@ -17,6 +19,16 @@
 
   let terms: string[] = [];
   let search: string = "";
+  let isDesktop = false;
+
+  onMount(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => (isDesktop = query.matches);
+    update();
+    query.addEventListener("change", update);
+
+    return () => query.removeEventListener("change", update);
+  });
 
   $: sortedTokens = (tokenInfosAndBalances || [])
     .sort((a, b) => (a.balance > b.balance ? -1 : 1))
@@ -43,7 +55,6 @@
         : true
     );
 
-  let checkbox: HTMLInputElement;
   $: console.log("terms", terms);
 </script>
 
@@ -51,11 +62,12 @@
   type="checkbox"
   {id}
   class="modal-toggle lg:block hidden"
-  bind:this={checkbox}
+  bind:checked={open}
 />
 
-<label for={id} class="lg:modal cursor-pointer hidden">
-  <label class="w-full lg:w-2/5">
+{#if open && isDesktop}
+<div use:portal use:closeOnEscape={() => (open = false)} class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-6 lg:flex" role="dialog" aria-modal="true" on:click={() => (open = false)}>
+  <div class="w-full lg:w-2/5" on:click|stopPropagation>
     <div class="bg-opaque lg:rounded-xl lg:border block lg:p-8">
       <div class="lg:join shadow-lg lg:rounded-full w-full mt-2 hidden">
         <div class="border-b m-4">
@@ -82,7 +94,7 @@
         <button
           class="absolute btn btn-primary no-animation w-1/5"
           on:click={(_) => {
-            checkbox.click();
+            open = false;
             // if ($appState.help) {
             //   driveOTC(
             //     selectedToken0?.info?.symbol,
@@ -95,19 +107,22 @@
         </button>
       {/if}
     </div>
-  </label>
-</label>
+  </div>
+</div>
+{/if}
 
-<Drawer.Root bind:open>
-  <!-- <Drawer.Trigger /> -->
-  <Drawer.Portal>
-    <Drawer.Overlay class="fixed inset-0 bg-black/40" />
-    <Drawer.Content
-      class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border"
-    >
-      <div class="w-1/6 mb-8 h-1 bg-base-content rounded-full border- m-auto" />
-      <TokenList bind:selectedToken {sortedTokens} />
-      <Menu bind:terms />
-    </Drawer.Content>
-  </Drawer.Portal>
-</Drawer.Root>
+{#if !isDesktop}
+  <Drawer.Root bind:open closeOnOutsideClick={false} dismissible={false}>
+    <!-- <Drawer.Trigger /> -->
+    <Drawer.Portal>
+      <Drawer.Overlay class="fixed inset-0 bg-black/40" />
+      <Drawer.Content
+        class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border"
+      >
+        <div class="w-1/6 mb-8 h-1 bg-base-content rounded-full border- m-auto" />
+        <TokenList bind:selectedToken {sortedTokens} />
+        <Menu bind:terms />
+      </Drawer.Content>
+    </Drawer.Portal>
+  </Drawer.Root>
+{/if}

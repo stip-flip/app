@@ -3,6 +3,7 @@
   import { BigNumber, constants } from "ethers";
   import { formatEther, parseEther } from "ethers/lib/utils";
   import { validator } from "src/actions/big-number-input";
+  import { closeOnEscape, portal } from "src/actions/modal";
   import { signPermit } from "src/actions/sign";
   import CoinIcon from "src/components/coin-icon.svelte";
   import { useBalance } from "src/hooks/balance";
@@ -20,6 +21,7 @@
   import { getAmountsDelta } from "src/lib/uniswap/sqrtPriceMath";
   import { getRatioForTick } from "src/lib/uniswap/tick";
   import { sdk } from "src/stores";
+  import { onMount } from "svelte";
   import { signer, signerAddress } from "svelte-ethers-store";
   import { Drawer } from "vaul-svelte";
 
@@ -28,6 +30,16 @@
   export let open: boolean;
 
   let mode: "withdraw" | "deposit" = "withdraw";
+  let isDesktop = false;
+
+  onMount(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => (isDesktop = query.matches);
+    update();
+    query.addEventListener("change", update);
+
+    return () => query.removeEventListener("change", update);
+  });
 
   $: amounts = getAmountsDelta(
     getRatioForTick(selectedPosition?.tickLower),
@@ -185,13 +197,15 @@
       );
     }
   }
+
 </script>
 
-<input type="checkbox" id={pool.address} class="modal-toggle lg:block hidden" />
+<input type="checkbox" id={pool.address} class="modal-toggle lg:block hidden" bind:checked={open} />
 
 <!-- Desktop Modal -->
-<label for={pool.address} class="lg:modal cursor-pointer hidden">
-  <label class="modal-box relative" for="">
+{#if open && isDesktop}
+<div use:portal use:closeOnEscape={() => (open = false)} class="fixed inset-0 z-50 hidden items-center justify-center overflow-y-auto bg-black/40 p-6 lg:flex" role="dialog" aria-modal="true" on:click={() => (open = false)}>
+  <div class="modal-box relative max-h-[calc(100vh-3rem)] overflow-y-auto" on:click|stopPropagation>
     <div class="flex items-center justify-between">
       <h2 class="text-2xl font-bold flex items-center">
         <CoinIcon symbol={pool.synth?.info?.symbol} className="mr-2" />{pool
@@ -422,17 +436,19 @@
         {/if}
       </button>
     </div>
-  </label>
-</label>
+  </div>
+</div>
+{/if}
 
 <!-- Mobile Modal -->
-<Drawer.Root bind:open>
-  <Drawer.Trigger />
-  <Drawer.Portal>
-    <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden" />
-    <Drawer.Content
-      class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border z-20 lg:hidden"
-    >
+{#if !isDesktop}
+  <Drawer.Root bind:open closeOnOutsideClick={false} dismissible={false}>
+    <Drawer.Trigger />
+    <Drawer.Portal>
+      <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden" />
+      <Drawer.Content
+        class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border z-20 lg:hidden"
+      >
       <div class="w-1/6 mb-8 h-1 bg-base-content rounded-full border- m-auto" />
       <div class="px-4">
         <div class="flex items-center justify-between">
@@ -670,6 +686,7 @@
           </button>
         </div>
       </div>
-    </Drawer.Content>
-  </Drawer.Portal>
-</Drawer.Root>
+      </Drawer.Content>
+    </Drawer.Portal>
+  </Drawer.Root>
+{/if}

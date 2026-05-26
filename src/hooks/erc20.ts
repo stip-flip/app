@@ -70,7 +70,6 @@ export const useAllowance = (
 };
 
 export const asyncBalance = async (tokenAddress: string, account?: string) => {
-  console.log("asyncBalance", tokenAddress, account);
   try {
     if (!tokenAddress || !(account && get(signerAddress))) return 0;
     if (tokenAddress == "0x0")
@@ -83,7 +82,9 @@ export const asyncBalance = async (tokenAddress: string, account?: string) => {
     const [amount, decimals] = await Promise.all([aamount, adecimals]);
     return formatUnits(amount, decimals);
   } catch (e) {
-    console.warn(e);
+    if ((e as { code?: string })?.code !== "CALL_EXCEPTION") {
+      console.warn(e);
+    }
     return 0;
   }
 };

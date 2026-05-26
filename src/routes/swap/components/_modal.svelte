@@ -1,8 +1,10 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import { closeOnEscape, portal } from "src/actions/modal";
   import CoinIcon from "src/components/coin-icon.svelte";
   import type { TokenInfoAndBalance } from "src/hooks/erc20";
   import { commify } from "src/lib";
+  import { onMount } from "svelte";
   import { scale, slide } from "svelte/transition";
   import Menu from "./_menu.svelte";
   import { chainId } from "svelte-ethers-store";
@@ -26,6 +28,16 @@
 
   let terms: string[] = [];
   let search: string = "";
+  let isDesktop = false;
+
+  onMount(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => (isDesktop = query.matches);
+    update();
+    query.addEventListener("change", update);
+
+    return () => query.removeEventListener("change", update);
+  });
 
   $: sortedTokens = (tokenInfosAndBalances || [])
     .sort((a, b) => (a.balance > b.balance ? -1 : 1))
@@ -74,11 +86,13 @@
   type="checkbox"
   {id}
   class="modal-toggle lg:block hidden"
+  bind:checked={open}
   bind:this={checkbox}
 />
 
-<label for={id} class="lg:modal cursor-pointer z-20 hidden">
-  <label class="w-full lg:w-1/2">
+{#if open && isDesktop}
+<div use:portal use:closeOnEscape={() => (open = false)} class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-6 lg:flex" role="dialog" aria-modal="true" on:click={() => (open = false)}>
+  <div class="w-full lg:w-1/2" on:click|stopPropagation>
     <div class="bg-opaque lg:rounded-xl lg:border block p-8" for="">
       <div class="flex justify-around pb-4">
         <label
@@ -126,7 +140,7 @@
       <button
         class="btn !bg-opaque w-2/5 border border-base-100"
         on:click={(_) => {
-          checkbox.click();
+          open = false;
         }}>Close</button
       >
       {#if selectedToken}
@@ -155,7 +169,7 @@
                 e.preventDefault();
                 !otherTokenSelected
                   ? (selectToken = "token0")
-                  : checkbox.click();
+                  : (open = false);
               }}>{!otherTokenSelected ? "Token 1" : "Done"}</label
             >
           {:else}
@@ -164,7 +178,7 @@
               id="done"
               on:click={(e) => {
                 e.preventDefault();
-                checkbox.click();
+                open = false;
                 // if ($appState.help) {
                 //   driveOTC(
                 //     selectedToken0?.info?.symbol,
@@ -180,19 +194,22 @@
       {/if}
       <!-- <buton class="btn btn-primary flex-grow">Token 2</buton> -->
     </div>
-  </label>
-</label>
+  </div>
+</div>
+{/if}
 
-<Drawer.Root bind:open>
-  <!-- <Drawer.Trigger /> -->
-  <Drawer.Portal>
-    <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden z-10" />
-    <Drawer.Content
-      class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border lg:hidden z-10"
-    >
-      <div class="w-1/6 mb-8 h-1 bg-base-content border- m-auto" />
-      <TokenList bind:selectedToken {sortedTokens} />
-      <Menu bind:terms />
-    </Drawer.Content>
-  </Drawer.Portal>
-</Drawer.Root>
+{#if !isDesktop}
+  <Drawer.Root bind:open>
+    <!-- <Drawer.Trigger /> -->
+    <Drawer.Portal>
+      <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden z-10" />
+      <Drawer.Content
+        class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border lg:hidden z-10"
+      >
+        <div class="w-1/6 mb-8 h-1 bg-base-content border- m-auto" />
+        <TokenList bind:selectedToken {sortedTokens} />
+        <Menu bind:terms />
+      </Drawer.Content>
+    </Drawer.Portal>
+  </Drawer.Root>
+{/if}

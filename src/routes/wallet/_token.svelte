@@ -2,6 +2,7 @@
   import Icon from "@iconify/svelte";
   import type { BigNumberish } from "ethers";
   import { formatUnits } from "ethers/lib/utils";
+  import { closeOnEscape, portal } from "src/actions/modal";
   import CoinIcon from "src/components/coin-icon.svelte";
   import type { TokenInfo } from "src/hooks/erc20";
   import { addToken, commify } from "src/lib";
@@ -11,7 +12,7 @@
   export let pnl: BigNumberish;
   export let tick: BigNumberish;
 
-  let input: HTMLInputElement;
+  let open = false;
 
   $: details = token?.name.toLowerCase().includes("stip")
     ? "This token represent the long side of " + token?.name.split("Stip-")[1]
@@ -21,12 +22,13 @@
 <!-- Put this part before </body> tag -->
 <input
   type="checkbox"
-  bind:this={input}
   id={token?.address}
   class="modal-toggle"
+  bind:checked={open}
 />
-<label for={token?.address} class="modal cursor-pointer">
-  <label class="modal-box relative app-panel" for="">
+{#if open}
+<div use:portal use:closeOnEscape={() => (open = false)} class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-6" role="dialog" aria-modal="true" on:click={() => (open = false)}>
+  <div class="modal-box relative app-panel" on:click|stopPropagation>
     <h3 class="text-2xl text-center pb-4">{token?.name}</h3>
     <p class="text-center text-sm">{details}</p>
     <div class="border-b m-4" />
@@ -56,10 +58,11 @@
         class="underline text-primary cursor-pointer">Add to Wallet</a
       >
     </div>
-  </label>
-</label>
+  </div>
+</div>
+{/if}
 
-<tr class="hover cursor-pointer" on:click={(_) => input.click()}>
+<tr class="hover cursor-pointer" on:click={(_) => (open = true)}>
   <td class="flex items-center space-x-2">
     <CoinIcon symbol={token?.symbol} />
     <strong>{token?.name}</strong>

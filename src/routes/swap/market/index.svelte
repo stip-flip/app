@@ -218,7 +218,7 @@
         tabindex="0"
         id="token0"
         class="w-full btn rounded-lg shadow-lg"
-        on:click={(_) => {
+        on:click|preventDefault={(_) => {
           selectToken = "token0";
           open = true;
         }}
@@ -284,7 +284,7 @@
         for="selectToken"
         tabindex="0"
         class="w-full btn rounded-lg shadow-lg"
-        on:click={(_) => {
+        on:click|preventDefault={(_) => {
           open = true;
           selectToken = "token1";
         }}
@@ -345,7 +345,7 @@
       on:click={async (_) => {
         if (!$signer) return modal.open();
         if (!supportedNetwork) return switchNetwork(63);
-        if (!selectedToken0 || !selectedToken1) checkbox.click();
+        if (!selectedToken0 || !selectedToken1) open = true;
         if (Number(amountOut) > $balance0) return;
         let signature;
         let shares = Number(amountOut);

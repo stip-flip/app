@@ -3,11 +3,13 @@
   import { BigNumber } from "ethers";
   import { formatEther, parseEther } from "ethers/lib/utils";
   import { validator } from "src/actions/big-number-input";
+  import { closeOnEscape, portal } from "src/actions/modal";
   import { useBalance } from "src/hooks/balance";
   import { broadcastTransaction } from "src/hooks/transactions";
   import type { Position } from "src/hooks/sf/position";
   import { commify } from "src/lib";
   import { sdk } from "src/stores";
+  import { onMount } from "svelte";
   import { signer, signerAddress } from "svelte-ethers-store";
   import { Drawer } from "vaul-svelte";
 
@@ -19,6 +21,16 @@
   let mode: "withdraw" | "deposit" = "withdraw";
   let amount: string = "0";
   let automate: boolean = true;
+  let isDesktop = false;
+
+  onMount(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => (isDesktop = query.matches);
+    update();
+    query.addEventListener("change", update);
+
+    return () => query.removeEventListener("change", update);
+  });
   // $: liquidityAndPnL = BigNumber.from(selectedPosition?.liquidity || 0).add(
   //   pnl
   // );
@@ -67,12 +79,14 @@
             )
         );
   }
+
 </script>
 
-<input type="checkbox" id={poolAddress} class="modal-toggle lg:block hidden" />
+<input type="checkbox" id={poolAddress} class="modal-toggle lg:block hidden" bind:checked={open} />
 <!-- Desktop Modal -->
-<label for={poolAddress} class="lg:modal cursor-pointer hidden">
-  <label class="modal-box relative" for="">
+{#if open && isDesktop}
+<div use:portal use:closeOnEscape={() => (open = false)} class="fixed inset-0 z-50 hidden items-center justify-center overflow-y-auto bg-black/40 p-6 lg:flex" role="dialog" aria-modal="true" on:click={() => (open = false)}>
+  <div class="modal-box relative max-h-[calc(100vh-3rem)] overflow-y-auto" on:click|stopPropagation>
     <div class="tabs tabs-boxed">
       <a
         class="tab tab-lg w-1/2"
@@ -127,17 +141,19 @@
         {/if}
       </button>
     </div>
-  </label>
-</label>
+  </div>
+</div>
+{/if}
 
 <!-- Mobile Modal -->
-<Drawer.Root bind:open>
-  <!-- <Drawer.Trigger /> -->
-  <Drawer.Portal>
-    <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden" />
-    <Drawer.Content
-      class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border lg:hidden"
-    >
+{#if !isDesktop}
+  <Drawer.Root bind:open closeOnOutsideClick={false} dismissible={false}>
+    <!-- <Drawer.Trigger /> -->
+    <Drawer.Portal>
+      <Drawer.Overlay class="fixed inset-0 bg-black/40 lg:hidden" />
+      <Drawer.Content
+        class="rounded-t-3xl pb-8 pt-3 bg-opaque fixed bottom-0 left-0 right-0 fine-border lg:hidden"
+      >
       <div class="w-1/6 mb-8 h-1 bg-base-content rounded-full border- m-auto" />
       <div class="p-2">
         <div class="tabs tabs-boxed">
@@ -196,6 +212,7 @@
           </button>
         </div>
       </div>
-    </Drawer.Content>
-  </Drawer.Portal>
-</Drawer.Root>
+      </Drawer.Content>
+    </Drawer.Portal>
+  </Drawer.Root>
+{/if}
