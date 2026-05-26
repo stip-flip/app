@@ -9,6 +9,7 @@ import { usePositionClaims } from "./positionClaims";
 
 export type Position = {
   tick: number;
+  activeTick: number;
   liquidity: BigNumber;
   pnl: BigNumber;
   shares: BigNumber;
@@ -57,6 +58,7 @@ export const positionsAsync = async (poolAddress: string, account: string) => {
       ...acc,
       [byte]: {
         tick: cur.tick,
+        activeTick: slot1.tick,
         liquidity: liquidities[index],
         pnl: pnls[index],
         shares: positionInfos[index].shares,
@@ -117,7 +119,7 @@ export const usePositionsStats: Readable<PositionStats> = derived(
             .add(
               p.liquidity
                 .mul((Number(p.liquidityActive) * 1e9).toFixed(0))
-                .mul(p.tick)
+                .mul(p.activeTick)
                 .div(1e9)
             )
             .div(acc.totalDeposited.add(p.liquidity))
