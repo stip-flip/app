@@ -47,6 +47,12 @@
     content: string;
   };
 
+  type IntentSlotDefinition = {
+    Index?: number;
+    Label?: string;
+    Decimals?: number;
+  };
+
   type ExistingMarket = SynthFragmentFragment & {
     latestSnapshots?: { timestamp?: number | null }[];
   };
@@ -66,7 +72,9 @@
     "wss://relay.damus.io",
     "wss://nos.lol",
     "wss://relay.nostr.band",
+    "wss://relay.primal.net",
   ];
+  const intentEventKind = 30313;
   const leverageOptions: Leverage[] = ["NONE", "SQUARED", "CUBED"];
   const sideOptions = [
     { long: true, label: "Stip" },
@@ -301,7 +309,9 @@
     const nextDefinitions = await Promise.all(
       oracles.map(async (oracle) => ({
         id: oracle.id,
-        definitions: await loadSlotDefinitions(oracle.description || ""),
+        definitions: oracle.slots?.length
+          ? await loadSlotDefinitions(oracle.description || "", oracle.id)
+          : {},
       }))
     );
 
@@ -362,7 +372,67 @@
     return event.tags.some((tag) => tag[0] === "d" && tag[1] === d);
   }
 
-  async function loadSlotDefinitions(description: string) {
+  function eventHasMethodologyHash(event: NostrMethodologyEvent, specHash: string) {
+    return event.tags.some((tag) => tag[0] === "methodology" && tag.includes(specHash));
+  }
+
+  function eventHasOracle(event: NostrMethodologyEvent, oracleAddress: string) {
+    return event.tags.some(
+      (tag) => tag[0] === "oracle" && tag[1]?.toLowerCase() === oracleAddress.toLowerCase()
+    );
+  }
+
+  function definitionsFromIntentEvent(event: NostrMethodologyEvent) {
+    const content = JSON.parse(event.content) as {
+      Slots?: IntentSlotDefinition[];
+    };
+
+    return Object.fromEntries(
+      (content.Slots || [])
+        .filter((slot) => Number.isInteger(slot.Index) && slot.Label)
+        .map((slot) => [
+          slot.Index,
+          {
+            index: slot.Index as number,
+            label: slot.Label as string,
+            decimals: slot.Decimals,
+          },
+        ])
+    ) as Record<number, OracleSlotDefinition>;
+  }
+
+  async function loadSlotDefinitionsFromIntent(description: string, oracleAddress: string) {
+    const pointer = parseMethodologyPointer(description);
+    if (!pointer) return {} as Record<number, OracleSlotDefinition>;
+
+    const filters = { kinds: [intentEventKind], authors: [pointer.pubkey] };
+    const relayFetches = nostrRelays.map(async (relay) => {
+      const pool = new SimplePool();
+      try {
+        const event = (await pool.get([relay], filters, { maxWait: 4000 })) as NostrMethodologyEvent | null;
+        if (!event) throw new Error(`No oracle intent returned from ${relay}.`);
+        if (event.kind !== intentEventKind || event.pubkey !== pointer.pubkey) {
+          throw new Error(`Oracle intent coordinate mismatch from ${relay}.`);
+        }
+        if (!eventHasOracle(event, oracleAddress) || !eventHasMethodologyHash(event, pointer.specHash)) {
+          throw new Error(`Oracle intent does not match ${oracleAddress} and ${pointer.specHash}.`);
+        }
+
+        return definitionsFromIntentEvent(event);
+      } finally {
+        pool.close([relay]);
+      }
+    });
+
+    try {
+      return await Promise.any(relayFetches);
+    } catch (err) {
+      console.warn("Unable to load oracle intent slot labels", err);
+      return {} as Record<number, OracleSlotDefinition>;
+    }
+  }
+
+  async function loadSlotDefinitions(description: string, oracleAddress: string) {
     const pointer = parseMethodologyPointer(description);
     if (!pointer) return {} as Record<number, OracleSlotDefinition>;
 
@@ -395,8 +465,11 @@
           .map((slot) => [slot.index, slot])
       ) as Record<number, OracleSlotDefinition>;
     } catch (err) {
-      console.warn("Unable to load oracle methodology", err);
-      return {} as Record<number, OracleSlotDefinition>;
+      const fallbackDefinitions = await loadSlotDefinitionsFromIntent(description, oracleAddress);
+      if (!Object.keys(fallbackDefinitions).length) {
+        console.warn("Unable to load oracle methodology", err);
+      }
+      return fallbackDefinitions;
     }
   }
 
