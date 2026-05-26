@@ -88,13 +88,20 @@
 
   $: isReversed = (selectedSynth?.address || "") > $sdk.WETC9.address;
 
-  $: console.log("debug", currentRatio);
-
   $: tickLower = getClosestTick(lowRatio);
 
   $: tickUpper = getClosestTick(highRatio);
 
   let signature: RSV | undefined;
+
+  const floorAmount = (value: number | string | undefined, decimals = 12) => {
+    const amount = Number(value);
+    if (!Number.isFinite(amount)) return "";
+    const factor = 10 ** decimals;
+    return String(Math.floor(amount * factor) / factor);
+  };
+
+  $: maxEtcAmount = floorAmount($useBalance?.balance);
 
   // recompute synth (amount0)
   function recomputeSynth() {
@@ -109,13 +116,11 @@
 
     synthAmount = String((shares * synthRatio) / synthPrice);
 
-    console.log("recomputeSynth", shares, synthAmount);
   }
 
   $: {
     if (selectedToken && selectedSynth && !!etcAmount) {
       recomputeSynth();
-      console.log(selectedSynth, etcAmount, synthPrice, synthRatio);
     }
   }
 
@@ -143,56 +148,68 @@
   tokenInfosAndBalances={$si.map((p) => p.token) || []}
 />
 
-<div
-  class="rounded-lg lg:p-4 bg-transparent lg:w-1/2 m-auto lg:app-panel"
->
-  <div class="p-4 lg:h-auto lg:pt-0 container-height" id="container">
-    <label class="label">
-      <span class="label-text font-semibold text-base">Select pair</span>
-    </label>
-    <div class="flex space-x-4">
-      <div class="w-1/2">
-        <label
-          class="btn w-full lg:btn-md btn-sm border bg-opaque fine-border cursor-default"
-          ><Icon class="inline text-xl text-green-600" icon="mdi:ethereum" />
-          ETC</label
-        >
+<section class="earn-add-shell px-4 pb-12 pt-44 lg:px-8 lg:pt-0" id="container">
+  <div class="mx-auto max-w-7xl">
+    <div class="earn-add-hero">
+      <div>
+        <p class="app-label">Secondary trading</p>
+        <h2>Provide depth for position tokens.</h2>
+        <p>
+          Market liquidity helps tokenized exposure move between wallets and venues while protocol settlement remains canonical.
+        </p>
       </div>
-      <div class="w-1/2">
-        <label
-          for="position-modal"
-          class="lg:btn hidden w-full fine-border"
-          class:bg-opaque={selectedSynth != undefined}
-        >
-          <CoinIcon symbol={selectedSynth?.token?.info?.symbol} />{selectedSynth
-            ?.token?.info?.name || "--"}</label
-        >
-        <button
-          class="btn btn-sm w-full fine-border lg:hidden"
-          class:bg-opaque={selectedSynth != undefined}
-          on:click={(_) => (open = true)}
-          ><CoinIcon
-            className="!w-4 !h-4"
-            symbol={selectedSynth?.token?.info?.symbol}
-          />{selectedSynth?.token?.info?.name || "--"}</button
-        >
+      <div class="earn-add-proof">
+        <span>Mode</span>
+        <strong>ETC / position token</strong>
       </div>
     </div>
+
+    <div class="app-panel earn-add-panel">
+      <div class="earn-add-section">
+        <div>
+          <p class="app-label">1. Pair</p>
+          <h3>Select the exposure token to back</h3>
+        </div>
+        <div class="earn-add-pair">
+          <div class="token-chip token-chip--fixed">
+            <Icon class="text-xl text-green-600" icon="mdi:ethereum" />
+            <span>ETC</span>
+          </div>
+          <label
+            for="position-modal"
+            class="token-chip token-chip--button token-chip--desktop"
+            class:token-chip--selected={selectedSynth != undefined}
+          >
+            <CoinIcon symbol={selectedSynth?.token?.info?.symbol} />{selectedSynth
+              ?.token?.info?.name || "Select token"}
+          </label>
+          <button
+            class="token-chip token-chip--button token-chip--mobile"
+            class:token-chip--selected={selectedSynth != undefined}
+            type="button"
+            on:click={(_) => (open = true)}
+            ><CoinIcon
+              className="!w-4 !h-4"
+              symbol={selectedSynth?.token?.info?.symbol}
+            />{selectedSynth?.token?.info?.name || "Select token"}</button
+          >
+        </div>
+      </div>
+
     {#if selectedSynth}
       {#if !pool}
-        <div
-          class="border border-info bg-info text-info-content p-4 rounded-xl mt-4"
-        >
-          This pool must be initialized before you can add liquidity. To
-          initialize, select a starting price for the pool. Then, enter your
-          liquidity price range and deposit amount. Gas fees will be higher than
-          usual due to the initialization transaction.
+        <div class="earn-add-notice">
+          <strong>Pool initialization required.</strong>
+          Choose a starting price, then set the active range and deposit amounts. The first transaction initializes secondary trading for this exposure token.
         </div>
-        <div class="my-4 font-semibold">Starting Price</div>
-        <div class="flex justify-between items-center space-x-4">
-          <div class="lg:form-control lg:w-full hidden">
+        <div class="earn-add-section earn-add-section--stacked">
+          <div>
+            <p class="app-label">Starting price</p>
+            <h3>Set the first secondary-market price</h3>
+          </div>
+          <div class="hidden lg:block">
             <div class="flex items-center">
-              <label class="input-group bg-opaque fine-border p-4 rounded-xl">
+              <label class="input-group form-slab">
                 <div
                   class="lg:input lg:input-ghost lg:input-bordered text-2xl lg:w-2/3 flex items-center"
                 >
@@ -208,7 +225,7 @@
                 >
               </label>
               <Icon class="text-5xl" icon="pepicons-pop:equal" />
-              <label class="input-group bg-opaque fine-border p-4 rounded-xl">
+              <label class="input-group form-slab">
                 <input
                   type="number"
                   inputmode="decimal"
@@ -229,7 +246,7 @@
               </label>
             </div>
           </div>
-          <div class="lg:hidden flex items-center space-x-1">
+          <div class="lg:hidden flex items-center gap-2 app-muted">
             <span>1</span>
             <CoinIcon
               className="mr-2"
@@ -244,21 +261,22 @@
           </div>
         </div>
       {:else}
-        <div class="pt-4 lg:font-bold">
-          Current Price: {commify(currentPrice, 4)}
+        <div class="earn-add-current">
+          <span>Current secondary price</span>
+          <strong>{commify(currentPrice, 4)}</strong>
           <Icon icon="mdi:ethereum" class="inline lg:text-xl text-green-600" />
         </div>
       {/if}
     {/if}
-    <div class="border-b w-full border-base-content hidden lg:block mt-4" />
     <div class:opacity-30={!selectedSynth}>
-      <!-- <div class="border-b w-full my-4 border-base-content" /> -->
-      <div class="my-4 font-semibold">Set price range</div>
+      <div class="earn-add-section earn-add-section--stacked">
+        <div>
+          <p class="app-label">2. Range</p>
+          <h3>Choose where this liquidity is active</h3>
+        </div>
 
-      <div class="lg:flex lg:justify-between lg:items-center lg:space-x-4">
-        <div
-          class="lg:form-control lg:w-1/2 bg-opaque fine-border px-4 pb-4 rounded-xl"
-        >
+      <div class="grid gap-4 lg:grid-cols-2">
+        <div class="form-slab">
           <label class="label">
             <span>Low price</span>
             <span
@@ -290,9 +308,7 @@
             >
           </label>
         </div>
-        <div
-          class="form-control lg:w-1/2 bg-opaque fine-border fine-border px-4 pb-4 rounded-xl lg:mt-0 mt-4"
-        >
+        <div class="form-slab">
           <label class="label">
             <span>High price</span>
             <span
@@ -327,12 +343,16 @@
           </label>
         </div>
       </div>
+      </div>
     </div>
-    <div class="border-b w-full my-4 border-base-content lg:block hidden" />
     <div class:opacity-30={!selectedSynth}>
-      <div class="font-semibold text-base my-4">Deposit amount</div>
-      <div class="lg:flex lg:justify-between items-center lg:space-x-4">
-        <div class="form-control lg:w-1/2 bg-opaque fine-border p-4 rounded-xl">
+      <div class="earn-add-section earn-add-section--stacked">
+        <div>
+          <p class="app-label">3. Deposit</p>
+          <h3>Commit collateral and exposure token inventory</h3>
+        </div>
+      <div class="grid gap-4 lg:grid-cols-2">
+        <div class="form-slab">
           <label class="input-group">
             <input
               bind:value={etcAmount}
@@ -347,7 +367,7 @@
               disabled={lowPrice >= currentPrice}
               use:validator={{
                 value: etcAmount,
-                max: $useBalance?.balance,
+                max: maxEtcAmount,
               }}
             />
             <span
@@ -359,20 +379,19 @@
               ETC</span
             >
           </label>
-          <div
-            class="text-right px-4 cursor-pointer"
+          <button
+            class="balance-button"
+            type="button"
             on:click={(_) => {
-              etcAmount = String($useBalance?.balance);
+              etcAmount = maxEtcAmount;
               recomputeSynth();
             }}
           >
             <span class="text-xs">Balance: </span>
             <span class="text-xs">{commify($useBalance?.balance)}</span>
-          </div>
+          </button>
         </div>
-        <div
-          class="form-control lg:w-1/2 bg-opaque fine-border p-4 rounded-xl lg:mt-0 mt-4"
-        >
+        <div class="form-slab">
           <label class="input-group">
             <input
               bind:value={synthAmount}
@@ -390,11 +409,12 @@
                 className="mr-2"
                 symbol={selectedSynth?.token?.info?.symbol}
               />
-              {selectedSynth?.token?.info?.symbol}</span
+              {selectedSynth?.token?.info?.symbol || "Token"}</span
             >
           </label>
-          <div
-            class="text-right px-4 cursor-pointer"
+          <button
+            class="balance-button"
+            type="button"
             on:click={(_) => {
               synthAmount = String(selectedSynth?.token?.balance);
               recomputeETC();
@@ -403,22 +423,20 @@
             <span class="text-xs">Balance: </span>
             <span class="text-xs">{commify(selectedSynth?.token?.balance)}</span
             >
-          </div>
+          </button>
         </div>
       </div>
+      </div>
     </div>
-    <div class="border-b w-full border-base-content hidden lg:block mt-4" />
     <button
-      class="btn btn-primary w-full mt-8"
+      class="btn btn-primary w-full rounded-full mt-8"
       disabled={!selectedSynth ||
         !synthAmount ||
         Number(selectedToken?.balance) < Number(synthAmount) ||
         Number($useBalance?.balance) < Number(etcAmount)}
       on:click={async (_) => {
-        console.log("click", $allowance, shares, synthAmount);
         const shares_ = (Number(synthAmount) * synthPrice) / synthRatio;
         if ($allowance < shares_ && !signature) {
-          console.log("signature");
           signature = await signPermit(
             selectedSynth?.address || "",
             $sdk.POSITION_MANAGER.address,
@@ -427,7 +445,6 @@
           );
           return;
         }
-        console.log(tickLower, tickUpper, selectedSynth?.address);
         broadcastTransaction(
           `Depositing liquidities to ${selectedSynth?.token?.info?.symbol}`,
           $sdk.POSITION_MANAGER.connect($signer).multicall(
@@ -503,16 +520,190 @@
       {:else if $allowance < (Number(synthAmount) * synthPrice) / synthRatio && !signature}
         Approve
       {:else}
-        Add Liquidity
+        Back secondary market
       {/if}
     </button>
   </div>
-</div>
+  </div>
+</section>
 
 <style>
+  .earn-add-shell {
+    min-height: calc(var(--vc, 1vh) * 100);
+    overflow: visible;
+    padding-bottom: calc(var(--footer-height, 6rem) + 3rem);
+    padding-top: 11rem;
+  }
+
+  .earn-add-hero {
+    display: grid;
+    gap: 1.5rem;
+    align-items: end;
+    padding: 1rem 0 1.25rem;
+  }
+
+  .earn-add-hero h2 {
+    max-width: 48rem;
+    margin-top: 0.45rem;
+    color: hsl(var(--bc));
+    font-size: clamp(2.25rem, 6vw, 5.25rem);
+    font-weight: 800;
+    line-height: 0.94;
+  }
+
+  .earn-add-hero p:not(.app-label) {
+    max-width: 44rem;
+    margin-top: 1rem;
+    color: hsl(var(--bc) / 0.72);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .earn-add-proof {
+    justify-self: start;
+    border: 1px solid rgb(var(--sf-green) / 0.18);
+    border-radius: 0.5rem;
+    padding: 0.85rem 1rem;
+    background: rgb(17 18 28 / 0.46);
+  }
+
+  .earn-add-proof span,
+  .earn-add-current span {
+    display: block;
+    color: hsl(var(--bc) / 0.62);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .earn-add-proof strong,
+  .earn-add-current strong {
+    display: block;
+    margin-top: 0.25rem;
+    color: hsl(var(--bc));
+  }
+
+  .earn-add-panel {
+    padding: 1rem;
+  }
+
+  .earn-add-section {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgb(var(--sf-border) / 0.1);
+  }
+
+  .earn-add-section:first-child {
+    padding-top: 0;
+  }
+
+  .earn-add-section h3 {
+    margin-top: 0.35rem;
+    font-size: 1.25rem;
+    font-weight: 750;
+  }
+
+  .earn-add-section--stacked {
+    display: block;
+  }
+
+  .earn-add-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .token-chip,
+  .form-slab {
+    border: 1px solid rgb(var(--sf-border) / 0.12);
+    border-radius: 0.5rem;
+    background: rgb(255 255 255 / 0.035);
+  }
+
+  .token-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    font-weight: 750;
+  }
+
+  .token-chip--desktop {
+    display: none;
+  }
+
+  .token-chip--button {
+    cursor: pointer;
+  }
+
+  .token-chip--selected,
+  .token-chip--button:hover {
+    border-color: rgb(var(--sf-green) / 0.25);
+    background: rgb(var(--sf-green) / 0.08);
+  }
+
+  .earn-add-notice,
+  .earn-add-current {
+    margin-top: 1rem;
+    border: 1px solid rgb(var(--sf-green) / 0.18);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background: rgb(var(--sf-green) / 0.08);
+    color: hsl(var(--bc) / 0.78);
+  }
+
+  .form-slab {
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+
+  .balance-button {
+    display: block;
+    margin: 0.75rem 0 0 auto;
+    color: hsl(var(--bc) / 0.68);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .balance-button:hover {
+    color: rgb(var(--sf-green));
+  }
+
   :global(input[type="number"]::-webkit-inner-spin-button),
   :global(input[type="number"]::-webkit-outer-spin-button) {
     -webkit-appearance: none;
     margin: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .earn-add-shell {
+      padding-bottom: 3rem;
+      padding-top: 0;
+    }
+
+    .earn-add-hero {
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding-top: 1.5rem;
+    }
+
+    .earn-add-panel {
+      padding: 1.5rem;
+    }
+
+    .earn-add-section {
+      grid-template-columns: 18rem minmax(0, 1fr);
+      align-items: center;
+    }
+
+    .token-chip--desktop {
+      display: inline-flex;
+    }
+
+    .token-chip--mobile {
+      display: none;
+    }
   }
 </style>

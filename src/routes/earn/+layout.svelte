@@ -71,15 +71,17 @@
     {/if}
   {:else}
     <div
-      class="flex items-center justify-between py-4"
+      class="mx-auto flex max-w-7xl items-center justify-between py-4"
     >
       <a class="app-muted inline-flex items-center gap-2 text-sm font-semibold hover:text-white" href={navigate("/earn", url)}>
         <Icon icon="ph-arrow-left-bold" class="text-2xl" />
         <span>Back</span>
       </a>
       <div class="text-right">
-        <div class="app-label">Liquidity backing</div>
-        <h1 class="text-lg font-bold lg:text-2xl">New position</h1>
+        <div class="app-label">
+          {mode == "otc" ? "Protocol liquidity" : "Secondary liquidity"}
+        </div>
+        <h1 class="text-lg font-bold lg:text-2xl">Back tokenized exposure</h1>
       </div>
     </div>
   {/if}
