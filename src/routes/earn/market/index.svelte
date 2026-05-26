@@ -1,7 +1,10 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import CoinIcon from "src/components/coin-icon.svelte";
-  import { usePoolInfos, usePoolInfosLoading } from "src/hooks/uniswap/pool";
+  import {
+    usePositionPoolInfos,
+    usePositionPoolInfosLoading,
+  } from "src/hooks/uniswap/pool";
   import {
     useUniPositions,
     useUniPositionsLoading,
@@ -10,7 +13,7 @@
   import { onMount } from "svelte";
   import Positions from "./_positions.svelte";
 
-  const poolInfos = usePoolInfos;
+  const poolInfos = usePositionPoolInfos;
 
   const positionInfos = useUniPositions;
 
@@ -30,7 +33,7 @@
 
   $: isLoading =
     $useUniPositionsLoading ||
-    (positionExist && $usePoolInfosLoading && !matchingPools.length);
+    (positionExist && $usePositionPoolInfosLoading && !matchingPools.length);
 
   onMount(updateVc);
 </script>

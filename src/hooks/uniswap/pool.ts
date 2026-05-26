@@ -6,6 +6,10 @@ import { infosAndBalanceAsync, type TokenInfoAndBalance } from "../erc20";
 import type { PoolFragment } from "../subgraph";
 import { resolvedTransactions } from "../transactions";
 import { reverseRatio } from "src/lib/sf/reverse";
+import {
+  useUniPositions,
+  type UniPositionInfo,
+} from "src/hooks/uniswap/position";
 
 // synth token is expected to be token 0 accross the app
 // sometimes it is token1, we note the pool as reversed in that case
@@ -25,6 +29,17 @@ export type PoolInfo = {
 };
 
 export const usePoolInfosLoading = writable(false);
+export const usePositionPoolInfosLoading = writable(false);
+
+function pairKey(token0: string, token1: string) {
+  return [token0.toLowerCase(), token1.toLowerCase()].sort().join(":");
+}
+
+function positionPairKeys(positions: UniPositionInfo[]) {
+  return new Set(
+    positions.map((position) => pairKey(position.token0, position.token1))
+  );
+}
 
 export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
   // return await get(gqlsdk).getPools();
@@ -132,6 +147,71 @@ export const usePoolInfos = derived(
       .finally(() => {
         if (!cancelled) {
           usePoolInfosLoading.set(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  },
+  [] as PoolInfo[]
+);
+
+export const usePositionPoolInfos = derived(
+  [ethsdk, resolvedTransactions, gqlsdk, useUniPositions],
+  ([$ethsdk, $resolvedTransactions, $gqlsdk, $positions], set) => {
+    let cancelled = false;
+
+    if (!$gqlsdk || !$ethsdk || !$positions.length) {
+      usePositionPoolInfosLoading.set(false);
+      set([]);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const activePairKeys = positionPairKeys($positions);
+
+    usePositionPoolInfosLoading.set(true);
+    set([]);
+
+    $gqlsdk
+      .getPools()
+      .then(async (res) => {
+        const matchingPoolFragments = res.pools.filter((pool: PoolFragment) =>
+          activePairKeys.has(pairKey(pool.token0, pool.token1))
+        );
+
+        const pools: PoolInfo[] = [];
+        let failedPools = 0;
+
+        await Promise.all(
+          matchingPoolFragments.map(async (poolFragment: PoolFragment) => {
+            try {
+              const pool = await poolInfoAsync(poolFragment);
+              if (cancelled) return;
+              pools.push(pool);
+              set([...pools]);
+            } catch (error) {
+              failedPools++;
+            }
+          })
+        );
+
+        if (cancelled) return;
+
+        if (failedPools) {
+          console.warn(`Skipped ${failedPools} unavailable position pools`);
+        }
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        console.warn("Unable to load position market pools", error);
+        set([]);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          usePositionPoolInfosLoading.set(false);
         }
       });
 
