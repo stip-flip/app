@@ -93,6 +93,7 @@
   let contractLoadRequest = 0;
   let loadedOracleContractKey = "";
   let loadingOracleContractKey = "";
+  let slotDefinitionRequest = 0;
   let existingMarketAddress = "";
   let existingMarketLoading = false;
   let existingMarketError = "";
@@ -138,6 +139,7 @@
         existingMarkets = synthRes.synths || [];
         if (!selectedOracleId && oracles[0]) selectedOracleId = oracles[0].id;
         loadOracleContracts();
+        if (loadedOracleContractKey) loadOracleSlotDefinitions();
       })
       .catch((err) => {
         console.warn("Unable to load market creation data", err);
@@ -253,19 +255,13 @@
       oracles.map(async (oracle) => {
         try {
           const contract = sdkReady.ORACLE.attach(oracle.id);
-          const [description, frequency, currentRound, liveLastRound, rawSlots] = await Promise.all([
+          const [description, frequency, currentRound, liveLastRound, slots] = await Promise.all([
             contract.description().catch(() => ""),
             contract.frequency().catch(() => null),
             contract.getCurrentRound().catch(() => null),
             contract.getLastRound(false).catch(() => null),
             loadOracleSlots(contract),
           ]);
-          const slotDefinitions = await loadSlotDefinitions(description);
-          const slots = rawSlots.map((slot) => ({
-            ...slot,
-            label: slotDefinitions[slot.index]?.label || slot.label,
-            formula: slotDefinitions[slot.index]?.formula,
-          }));
 
           return {
             ...oracle,
@@ -296,6 +292,34 @@
     loadingOracleContractKey = "";
     if (!selectedOracleId && oracles[0]) selectedOracleId = oracles[0].id;
     if (selectedOracle?.slots?.length && !selectedSlot) selectedSlotIndex = selectedOracle.slots[0].index;
+    loadOracleSlotDefinitions();
+  }
+
+  async function loadOracleSlotDefinitions() {
+    const request = ++slotDefinitionRequest;
+
+    const nextDefinitions = await Promise.all(
+      oracles.map(async (oracle) => ({
+        id: oracle.id,
+        definitions: await loadSlotDefinitions(oracle.description || ""),
+      }))
+    );
+
+    if (request !== slotDefinitionRequest) return;
+
+    oracles = oracles.map((oracle) => {
+      const definitions = nextDefinitions.find((entry) => entry.id === oracle.id)?.definitions || {};
+      if (!oracle.slots?.length || !Object.keys(definitions).length) return oracle;
+
+      return {
+        ...oracle,
+        slots: oracle.slots.map((slot) => ({
+          ...slot,
+          label: definitions[slot.index]?.label || slot.label,
+          formula: definitions[slot.index]?.formula || slot.formula,
+        })),
+      };
+    });
   }
 
   async function loadOracleSlots(contract: any) {
