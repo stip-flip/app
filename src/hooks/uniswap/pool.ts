@@ -1,7 +1,7 @@
 import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { gqlsdk } from "src/stores";
 import { sdk as ethsdk } from "src/stores/eth-sdk";
-import { derived, get } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 import { infosAndBalanceAsync, type TokenInfoAndBalance } from "../erc20";
 import type { PoolFragment } from "../subgraph";
 import { resolvedTransactions } from "../transactions";
@@ -23,6 +23,8 @@ export type PoolInfo = {
   synth?: TokenInfoAndBalance; // whichever token is the synth (0 or 1) store its info here
   reversed?: boolean; // if the synth token is token1
 };
+
+export const usePoolInfosLoading = writable(false);
 
 export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
   // return await get(gqlsdk).getPools();
@@ -84,18 +86,58 @@ export const poolInfoAsync = async (pool: PoolFragment): Promise<PoolInfo> => {
 export const usePoolInfos = derived(
   [ethsdk, resolvedTransactions, gqlsdk],
   ([$ethsdk, $resolvedTransactions, $gqlsdk], set) => {
+    let cancelled = false;
+
+    if (!$gqlsdk || !$ethsdk) {
+      usePoolInfosLoading.set(false);
+      set([]);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    usePoolInfosLoading.set(true);
+    set([]);
+
     $gqlsdk
       ?.getPools()
       .then(async (res) => {
-        const pools = await Promise.all(
-          res.pools.map((p: PoolFragment) => poolInfoAsync(p))
+        const pools: PoolInfo[] = [];
+        let failedPools = 0;
+
+        await Promise.all(
+          res.pools.map(async (p: PoolFragment) => {
+            try {
+              const pool = await poolInfoAsync(p);
+              if (cancelled) return;
+              pools.push(pool);
+              set([...pools]);
+            } catch (error) {
+              failedPools++;
+            }
+          })
         );
-        set(pools);
+
+        if (cancelled) return;
+
+        if (failedPools) {
+          console.warn(`Skipped ${failedPools} unavailable market pools`);
+        }
       })
       .catch((error) => {
+        if (cancelled) return;
         console.warn("Unable to load market pools from subgraph", error);
         set([]);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          usePoolInfosLoading.set(false);
+        }
       });
+
+    return () => {
+      cancelled = true;
+    };
   },
   [] as PoolInfo[]
 );

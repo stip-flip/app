@@ -1,7 +1,7 @@
 import { BigNumber, type BigNumberish } from "ethers";
 import { gqlsdk, sdk } from "src/stores";
 import { signerAddress } from "svelte-ethers-store";
-import { derived, get } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 import type { UniPositionFragment } from "../subgraph";
 import { resolvedTransactions } from "../transactions";
 
@@ -12,25 +12,42 @@ export type UniPositionInfo = UniPositionFragment & {
   };
 };
 
+const maxUint128 = BigNumber.from("1").shl(128).sub(1);
+
+export const useUniPositionsLoading = writable(false);
+
 export const asyncUniPositions = async (owner: string) => {
-  const balance = await get(sdk).POSITION_MANAGER.balanceOf(owner);
+  const currentSdk = get(sdk);
+
+  if (!currentSdk?.POSITION_MANAGER || !owner) {
+    return [];
+  }
+
+  let balance: BigNumber;
+
+  try {
+    balance = await currentSdk.POSITION_MANAGER.balanceOf(owner);
+  } catch (err) {
+    console.warn("Unable to fetch Uniswap position balance", err);
+    return [];
+  }
 
   const tokenIDs = await Promise.all(
     Array.from(
       { length: balance.toNumber() },
       async (_, i) =>
-        await get(sdk).POSITION_MANAGER.tokenOfOwnerByIndex(owner, i)
+        await currentSdk.POSITION_MANAGER.tokenOfOwnerByIndex(owner, i)
     )
   );
 
-  const positions = await Promise.all(
+  const positionResults = await Promise.allSettled(
     tokenIDs.map(async (id) => {
-      const p = await get(sdk).POSITION_MANAGER.positions(id);
-      const fees = await get(sdk).POSITION_MANAGER.callStatic.collect({
+      const p = await currentSdk.POSITION_MANAGER.positions(id);
+      const fees = await currentSdk.POSITION_MANAGER.callStatic.collect({
         tokenId: id,
-        recipient: get(signerAddress),
-        amount0Max: BigNumber.from("1").shl(128).sub(1),
-        amount1Max: BigNumber.from("1").shl(128).sub(1),
+        recipient: owner,
+        amount0Max: maxUint128,
+        amount1Max: maxUint128,
       });
       return {
         ...p,
@@ -42,9 +59,8 @@ export const asyncUniPositions = async (owner: string) => {
     })
   );
 
-  console.log(
-    positions,
-    positions.filter((p) => !p.liquidity.isZero())
+  const positions = positionResults.flatMap((result) =>
+    result.status === "fulfilled" ? [result.value] : []
   );
 
   return positions.filter((p) => !p.liquidity.isZero());
@@ -53,10 +69,38 @@ export const asyncUniPositions = async (owner: string) => {
 export const useUniPositions = derived(
   [resolvedTransactions, gqlsdk, signerAddress],
   ([$resolvedTransactions, $gqlsdk, $signerAddress], set) => {
-    if (!$gqlsdk) set([]);
+    let cancelled = false;
+
+    if (!$gqlsdk || !$signerAddress) {
+      useUniPositionsLoading.set(false);
+      set([]);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    useUniPositionsLoading.set(true);
+
     asyncUniPositions($signerAddress)
-      .then((res) => set(res))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        if (!cancelled) {
+          set(res);
+        }
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.warn("Unable to fetch Uniswap positions", err);
+        set([]);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          useUniPositionsLoading.set(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   },
   [] as UniPositionInfo[]
 );
