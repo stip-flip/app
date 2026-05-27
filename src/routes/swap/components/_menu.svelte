@@ -1,43 +1,51 @@
 <script lang="ts">
-  $: selected = { ["zero-leverage"]: true, ["stip"]: true };
+  let zeroLeverage = true;
+  let squaredLeverage = false;
+  let cubedLeverage = false;
+  let stip = true;
+  let flip = false;
 
   export let terms = [];
-  $: terms = Object.keys(selected).filter((term) => selected[term]);
+  $: terms = [
+    zeroLeverage && "zero-leverage",
+    squaredLeverage && "squared-leverage",
+    cubedLeverage && "cubed-leverage",
+    stip && "stip",
+    flip && "flip",
+  ].filter(Boolean);
 
   // reset all leverage field
   function resetLeverage() {
-    selected["zero-leverage"] = false;
-    selected["squared-leverage"] = false;
-    selected["cubed-leverage"] = false;
+    zeroLeverage = false;
+    squaredLeverage = false;
+    cubedLeverage = false;
   }
 
   function resetStance() {
-    selected["stip"] = false;
-    selected["flip"] = false;
+    stip = false;
+    flip = false;
   }
 </script>
 
-<ul class="menu w-50 hidden lg:block" id="menu">
+<ul class="token-filter hidden lg:block" id="menu">
   <li>
-    <a
-      class:text-primary={!!selected["stip"]}
-      class:border-l={!!selected["stip"]}
-      class="rounded-none border-primary"
+    <button
+      type="button"
+      class:filter-active={stip}
       on:click={(_) => {
         resetStance();
-        selected["stip"] = !selected["stip"];
-      }}>Bullish</a
+        stip = !stip;
+      }}>Long exposure</button
     >
   </li>
   <li>
-    <a
-      class:text-primary={!!selected["flip"]}
-      class:border-l={!!selected["flip"]}
-      class="rounded-none border-primary"
+    <button
+      type="button"
+      class:filter-active={flip}
       on:click={(_) => {
         resetStance();
-        selected["flip"] = !selected["flip"];
-      }}>Bearish</a
+        flip = !flip;
+      }}>Inverse exposure</button
     >
   </li>
   <!-- <li> -->
@@ -63,39 +71,36 @@
   </li> -->
   <!-- </li> -->
   <li>
-    <a class="!bg-transparent !cursor-default">Leverage</a>
-    <ul>
+    <p>Power</p>
+    <ul class="mt-2 space-y-1">
       <li>
-        <a
-          class:text-primary={!!selected["zero-leverage"]}
-          class:border-l={!!selected["zero-leverage"]}
-          class="rounded-none border-primary"
+        <button
+          type="button"
+          class:filter-active={zeroLeverage}
           on:click={(_) => {
             resetLeverage();
-            selected["zero-leverage"] = !selected["zero-leverage"];
-          }}>Zero</a
+            zeroLeverage = !zeroLeverage;
+          }}>Linear</button
         >
       </li>
       <li>
-        <a
-          class:text-primary={!!selected["squared-leverage"]}
-          class:border-l={!!selected["squared-leverage"]}
-          class="rounded-none border-primary"
+        <button
+          type="button"
+          class:filter-active={squaredLeverage}
           on:click={(_) => {
             resetLeverage();
-            selected["squared-leverage"] = !selected["squared-leverage"];
-          }}>Squared</a
+            squaredLeverage = !squaredLeverage;
+          }}>Squared</button
         >
       </li>
       <li>
-        <a
-          class:text-primary={!!selected["cubed-leverage"]}
-          class:border-l={!!selected["cubed-leverage"]}
-          class="rounded-none border-primary"
+        <button
+          type="button"
+          class:filter-active={cubedLeverage}
           on:click={(_) => {
             resetLeverage();
-            selected["cubed-leverage"] = !selected["cubed-leverage"];
-          }}>Cubed</a
+            cubedLeverage = !cubedLeverage;
+          }}>Cubed</button
         >
       </li>
     </ul>
@@ -105,28 +110,69 @@
 <div class="join w-full lg:hidden px-4">
   <button
     class="btn btn-primary btn-outline join-item w-1/3"
-    class:btn-active={selected["squared-leverage"]}
+    class:btn-active={squaredLeverage}
     on:click={(_) => {
-      selected["cubed-leverage"] = false;
-      selected["squared-leverage"] = !selected["squared-leverage"];
-      selected["zero-leverage"] = !selected["squared-leverage"];
+      cubedLeverage = false;
+      squaredLeverage = !squaredLeverage;
+      zeroLeverage = !squaredLeverage;
     }}>Squared</button
   >
   <button
     class="btn btn-primary btn-outline join-item w-1/3"
-    class:btn-active={selected["cubed-leverage"]}
+    class:btn-active={cubedLeverage}
     on:click={(_) => {
-      selected["squared-leverage"] = false;
-      selected["cubed-leverage"] = !selected["cubed-leverage"];
-      selected["zero-leverage"] = !selected["cubed-leverage"];
+      squaredLeverage = false;
+      cubedLeverage = !cubedLeverage;
+      zeroLeverage = !cubedLeverage;
     }}>Cubed</button
   >
   <button
     class="btn btn-primary btn-outline join-item w-1/3"
-    class:btn-active={selected["flip"]}
+    class:btn-active={flip}
     on:click={(_) => {
-      selected["flip"] = !selected["flip"];
-      selected["stip"] = !selected["flip"];
-    }}>Flip</button
+      flip = !flip;
+      stip = !flip;
+    }}>Inverse</button
   >
 </div>
+
+<style>
+  .token-filter {
+    border-right: 1px solid rgb(var(--sf-border) / 0.1);
+    padding-right: 1rem;
+  }
+
+  .token-filter > li + li {
+    margin-top: 0.35rem;
+  }
+
+  .token-filter p {
+    margin-top: 1rem;
+    padding: 0.55rem 0.75rem 0.25rem;
+    color: rgb(var(--sf-green));
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .token-filter button {
+    width: 100%;
+    border-left: 2px solid transparent;
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    color: hsl(var(--bc) / 0.72);
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .token-filter button:hover,
+  .token-filter .filter-active {
+    border-color: rgb(var(--sf-green));
+    background: rgb(var(--sf-green) / 0.1);
+    color: hsl(var(--bc));
+  }
+</style>

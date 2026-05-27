@@ -192,6 +192,7 @@
 
 <Modal
   id="selectToken"
+  mode="otc"
   otherTokenSelected={selectToken == "token0" ? selectedToken1 : selectedToken0}
   tokenInfosAndBalances={selectToken == "token0"
     ? tokenInfosAndBalances

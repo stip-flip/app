@@ -7,35 +7,42 @@
   export let sortedTokens: TokenInfoAndBalance[];
 </script>
 
-<ul
-  class="p-4 lg:rounded-box lg:shadow-lg w-full overflow-scroll"
-  style="height: 40vh;"
->
-  {#each sortedTokens || [] as token}
+<ul class="token-list w-full overflow-y-auto px-4 py-3 lg:px-0" style="height: 40vh;">
+  {#each sortedTokens || [] as token (token.info.address)}
     <!-- {#if token.info.address == selectedToken?.info.address} -->
-    <li
-      class="px-2 pb-2 pt-2 cursor-pointer hover:bg-base-200 transition-all"
-      class:border-b={token.info.address == selectedToken?.info.address}
-      class:bg-base-100={token.info.address == selectedToken?.info.address}
-      class:px-6={token.info.address == selectedToken?.info.address}
-      id="list-token"
-      on:click={(_) => {
-        selectedToken = token;
-      }}
-    >
-      <div class="flex space-x-2">
+    <li>
+      <button
+        type="button"
+        class="token-row w-full cursor-pointer"
+        class:token-row-selected={token.info.address == selectedToken?.info.address}
+        id="list-token"
+        on:click={(_) => {
+          selectedToken = token;
+        }}
+      >
+      <div class="flex min-w-0 items-start gap-3">
         <CoinIcon symbol={token.info.symbol} />
-        <strong class="capitalize">
-          <a>{token.info.symbol}</a> :
-        </strong>
-        <span>
-          ({commify(token?.balance, 4)})
-        </span>
-        <p class:hidden={token.info.address != selectedToken?.info.address}>
-          {token?.info?.description ||
-            "Ether Coin, The Ether's native currency."}
-        </p>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-baseline justify-between gap-3">
+            <strong class="truncate text-base">
+              {token.info.symbol}
+            </strong>
+            <span class="shrink-0 text-sm text-base-content/60">
+              {commify(token?.balance, 4)}
+            </span>
+          </div>
+          <p class="mt-1 truncate text-sm text-base-content/68">
+            {token.info.name}
+          </p>
+          {#if token.info.address == selectedToken?.info.address}
+            <p class="mt-2 text-sm leading-relaxed text-base-content/72">
+              {token?.info?.description ||
+                "Native settlement asset for protocol collateral and settlement."}
+            </p>
+          {/if}
+        </div>
       </div>
+      </button>
     </li>
     <!-- {:else}
       <li
@@ -57,3 +64,29 @@
     {/if} -->
   {/each}
 </ul>
+
+<style>
+  .token-list {
+    scrollbar-width: thin;
+  }
+
+  .token-row {
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    padding: 0.8rem;
+    text-align: left;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .token-row:hover {
+    background: rgb(255 255 255 / 0.06);
+    border-color: rgb(var(--sf-border) / 0.1);
+  }
+
+  .token-row-selected {
+    background: rgb(var(--sf-green) / 0.12);
+    border-color: rgb(var(--sf-green) / 0.24);
+  }
+</style>
