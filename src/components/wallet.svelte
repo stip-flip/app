@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import BuyEtc from "src/components/buy-etc.svelte";
   import { SUPPORTED_NETWORKS } from "src/stores";
   import {
     chainId,
@@ -41,17 +42,21 @@
 
 <div class="relative" id="wallet-connect">
   {#if !$connected || !$signerAddress}
-    <div
-      class="border border-primary flex cursor-pointer items-center h-8 rounded-full"
-    >
+    <div class="flex items-center gap-2">
+      <BuyEtc compact />
+      <div
+        class="border border-primary flex cursor-pointer items-center h-8 rounded-full"
+      >
       <button
         on:click={(_) => modal.open()}
         class="px-4 text-primary tracking-wider flex cursor-pointer"
         >Connect <span class="lg:visible hidden">Wallet</span></button
       >
+      </div>
     </div>
   {:else}
     <div class="flex items-center relative space-x-4">
+      <BuyEtc compact />
       <button
         class={`h-6 flex-col absolute -left-12 -top-1 cursor-pointer ` +
           (!supportedNetwork ? "" : "hidden")}

@@ -5,6 +5,7 @@
   import Icon from "@iconify/svelte";
   import { disconnectMetamask, switchNetwork } from "src/lib";
   import { modal } from "src/lib/web3";
+  import BuyEtc from "./buy-etc.svelte";
   import Theme from "./theme.svelte";
 
   let overlay: HTMLInputElement;
@@ -25,7 +26,7 @@
       for="wallet-drawer"
       aria-label="close sidebar"
       class="drawer-overlay"
-    />
+    ></label>
     <ul
       class="menu p-4 lg:w-80 w-2/3 min-h-full text-base-content z-20 bg-opaque"
     >
@@ -54,6 +55,10 @@
           >
         </div>
         <div class="divider my-8 app-muted">Settlement networks</div>
+
+        <div class="mb-3">
+          <BuyEtc fullWidth />
+        </div>
 
         <button
           class="btn btn-outline px-4 flex space-x-2 items-center"
