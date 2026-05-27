@@ -9,6 +9,10 @@
   import { appMode } from "src/stores";
 
   $: url = new URL($page.url);
+  $: requestedMode = url.searchParams.get("mode");
+  $: if (requestedMode === "market" || requestedMode === "otc") {
+    appMode.set(requestedMode);
+  }
 
   $: mode = $appMode;
 
@@ -73,9 +77,9 @@
     <div
       class="mx-auto flex max-w-7xl items-center justify-between py-4"
     >
-      <a class="app-muted inline-flex items-center gap-2 text-sm font-semibold hover:text-white" href={navigate("/earn", url)}>
+      <a class="app-muted inline-flex items-center gap-2 text-sm font-semibold hover:text-white" href="/">
         <Icon icon="ph-arrow-left-bold" class="text-2xl" />
-        <span>Back</span>
+        <span>Markets</span>
       </a>
       <div class="text-right">
         <div class="app-label">

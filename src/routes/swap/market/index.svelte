@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
   import { formatUnits, parseEther } from "ethers/lib/utils";
   import _ from "lodash";
@@ -43,7 +44,7 @@
         selectedToken0 = selectedToken;
       }
       // selectedToken = undefined;
-    } else {
+    } else if (selectedToken) {
       selectedToken1 = selectedToken;
       // selectedToken = undefined;
     }
@@ -55,6 +56,7 @@
   let open: boolean = false;
 
   const ZERO_ADDRESS = "0x0";
+  let appliedPairKey = "";
 
   $: synthInfo = useSynthInfos;
 
@@ -98,6 +100,36 @@
     ...($synthInfo || []).map((pi) => pi.token),
     $quoteToken,
   ].filter((t) => !!t);
+
+  function sameAddress(a?: string, b?: string) {
+    return (a || "").toLowerCase() === (b || "").toLowerCase();
+  }
+
+  $: requestedFrom = $page.url.searchParams.get("from");
+  $: requestedTo = $page.url.searchParams.get("to");
+  $: requestedPairKey = `${requestedFrom || ""}:${requestedTo || ""}:${tokenInfosAndBalances.length}`;
+  $: if (
+    requestedPairKey !== appliedPairKey &&
+    tokenInfosAndBalances.length &&
+    (requestedFrom || requestedTo)
+  ) {
+    const fromToken = requestedFrom
+      ? tokenInfosAndBalances.find((t: TokenInfoAndBalance) =>
+          sameAddress(t?.info?.address, requestedFrom)
+        )
+      : undefined;
+    const toToken = requestedTo
+      ? tokenInfosAndBalances.find((t: TokenInfoAndBalance) =>
+          sameAddress(t?.info?.address, requestedTo)
+        )
+      : undefined;
+
+    if ((!requestedFrom || fromToken) && (!requestedTo || toToken)) {
+      if (fromToken) selectedToken0 = fromToken;
+      if (toToken) selectedToken1 = toToken;
+      appliedPairKey = requestedPairKey;
+    }
+  }
 
   $: filteredSelectedToken1 = tokenInfosAndBalances.filter(
     (t: TokenInfoAndBalance) => {
@@ -180,6 +212,7 @@
 
 <Modal
   id="selectToken"
+  mode="market"
   otherTokenSelected={selectToken == "token0" ? selectedToken1 : selectedToken0}
   tokenInfosAndBalances={selectToken == "token0"
     ? tokenInfosAndBalances

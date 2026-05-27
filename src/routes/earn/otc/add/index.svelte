@@ -21,11 +21,26 @@
   let open: boolean = false;
 
   let selectedToken: TokenInfoAndBalance;
+  let appliedTokenParam = "";
 
   $: pi = useSynthInfos;
   $: selectedPool = $pi?.find((p) => p.address == selectedToken?.info?.address);
 
   $: url = new URL($page.url);
+  $: requestedToken = url.searchParams.get("token");
+  $: if (requestedToken && requestedToken !== appliedTokenParam && $pi?.length) {
+    const match = $pi
+      .map((p) => p.token)
+      .find(
+        (token: TokenInfoAndBalance) =>
+          token?.info?.address?.toLowerCase() === requestedToken.toLowerCase()
+      );
+
+    if (match) {
+      selectedToken = match;
+      appliedTokenParam = requestedToken;
+    }
+  }
 
   let FR = 500;
   // fr is actually a tick here

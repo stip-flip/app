@@ -32,6 +32,7 @@
   let etcAmount: string; // etcAmount is the amount of ETC (amount1)
 
   let selectedToken: TokenInfoAndBalance;
+  let appliedTokenParam = "";
 
   $: url = new URL($page.url);
 
@@ -39,6 +40,20 @@
   $: selectedSynth = $si?.find(
     (p) => p.address == selectedToken?.info?.address
   );
+  $: requestedToken = url.searchParams.get("token");
+  $: if (requestedToken && requestedToken !== appliedTokenParam && $si?.length) {
+    const match = $si
+      .map((p) => p.token)
+      .find(
+        (token: TokenInfoAndBalance) =>
+          token?.info?.address?.toLowerCase() === requestedToken.toLowerCase()
+      );
+
+    if (match) {
+      selectedToken = match;
+      appliedTokenParam = requestedToken;
+    }
+  }
 
   $: pi = usePoolInfos;
 
