@@ -81,7 +81,7 @@
   };
 
   type SpecPublication = {
-    kind: 30312;
+    kind: number;
     chainId?: number;
     factory?: string;
     pubkey: string;
@@ -94,6 +94,7 @@
     publishedAt: string;
     verifiedAt?: string;
     verifiedRelay?: string;
+    signedEvent?: NostrMethodologyEvent;
   };
 
   type NostrMethodologyEvent = {
@@ -102,6 +103,8 @@
     kind: number;
     tags: string[][];
     content: string;
+    created_at?: number;
+    sig?: string;
   };
 
   type CreateOracleDraft = {
@@ -157,8 +160,8 @@
     { id: "feeds", label: "2. Feeds and Slots" },
     { id: "operate", label: "3. Operate Oracle" },
   ];
-  const specEventKind = 30312;
-  const intentEventKind = 30313;
+  const specEventKind = 30777;
+  const intentEventKind = 30778;
   const nostrRelays = [
     "wss://relay.nuts.cash",
     "wss://relay.damus.io",
@@ -1210,6 +1213,7 @@ Spec d: ${d}`;
             naddr: specPublication.naddr,
             relays: specPublication.relays,
             specHash: specPublication.specHash,
+            signedEvent: specPublication.signedEvent,
           }
         : undefined,
       timings: {
@@ -1278,6 +1282,8 @@ Hard requirements:
 - Do not use parallel endpoint fan-out unless provider-specific rate limits are enforced.
 - Publish a kind ${intentEventKind} Nostr intent before every setPrices transaction.
 - Fetch methodology from the naddr in config. Some relays may not return addressable events through plain author/#d filters.
+- Preserve and verify the signedEvent cache in config. If all relays lose the methodology event, continue only from this exact signed event after verifying id, author, kind, d tag, signature, and specHash.
+- Republish the exact signed methodology event to configured relays when it is missing remotely; do not mutate content, tags, or created_at because that changes the event id.
 - Verify the fetched methodology event id, author, kind, d tag, and specHash before computing prices.
 - Verify the fetched methodology hash against specHash before computing prices.
 - Query these relays first: ${nostrRelays.join(", ")}.
@@ -1464,6 +1470,7 @@ ${config}
         publishedAt: new Date().toISOString(),
         verifiedAt: new Date().toISOString(),
         verifiedRelay: fetched.relay,
+        signedEvent: signed as NostrMethodologyEvent,
       };
       saveDraft();
       draftStatus = "Spec published and fetched from Nostr";
