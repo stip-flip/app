@@ -7,6 +7,7 @@
   import Icon from "@iconify/svelte";
   import Help from "src/components/help.svelte";
   import Logo from "src/components/logo.svelte";
+  import MeshGrid from "src/components/mesh-grid.svelte";
   import Mode from "src/components/mode.svelte";
   import TakeATour from "src/components/take-a-tour.svelte";
   import Theme from "src/components/theme.svelte";
@@ -31,13 +32,26 @@
   let lastResolvedIndex = 0;
   $: transactionWatcher = $transactions;
 
+  type GridRunner = {
+    id: number;
+    direction: "horizontal" | "vertical";
+    line: number;
+    duration: number;
+    delay: number;
+    cycle: number;
+  };
+
+  let gridRunners: GridRunner[] = [];
+
   onMount(() => {
     try {
       // Initial update
       updateVh();
+      resetGridRunners();
 
       // Update on resize
       window.addEventListener("resize", updateVh);
+      window.addEventListener("resize", resetGridRunners);
       // connectMetamask();
       // defaultEvmStores.setProvider().catch((e) => console.warn(e));
     } catch (e) {
@@ -46,6 +60,11 @@
         document.getElementById("take-a-tour")?.click();
       }
     }
+
+    return () => {
+      window.removeEventListener("resize", updateVh);
+      window.removeEventListener("resize", resetGridRunners);
+    };
   });
 
   $: homepage = $page.route.id == "/";
@@ -87,6 +106,31 @@
     document.documentElement.style.setProperty(
       "--vh",
       `${window.innerHeight * 0.01}px`
+    );
+  }
+
+  function createGridRunner(id: number, delay = 0): GridRunner {
+    const direction = Math.random() > 0.45 ? "horizontal" : "vertical";
+    const maxLine = direction === "horizontal" ? window.innerHeight : window.innerWidth;
+    const line = Math.max(0, Math.floor(Math.random() * Math.ceil(maxLine / 44)) * 44);
+
+    return {
+      id,
+      direction,
+      line,
+      duration: 4600 + Math.round(Math.random() * 2200),
+      delay,
+      cycle: Date.now() + id + Math.random(),
+    };
+  }
+
+  function resetGridRunners() {
+    gridRunners = Array.from({ length: 5 }, (_, id) => createGridRunner(id, id * 900));
+  }
+
+  function refreshGridRunner(id: number) {
+    gridRunners = gridRunners.map((runner) =>
+      runner.id === id ? createGridRunner(id, 350 + Math.round(Math.random() * 1800)) : runner
     );
   }
 </script>
@@ -174,35 +218,9 @@
   <input id="app-drawer" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content flex flex-col">
     <!-- Navbar -->
-    <div class="fixed w-full p-3 lg:p-4 z-10" id="navbar">
-      <div class="justify-between navbar">
-        {#if homepage}
-          <div class="flex items-center w-content lg:mr-8"></div>
-          <div
-            class="homepage-nav lg:w-2/3 w-full flex justify-between items-center rounded-full min-h-0 px-4"
-          >
-            <a href={"/"} class="flex w-1/2 items-center">
-              <Logo />
-            </a>
-            <div class="flex space-x-4">
-              <a
-                href="https://docs.stipflip.xyz"
-                class="p-1 rounded-md text-base-content hover:text-primary"
-                rel="noopener noreferrer"
-                >Documentation</a
-              >
-              <a
-                href="/swap"
-                class="p-1 rounded-md flex lg:space-x-1 hover:text-primary"
-                on:click|preventDefault={() => goto(navigate("/swap", url))}
-              >
-                <span>App</span></a
-              >
-            </div>
-          </div>
-          <div />
-          <!-- <Theme /> -->
-        {:else}
+    {#if !homepage}
+      <div class="fixed w-full p-3 lg:p-4 z-10" id="navbar">
+        <div class="justify-between navbar">
           <div class="flex items-center w-content h-8 lg:mr-8 lg:w-1/3">
             <div class="flex-none lg:hidden">
               <!-- <label
@@ -294,14 +312,24 @@
             <Wallet />
             <span class="lg:block hidden"><Theme /></span>
           </div>
-        {/if}
+        </div>
       </div>
-    </div>
+    {/if}
     <div
-      class={!homepage
-        ? "app-background bg-2 lg:h-screen w-full overflow-scroll lg:pb-8 lg:overflow-auto mobile-height overflow-x-hidden"
-        : "root h-screen bg"}
+      class={homepage
+        ? "app-background bg-2 min-h-screen w-full overflow-x-hidden"
+        : "app-background bg-2 lg:h-screen w-full overflow-scroll lg:pb-8 lg:overflow-auto mobile-height overflow-x-hidden"}
     >
+      <div class="grid-current-layer" aria-hidden="true">
+        <MeshGrid />
+        {#each gridRunners as runner (runner.cycle)}
+          <span
+            class={"grid-current-runner grid-current-runner--" + runner.direction}
+            style={`--line: ${runner.line}px; --duration: ${runner.duration}ms; --delay: ${runner.delay}ms;`}
+            on:animationend={() => refreshGridRunner(runner.id)}
+          ></span>
+        {/each}
+      </div>
       <slot />
     </div>
     <div
